@@ -9,7 +9,6 @@ The only purpose of this project is to develop such a service and to try differe
 
 So it’s more a personal technology test and evaluation.
 
-The project is split in the server and client directories and there in the different subprojects. 
+The project is split in the service and client directories and there in the different subprojects. 
 
-I think I will organize the different subprojects as maven modules to keep common dependencies in one place.
 
