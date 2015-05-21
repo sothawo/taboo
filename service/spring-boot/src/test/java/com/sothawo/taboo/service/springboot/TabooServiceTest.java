@@ -8,8 +8,7 @@ import mockit.Verifications;
 import org.junit.Test;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 import static org.hamcrest.CoreMatchers.is;
@@ -26,22 +25,21 @@ public class TabooServiceTest {
 
     @Test
     public void getAllBookmarks(@Mocked final BookmarkRepository repository) throws Exception {
-        final Collection<Bookmark> bookmarks = new ArrayList<Bookmark>();
-        bookmarks.add(aBookmark().withUrl("url1").addTag("tag1").build());
-        bookmarks.add(aBookmark().withUrl("url2").addTag("tag2").build());
+        final Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").build();
+        final Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").build();
 
         new Expectations() {{
             repository.findAllBookmarks();
-            result = bookmarks;
+            result = Arrays.asList(bookmark1, bookmark2);
         }};
 
         MockMvc mockMvc = standaloneSetup(new TabooService(repository)).build();
         mockMvc.perform(get("/taboo/bookmark"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].url", is("url1")))
-                .andExpect(jsonPath("$[0].tags[0]", is("tag1")))
-                .andExpect(jsonPath("$[1].url", is("url2")))
-                .andExpect(jsonPath("$[1].tags[0]", is("tag2")))
+                .andExpect(jsonPath("$[0].url", is(bookmark1.getUrl())))
+                .andExpect(jsonPath("$[0].tags[0]", is(bookmark1.getTags().iterator().next())))
+                .andExpect(jsonPath("$[1].url", is(bookmark2.getUrl())))
+                .andExpect(jsonPath("$[1].tags[0]", is(bookmark2.getTags().iterator().next())))
         ;
 
         new Verifications() {{
