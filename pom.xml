@@ -17,10 +17,49 @@
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <version.spring>4.1.6.RELEASE</version.spring>
+        <version.spring-boot>1.2.3.RELEASE</version.spring-boot>
+
+        <version.jmockit>1.16</version.jmockit>
+        <version.junit>4.12</version.junit>
+        <version.jsonPath>2.0.0</version.jsonPath>
     </properties>
 
     <modules>
         <module>service</module>
         <module>common</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <!-- before JUnit, otherwise the test classes must be annotated with @RunWith(JMockit.class) which may
+                inhibit using Spring's JUnit runner-->
+                <groupId>org.jmockit</groupId>
+                <artifactId>jmockit</artifactId>
+                <version>${version.jmockit}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <!-- needed for Spring's Testrunner and utilities -->
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${version.spring}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${version.junit}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.jayway.jsonpath</groupId>
+                <artifactId>json-path</artifactId>
+                <version>${version.jsonPath}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>
