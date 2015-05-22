@@ -34,20 +34,13 @@ public interface BookmarkRepository {
     Bookmark findBookmarkById(int id);
 
     /**
-     * returns all bookmarks that have at least one of the given tags.
-     *
-     * @param tags
-     *         the tags to be searched
-     * @return the bookmarks
-     */
-    Collection<Bookmark> findBookmarksWithAnyTag(Collection<String> tags);
-
-    /**
      * returns all bookmarks that have all of the given tags.
      *
      * @param tags
      *         the tags to be searched
+     * @param opAnd
+     *         if true, the tags are to be combined using AND, otherwise OR
      * @return the bookmarks
      */
-    Collection<Bookmark> findBookmarksWithAllTags(Collection<String> tags);
+    Collection<Bookmark> findBookmarksWithTags(Collection<String> tags, boolean opAnd);
 }

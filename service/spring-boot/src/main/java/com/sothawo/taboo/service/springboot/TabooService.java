@@ -44,12 +44,17 @@ public class TabooService {
     /**
      * gets all the bookmarks from the repository
      *
+     * @param tags
+     *         optional list of tags
+     * @param op
+     *         if "or", tags are combined with OR, otherwise with AND
      * @return all bookmarks
      */
     @RequestMapping(value = "/bookmarks", method = RequestMethod.GET)
-    public Collection<Bookmark> findAllBookmarks(@RequestParam(value = "tag", required = false) List<String> tags) {
+    public Collection<Bookmark> findAllBookmarks(@RequestParam(value = "tag", required = false) List<String> tags,
+                                                 @RequestParam(value = "op", defaultValue = "and") String op) {
         if (null != tags) {
-            return repository.findBookmarksWithAllTags(tags);
+            return repository.findBookmarksWithTags(tags, !"or".equalsIgnoreCase(op));
         } else {
             return repository.findAllBookmarks();
         }

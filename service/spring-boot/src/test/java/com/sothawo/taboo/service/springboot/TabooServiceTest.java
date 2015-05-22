@@ -6,7 +6,6 @@ import com.sothawo.taboo.common.NotFoundException;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -106,22 +105,52 @@ public class TabooServiceTest {
 
         Bookmark bookmark = bookmarks.get(1);
 
-        new Expectations(){{
-            repository.findBookmarksWithAllTags(Arrays.asList("tag2", "abc"));
+        new Expectations() {{
+            repository.findBookmarksWithTags(Arrays.asList("tag2", "abc"), true);
             result = Arrays.asList(bookmark);
         }};
 
         MockMvc mockMvc = standaloneSetup(new TabooService(repository)).build();
         mockMvc.perform(get("/taboo/bookmarks")
-                    .param("tag", "tag2", "abc")
-                    .accept(MediaType.APPLICATION_JSON))
+                .param("tag", "tag2", "abc")
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(bookmark.getId()))) // id check is enough here
         ;
 
-        new Verifications(){{
-            repository.findBookmarksWithAllTags(Arrays.asList("tag2", "abc"));
+        new Verifications() {{
+            repository.findBookmarksWithTags(Arrays.asList("tag2", "abc"), true);
+            times = 1;
+        }};
+
+    }
+
+    @Test
+    public void findBookmarksWithAnyTag(@Mocked final BookmarkRepository repository) throws Exception {
+        List<Bookmark> bookmarks = createBookmarks(1, 2, 3, 4, 5);
+        bookmarks.get(1).getTags().add("abc");
+        bookmarks.get(3).getTags().add("abc");
+
+        new Expectations() {{
+            repository.findBookmarksWithTags(Arrays.asList("tag2", "abc"), false);
+            result = Arrays.asList(bookmarks.get(1), bookmarks.get(3));
+        }};
+
+        MockMvc mockMvc = standaloneSetup(new TabooService(repository)).build();
+        mockMvc.perform(get("/taboo/bookmarks")
+                .param("tag", "tag2", "abc")
+                .param("op", "or")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(2)))
+                .andExpect(jsonPath("$[0].id", is(bookmarks.get(1).getId()))) // id check is enough here
+                .andExpect(jsonPath("$[1].id", is(bookmarks.get(3).getId())))
+        ;
+
+        new Verifications() {{
+            repository.findBookmarksWithTags(Arrays.asList("tag2", "abc"), false);
             times = 1;
         }};
 
