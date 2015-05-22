@@ -12,12 +12,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -38,7 +40,7 @@ public class TabooServiceTest {
         }};
 
         MockMvc mockMvc = standaloneSetup(new TabooService(repository)).build();
-        mockMvc.perform(get("/taboo/bookmark").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/taboo/bookmarks").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(2)))
                 .andExpect(jsonPath("$[0].id", is(bookmarks.get(0).getId())))
@@ -57,14 +59,14 @@ public class TabooServiceTest {
 
     @Test
     public void findExistingBookmark(@Mocked final BookmarkRepository repository) throws Exception {
-        final Bookmark bookmark = createBookmarks(7, 11).get(1);
+        final Bookmark bookmark = createBookmarks(11).get(0);
         new Expectations() {{
             repository.findBookmarkById(11);
             result = bookmark;
         }};
 
         MockMvc mockMvc = standaloneSetup(new TabooService(repository)).build();
-        mockMvc.perform(get("/taboo/bookmark/{id}", bookmark.getId()).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/taboo/bookmarks/{id}", bookmark.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(bookmark.getId())))
                 .andExpect(jsonPath("$.url", is(bookmark.getUrl())))
@@ -80,14 +82,13 @@ public class TabooServiceTest {
 
     @Test
     public void findNotExistingBookmarkYieldsNotFound(@Mocked final BookmarkRepository repository) throws Exception {
-        List<Bookmark> bookmarks = createBookmarks(23, 42);
         new Expectations() {{
             repository.findBookmarkById(11);
             result = new NotFoundException();
         }};
 
         MockMvc mockMvc = standaloneSetup(new TabooService(repository)).build();
-        mockMvc.perform(get("/taboo/bookmark/{id}", 11).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/taboo/bookmarks/{id}", 11).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
         ;
 
@@ -95,6 +96,35 @@ public class TabooServiceTest {
             repository.findBookmarkById(11);
             times = 1;
         }};
+    }
+
+    @Test
+    public void findBookmarksWithAllTags(@Mocked final BookmarkRepository repository) throws Exception {
+        List<Bookmark> bookmarks = createBookmarks(1, 2, 3, 4, 5);
+        bookmarks.get(1).getTags().add("abc");
+        bookmarks.get(3).getTags().add("abc");
+
+        Bookmark bookmark = bookmarks.get(1);
+
+        new Expectations(){{
+            repository.findBookmarksWithAllTags(Arrays.asList("tag2", "abc"));
+            result = Arrays.asList(bookmark);
+        }};
+
+        MockMvc mockMvc = standaloneSetup(new TabooService(repository)).build();
+        mockMvc.perform(get("/taboo/bookmarks")
+                    .param("tag", "tag2", "abc")
+                    .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(1)))
+                .andExpect(jsonPath("$[0].id", is(bookmark.getId()))) // id check is enough here
+        ;
+
+        new Verifications(){{
+            repository.findBookmarksWithAllTags(Arrays.asList("tag2", "abc"));
+            times = 1;
+        }};
+
     }
 
     /**

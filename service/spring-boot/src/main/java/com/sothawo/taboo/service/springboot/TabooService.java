@@ -12,11 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -47,13 +46,17 @@ public class TabooService {
      *
      * @return all bookmarks
      */
-    @RequestMapping(value = "/bookmark", method = RequestMethod.GET)
-    public Collection<Bookmark> findAllBookmarks() {
-        return repository.findAllBookmarks();
+    @RequestMapping(value = "/bookmarks", method = RequestMethod.GET)
+    public Collection<Bookmark> findAllBookmarks(@RequestParam(value = "tag", required = false) List<String> tags) {
+        if (null != tags) {
+            return repository.findBookmarksWithAllTags(tags);
+        } else {
+            return repository.findAllBookmarks();
+        }
     }
 
     /**
-     * returns the bookmark with the given id
+     * returns the bookmark with the given id.
      *
      * @param id
      *         id of the bookmark
@@ -61,19 +64,19 @@ public class TabooService {
      * @throws NotFoundException
      *         when no Bookmarks is found for the id
      */
-    @RequestMapping(value = "/bookmark/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/bookmarks/{id}", method = RequestMethod.GET)
     public Bookmark findBookmarkById(@PathVariable(value = "id") Integer id) {
         return repository.findBookmarkById(id);
     }
 
     /**
-     * ExceptionHandler for NotFoundException.
+     * ExceptionHandler for NotFoundException. just returns an empty body with the 404 status code.
+     *
      * @return HTTP NOT_FOUND Error Response
      */
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Error> notFound() {
-        Error error = new Error();
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void notFound() {
     }
 
 // --------------------------- main() method ---------------------------

@@ -49,5 +49,5 @@ public interface BookmarkRepository {
      *         the tags to be searched
      * @return the bookmarks
      */
-    Collection<Bookmark> finpdBookmarksWithAllTags(Collection<String> tags);
+    Collection<Bookmark> findBookmarksWithAllTags(Collection<String> tags);
 }

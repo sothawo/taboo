@@ -11,17 +11,14 @@ the following calls are implemented by the service:
 
 ### bookmarks
 
-#### _GET /taboo/bookmark_ 
+#### _GET /taboo/bookmarks_ 
   
 gets all bookmarks from the repository
 
-#### _GET /taboo/bookmark/{id}_
+#### _GET /taboo/bookmarks/{id}_
 
 gets the bookmark with the given id 
 
+#### _GET /taboo/bookmarks?tag=t1&tag=t2_
 
-### tags
-
-#### _GET /taboo/tag
-
-gets all known tags
+gets all bookmarks that have all of the given tags, tag parameter can be used multiple times 
