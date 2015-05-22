@@ -13,6 +13,7 @@ import java.util.Collection;
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 public interface BookmarkRepository {
+// -------------------------- OTHER METHODS --------------------------
 
     /**
      * returns all bookmarks in the repository.
@@ -22,13 +23,15 @@ public interface BookmarkRepository {
     Collection<Bookmark> findAllBookmarks();
 
     /**
-     * returns all bookmarks that have all of the given tags.
+     * returns the bookmark for the given id.
      *
-     * @param tags
-     *         the tags to be searched
-     * @return the bookmarks
+     * @param id
+     *         id of the bookmark
+     * @return the bookmark
+     * @throws NotFoundException
+     *         if no bookmark is found for the given id
      */
-    Collection<Bookmark> finpdBookmarksWithAllTags(Collection<String> tags);
+    Bookmark findBookmarkById(int id);
 
     /**
      * returns all bookmarks that have at least one of the given tags.
@@ -38,4 +41,13 @@ public interface BookmarkRepository {
      * @return the bookmarks
      */
     Collection<Bookmark> findBookmarksWithAnyTag(Collection<String> tags);
+
+    /**
+     * returns all bookmarks that have all of the given tags.
+     *
+     * @param tags
+     *         the tags to be searched
+     * @return the bookmarks
+     */
+    Collection<Bookmark> finpdBookmarksWithAllTags(Collection<String> tags);
 }

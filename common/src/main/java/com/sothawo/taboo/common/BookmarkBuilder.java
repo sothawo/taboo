@@ -15,10 +15,10 @@ import java.util.Collection;
  */
 public class BookmarkBuilder {
 // ------------------------------ FIELDS ------------------------------
-
+    /** the id of the bookmark */
+    private int id;
     /** the url for the bookmark */
     private String url;
-
     /** the tags for the bookmark */
     private Collection<String> tags = new ArrayList<String>();
 
@@ -54,6 +54,7 @@ public class BookmarkBuilder {
      */
     public Bookmark build() {
         Bookmark bookmark = new Bookmark();
+        bookmark.setId(id);
         bookmark.setUrl(url);
         bookmark.setTags(tags);
         return bookmark;
@@ -68,6 +69,18 @@ public class BookmarkBuilder {
      */
     public BookmarkBuilder withUrl(String url) {
         this.url = url;
+        return this;
+    }
+
+    /**
+     * sets the id of the bookmark.
+     *
+     * @param id
+     *         new id
+     * @return this object
+     */
+    public BookmarkBuilder withId(int id) {
+        this.id = id;
         return this;
     }
 }
