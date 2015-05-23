@@ -18,7 +18,7 @@ public class Bookmark {
 // ------------------------------ FIELDS ------------------------------
 
     /** the id of the bookmark */
-    private int id;
+    private Integer id;
     /** the URL the bookmark points to as String */
     private String url = "";
     /** the tags of the bookmark */
@@ -26,11 +26,11 @@ public class Bookmark {
 
 // --------------------- GETTER / SETTER METHODS ---------------------
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

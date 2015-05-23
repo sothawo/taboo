@@ -42,6 +42,24 @@ public class TabooService {
 // -------------------------- OTHER METHODS --------------------------
 
     /**
+     * creates a new bookmark in the repository
+     *
+     * @param bookmark
+     *         new bookmark to be created
+     * @return the created bookmark
+     * @throws IllegalArgumentException
+     *         when bookmark has it's id set
+     */
+    @RequestMapping(value = "/bookmarks", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
+    public Bookmark createBookmark(@RequestBody Bookmark bookmark) {
+        if (null != bookmark.getId()) {
+            throw new IllegalArgumentException("id must not be set");
+        }
+        return repository.createBookmark(bookmark);
+    }
+
+    /**
      * gets all the bookmarks from the repository
      *
      * @param tags
@@ -75,18 +93,15 @@ public class TabooService {
     }
 
     /**
-     * creates a new bookmark in the repository
+     * ExceptionHandler for IllegalArgumentException. returns the exception's error message in the body with the 412
+     * status code.
      *
-     * @param bookmarkIn
-     *         new bookmark to be created
-     * @return the created bookmark
-     * @throws IllegalArgumentException
-     *         when bookmarkIn has it's id set
+     * @return HTTP PRECONDITION_FAILED Response Status and error message
      */
-    @RequestMapping(value = "/bookmarks", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    public Bookmark createBookmark(@RequestBody Bookmark bookmarkIn) {
-        return repository.createBookmark(bookmarkIn);
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
+    public String illegalArgumentException(IllegalArgumentException e) {
+        return e.getMessage();
     }
 
     /**

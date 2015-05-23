@@ -10,7 +10,6 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
 import mockit.Verifications;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,7 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
-import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -184,24 +182,42 @@ public class TabooServiceTest {
         Bookmark bookmarkIn = aBookmark().withUrl("url").addTag("tag").build();
         Bookmark bookmarkOut = aBookmark().withId(11).withUrl("url").addTag("tag").build();
 
-        new Expectations(){{
+        new Expectations() {{
             repository.createBookmark(bookmarkIn);
             result = bookmarkOut;
         }};
 
         MockMvc mockMvc = standaloneSetup(tabooService).build();
         mockMvc.perform(post("/taboo/bookmarks")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(convertObjectToJsonBytes(bookmarkIn)))
-                .andDo(print())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(convertObjectToJsonBytes(bookmarkIn)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(bookmarkOut.getId())))
                 .andExpect(jsonPath("$.url", is(bookmarkOut.getUrl())))
         ;
-        new Verifications(){{
+        new Verifications() {{
             repository.createBookmark(bookmarkIn);
             times = 1;
+        }};
+    }
+
+    @Test
+    public void createBookmarksWithIdYieldsPreconditionFailed() throws Exception {
+        Bookmark bookmarkIn = aBookmark().withId(11).withUrl("url").addTag("tag").build();
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(post("/taboo/bookmarks")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(convertObjectToJsonBytes(bookmarkIn)))
+                .andDo(print())
+                .andExpect(status().isPreconditionFailed())
+        ;
+
+        new Verifications(){{
+            repository.createBookmark((Bookmark) any);
+            times = 0;
         }};
     }
 
