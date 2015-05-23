@@ -211,8 +211,23 @@ public class TabooServiceTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(convertObjectToJsonBytes(bookmarkIn)))
-                .andDo(print())
                 .andExpect(status().isPreconditionFailed())
+        ;
+
+        new Verifications(){{
+            repository.createBookmark((Bookmark) any);
+            times = 0;
+        }};
+    }
+
+    @Test
+    public void createBookmarksWithNoBodyYieldsBadRequest() throws Exception {
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(post("/taboo/bookmarks")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
         ;
 
         new Verifications(){{
