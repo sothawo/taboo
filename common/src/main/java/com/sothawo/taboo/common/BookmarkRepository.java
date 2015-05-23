@@ -16,6 +16,18 @@ public interface BookmarkRepository {
 // -------------------------- OTHER METHODS --------------------------
 
     /**
+     * creates a bookmark in the repository.
+     *
+     * @param bookmark
+     *         the new bookmark. must not have the id set
+     * @return the created bookmark with it's id
+     * @throws IllegalArgumentException
+     *         if the id is set in
+     * @throws AlreadyExistsException
+     *         if a bookmark with the given url already exists
+     */
+    Bookmark createBookmark(Bookmark bookmark);
+    /**
      * returns all bookmarks in the repository.
      *
      * @return the bookmarks
@@ -43,15 +55,4 @@ public interface BookmarkRepository {
      * @return the bookmarks
      */
     Collection<Bookmark> findBookmarksWithTags(Collection<String> tags, boolean opAnd);
-
-    /**
-     * creates a bookmark in the repository.
-     *
-     * @param bookmark
-     *         the new bookmark. must not have the id set
-     * @return the created bookmark with it's id
-     * @throws IllegalArgumentException
-     *         if the id is set in bookmark
-     */
-    Bookmark createBookmark(Bookmark bookmark);
 }

@@ -5,6 +5,7 @@
  */
 package com.sothawo.taboo.service.springboot;
 
+import com.sothawo.taboo.common.AlreadyExistsException;
 import com.sothawo.taboo.common.Bookmark;
 import com.sothawo.taboo.common.BookmarkRepository;
 import com.sothawo.taboo.common.NotFoundException;
@@ -113,6 +114,17 @@ public class TabooService {
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String notFoundExceptionHandler(NotFoundException e) {
+        return e.getMessage();
+    }
+    /**
+     * ExceptionHandler for AlreadyExistsException. returns the exception's error message in the body with the 409
+     * status code.
+     *
+     * @return HTTP CONFLICT Response Status and error message
+     */
+    @ExceptionHandler(AlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String alreadyExistsExceptionHandler(AlreadyExistsException e) {
         return e.getMessage();
     }
 

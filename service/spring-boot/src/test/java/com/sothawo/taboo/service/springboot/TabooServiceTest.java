@@ -3,6 +3,7 @@ package com.sothawo.taboo.service.springboot;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sothawo.taboo.common.AlreadyExistsException;
 import com.sothawo.taboo.common.Bookmark;
 import com.sothawo.taboo.common.BookmarkRepository;
 import com.sothawo.taboo.common.NotFoundException;
@@ -23,7 +24,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -41,6 +41,94 @@ public class TabooServiceTest {
     BookmarkRepository repository;
 
 // -------------------------- OTHER METHODS --------------------------
+
+    private byte[] convertObjectToJsonBytes(Object o) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        byte[] bytes = mapper.writeValueAsBytes(o);
+        return bytes;
+    }
+
+    @Test
+    public void createBookmark() throws Exception {
+        Bookmark bookmarkIn = aBookmark().withUrl("url").addTag("tag").build();
+        Bookmark bookmarkOut = aBookmark().withId(11).withUrl("url").addTag("tag").build();
+
+        new Expectations() {{
+            repository.createBookmark(bookmarkIn);
+            result = bookmarkOut;
+        }};
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(post("/taboo/bookmarks")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(convertObjectToJsonBytes(bookmarkIn)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id", is(bookmarkOut.getId())))
+                .andExpect(jsonPath("$.url", is(bookmarkOut.getUrl())))
+        ;
+        new Verifications() {{
+            repository.createBookmark(bookmarkIn);
+            times = 1;
+        }};
+    }
+
+    @Test
+    public void createBookmarksWithExistingUrlYieldsConflict() throws Exception {
+        Bookmark bookmarkIn = aBookmark().withUrl("url").addTag("tag").build();
+
+        new Expectations() {{
+            repository.createBookmark((Bookmark) any);
+            result = new AlreadyExistsException("bookmark url");
+        }};
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(post("/taboo/bookmarks")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(convertObjectToJsonBytes(bookmarkIn)))
+                .andExpect(status().isConflict())
+        ;
+
+        new Verifications() {{
+            repository.createBookmark((Bookmark) any);
+            times = 1;
+        }};
+    }
+
+    @Test
+    public void createBookmarksWithIdYieldsPreconditionFailed() throws Exception {
+        Bookmark bookmarkIn = aBookmark().withId(11).withUrl("url").addTag("tag").build();
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(post("/taboo/bookmarks")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(convertObjectToJsonBytes(bookmarkIn)))
+                .andExpect(status().isPreconditionFailed())
+        ;
+
+        new Verifications() {{
+            repository.createBookmark((Bookmark) any);
+            times = 0;
+        }};
+    }
+
+    @Test
+    public void createBookmarksWithNoBodyYieldsBadRequest() throws Exception {
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(post("/taboo/bookmarks")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+        ;
+
+        new Verifications() {{
+            repository.createBookmark((Bookmark) any);
+            times = 0;
+        }};
+    }
 
     @Test
     public void findBookmarksWithAllTags() throws Exception {
@@ -93,21 +181,6 @@ public class TabooServiceTest {
             repository.findBookmarksWithTags(Arrays.asList("tag2", "abc"), false);
             times = 1;
         }};
-    }
-
-    /**
-     * helper method to create a list of bookmarks.
-     *
-     * @param ids
-     *         id values for the Bookmark objects to create
-     * @return a list of bookmarks
-     */
-    private List<Bookmark> createBookmarks(int... ids) {
-        List<Bookmark> bookmarks = new ArrayList<>();
-        for (int id : ids) {
-            bookmarks.add(aBookmark().withId(id).withUrl("url" + id).addTag("tag" + id).build());
-        }
-        return bookmarks;
     }
 
     @Test
@@ -177,69 +250,18 @@ public class TabooServiceTest {
         }};
     }
 
-    @Test
-    public void createBookmark() throws Exception {
-        Bookmark bookmarkIn = aBookmark().withUrl("url").addTag("tag").build();
-        Bookmark bookmarkOut = aBookmark().withId(11).withUrl("url").addTag("tag").build();
-
-        new Expectations() {{
-            repository.createBookmark(bookmarkIn);
-            result = bookmarkOut;
-        }};
-
-        MockMvc mockMvc = standaloneSetup(tabooService).build();
-        mockMvc.perform(post("/taboo/bookmarks")
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(convertObjectToJsonBytes(bookmarkIn)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is(bookmarkOut.getId())))
-                .andExpect(jsonPath("$.url", is(bookmarkOut.getUrl())))
-        ;
-        new Verifications() {{
-            repository.createBookmark(bookmarkIn);
-            times = 1;
-        }};
-    }
-
-    @Test
-    public void createBookmarksWithIdYieldsPreconditionFailed() throws Exception {
-        Bookmark bookmarkIn = aBookmark().withId(11).withUrl("url").addTag("tag").build();
-
-        MockMvc mockMvc = standaloneSetup(tabooService).build();
-        mockMvc.perform(post("/taboo/bookmarks")
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(convertObjectToJsonBytes(bookmarkIn)))
-                .andExpect(status().isPreconditionFailed())
-        ;
-
-        new Verifications(){{
-            repository.createBookmark((Bookmark) any);
-            times = 0;
-        }};
-    }
-
-    @Test
-    public void createBookmarksWithNoBodyYieldsBadRequest() throws Exception {
-
-        MockMvc mockMvc = standaloneSetup(tabooService).build();
-        mockMvc.perform(post("/taboo/bookmarks")
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-        ;
-
-        new Verifications(){{
-            repository.createBookmark((Bookmark) any);
-            times = 0;
-        }};
-    }
-
-    private byte[] convertObjectToJsonBytes(Object o) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        byte[] bytes = mapper.writeValueAsBytes(o);
-        return bytes;
+    /**
+     * helper method to create a list of bookmarks.
+     *
+     * @param ids
+     *         id values for the Bookmark objects to create
+     * @return a list of bookmarks
+     */
+    private List<Bookmark> createBookmarks(int... ids) {
+        List<Bookmark> bookmarks = new ArrayList<>();
+        for (int id : ids) {
+            bookmarks.add(aBookmark().withId(id).withUrl("url" + id).addTag("tag" + id).build());
+        }
+        return bookmarks;
     }
 }
