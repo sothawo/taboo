@@ -14,4 +14,11 @@ The project is split in the service and client directories and there in the diff
 
 ## actual state
 
-this is a project that's just begun, so there is not very much to see at the moment.
+### service implementations
+
+* spring-boot service implementation basics
+
+
+### repositories
+
+* first basic inmemory implementation 
