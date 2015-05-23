@@ -54,7 +54,10 @@ public class TabooService {
     @RequestMapping(value = "/bookmarks", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public Bookmark createBookmark(@RequestBody Bookmark bookmark) {
-        if (null == bookmark || null != bookmark.getId()) {
+        if (null == bookmark) {
+            throw new IllegalArgumentException("bookmark must not be null");
+        }
+        if (null != bookmark.getId()) {
             throw new IllegalArgumentException("id must not be set");
         }
         return repository.createBookmark(bookmark);

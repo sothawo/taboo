@@ -30,6 +30,7 @@
     <modules>
         <module>service</module>
         <module>common</module>
+        <module>repositories</module>
     </modules>
 
     <dependencyManagement>
