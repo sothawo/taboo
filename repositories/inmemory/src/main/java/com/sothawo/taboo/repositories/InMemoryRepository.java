@@ -8,10 +8,12 @@ package com.sothawo.taboo.repositories;
 import com.sothawo.taboo.common.AlreadyExistsException;
 import com.sothawo.taboo.common.Bookmark;
 import com.sothawo.taboo.common.BookmarkRepository;
+import com.sothawo.taboo.common.NotFoundException;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -25,7 +27,7 @@ public class InMemoryRepository implements BookmarkRepository {
     /** id generator */
     private static final AtomicInteger nextId = new AtomicInteger(1);
 
-    /** map for storing the bookmarks */
+    /** map for storing the url -> bookmarks */
     private final Map<String, Bookmark> bookmarks = new HashMap<>();
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -42,7 +44,7 @@ public class InMemoryRepository implements BookmarkRepository {
             throw new IllegalArgumentException("is is not null");
         }
         if (bookmarks.containsKey(bookmark.getUrl())) {
-            throw new AlreadyExistsException("bookmark url " + bookmark.getUrl());
+            throw new AlreadyExistsException("bookmark with url: " + bookmark.getUrl());
         }
 
         bookmark.setId(nextId.getAndIncrement());
@@ -52,12 +54,16 @@ public class InMemoryRepository implements BookmarkRepository {
 
     @Override
     public Collection<Bookmark> findAllBookmarks() {
-        return null;
+        return bookmarks.values();
     }
 
     @Override
-    public Bookmark findBookmarkById(int id) {
-        return null;
+    public Bookmark findBookmarkById(Integer id) {
+        Integer idToSearch = Objects.requireNonNull(id);
+        return bookmarks.values().stream()
+                .filter(b -> b.getId().equals(idToSearch))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("no bookmark with id " + id));
     }
 
     @Override

@@ -22,7 +22,7 @@ public class Bookmark {
     /** the URL the bookmark points to as String */
     private String url = "";
     /** the tags of the bookmark */
-    private Collection<String> tags = new ArrayList();
+    private Collection<String> tags = new ArrayList<>();
 
 // --------------------- GETTER / SETTER METHODS ---------------------
 

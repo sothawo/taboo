@@ -18,6 +18,7 @@
     <description>base modules for the different repositories</description>
 
     <modules>
+        <module>repository-test</module>
         <module>inmemory</module>
     </modules>
 </project>

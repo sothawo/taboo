@@ -20,7 +20,7 @@ public class BookmarkBuilder {
     /** the url for the bookmark */
     private String url;
     /** the tags for the bookmark */
-    private Collection<String> tags = new ArrayList<String>();
+    private Collection<String> tags = new ArrayList<>();
 
 // -------------------------- STATIC METHODS --------------------------
 

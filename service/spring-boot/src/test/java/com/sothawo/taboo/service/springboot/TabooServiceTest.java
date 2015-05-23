@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
@@ -45,8 +46,7 @@ public class TabooServiceTest {
     private byte[] convertObjectToJsonBytes(Object o) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        byte[] bytes = mapper.writeValueAsBytes(o);
-        return bytes;
+        return mapper.writeValueAsBytes(o);
     }
 
     @Test
@@ -137,7 +137,7 @@ public class TabooServiceTest {
 
         new Expectations() {{
             repository.findBookmarksWithTags(Arrays.asList("tag2", "abc"), true);
-            result = Arrays.asList(bookmark);
+            result = Collections.singletonList(bookmark);
         }};
 
         MockMvc mockMvc = standaloneSetup(tabooService).build();

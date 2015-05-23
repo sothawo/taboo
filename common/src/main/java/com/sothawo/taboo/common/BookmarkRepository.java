@@ -22,7 +22,7 @@ public interface BookmarkRepository {
      *         the new bookmark. must not have the id set
      * @return the created bookmark with it's id
      * @throws IllegalArgumentException
-     *         if the id is set in
+     *         if the id is set in bookmark
      * @throws AlreadyExistsException
      *         if a bookmark with the given url already exists
      */
@@ -43,7 +43,7 @@ public interface BookmarkRepository {
      * @throws NotFoundException
      *         if no bookmark is found for the given id
      */
-    Bookmark findBookmarkById(int id);
+    Bookmark findBookmarkById(Integer id);
 
     /**
      * returns all bookmarks that have all of the given tags.
