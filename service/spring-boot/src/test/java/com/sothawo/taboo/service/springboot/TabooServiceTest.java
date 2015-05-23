@@ -1,5 +1,8 @@
 package com.sothawo.taboo.service.springboot;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sothawo.taboo.common.Bookmark;
 import com.sothawo.taboo.common.BookmarkRepository;
 import com.sothawo.taboo.common.NotFoundException;
@@ -7,6 +10,7 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
 import mockit.Verifications;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,9 +20,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
+import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -170,5 +177,38 @@ public class TabooServiceTest {
             repository.findAllBookmarks();
             times = 1;
         }};
+    }
+
+    @Test
+    public void createBookmark() throws Exception {
+        Bookmark bookmarkIn = aBookmark().withUrl("url").addTag("tag").build();
+        Bookmark bookmarkOut = aBookmark().withId(11).withUrl("url").addTag("tag").build();
+
+        new Expectations(){{
+            repository.createBookmark(bookmarkIn);
+            result = bookmarkOut;
+        }};
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(post("/taboo/bookmarks")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(convertObjectToJsonBytes(bookmarkIn)))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id", is(bookmarkOut.getId())))
+                .andExpect(jsonPath("$.url", is(bookmarkOut.getUrl())))
+        ;
+        new Verifications(){{
+            repository.createBookmark(bookmarkIn);
+            times = 1;
+        }};
+    }
+
+    private byte[] convertObjectToJsonBytes(Object o) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        byte[] bytes = mapper.writeValueAsBytes(o);
+        return bytes;
     }
 }

@@ -50,6 +50,21 @@ public class Bookmark {
 
     public void setUrl(String url) {
         this.url = Objects.requireNonNull(url);
-        ;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Bookmark bookmark = (Bookmark) o;
+
+        return !(url != null ? !url.equals(bookmark.url) : bookmark.url != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return url != null ? url.hashCode() : 0;
     }
 }

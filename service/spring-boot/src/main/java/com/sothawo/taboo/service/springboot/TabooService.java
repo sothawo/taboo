@@ -75,6 +75,21 @@ public class TabooService {
     }
 
     /**
+     * creates a new bookmark in the repository
+     *
+     * @param bookmarkIn
+     *         new bookmark to be created
+     * @return the created bookmark
+     * @throws IllegalArgumentException
+     *         when bookmarkIn has it's id set
+     */
+    @RequestMapping(value = "/bookmarks", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
+    public Bookmark createBookmark(@RequestBody Bookmark bookmarkIn) {
+        return repository.createBookmark(bookmarkIn);
+    }
+
+    /**
      * ExceptionHandler for NotFoundException. returns the exception's error message in the body with the 404 status
      * code.
      *
