@@ -4,7 +4,8 @@ import com.sothawo.taboo.common.Bookmark;
 import com.sothawo.taboo.common.BookmarkRepository;
 import com.sothawo.taboo.common.NotFoundException;
 import mockit.Expectations;
-import mockit.Mocked;
+import mockit.Injectable;
+import mockit.Tested;
 import mockit.Verifications;
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -18,7 +19,6 @@ import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -27,90 +27,27 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 public class TabooServiceTest {
+// ------------------------------ FIELDS ------------------------------
+
+    // the service to be tested, will be created by JMockit and injected with the repository which is mocked
+    @Tested
+    TabooService tabooService;
+    @Injectable
+    BookmarkRepository repository;
+
 // -------------------------- OTHER METHODS --------------------------
 
     @Test
-    public void getAllBookmarks(@Mocked final BookmarkRepository repository) throws Exception {
-        List<Bookmark> bookmarks = createBookmarks(23, 42);
-
-        new Expectations() {{
-            repository.findAllBookmarks();
-            result = bookmarks;
-        }};
-
-        MockMvc mockMvc = standaloneSetup(new TabooService(repository)).build();
-        mockMvc.perform(get("/taboo/bookmarks").accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.*", hasSize(2)))
-                .andExpect(jsonPath("$[0].id", is(bookmarks.get(0).getId())))
-                .andExpect(jsonPath("$[0].url", is(bookmarks.get(0).getUrl())))
-                .andExpect(jsonPath("$[0].tags[0]", is(bookmarks.get(0).getTags().iterator().next())))
-                .andExpect(jsonPath("$[1].id", is(bookmarks.get(1).getId())))
-                .andExpect(jsonPath("$[1].url", is(bookmarks.get(1).getUrl())))
-                .andExpect(jsonPath("$[1].tags[0]", is(bookmarks.get(1).getTags().iterator().next())))
-        ;
-
-        new Verifications() {{
-            repository.findAllBookmarks();
-            times = 1;
-        }};
-    }
-
-    @Test
-    public void findExistingBookmark(@Mocked final BookmarkRepository repository) throws Exception {
-        final Bookmark bookmark = createBookmarks(11).get(0);
-        new Expectations() {{
-            repository.findBookmarkById(11);
-            result = bookmark;
-        }};
-
-        MockMvc mockMvc = standaloneSetup(new TabooService(repository)).build();
-        mockMvc.perform(get("/taboo/bookmarks/{id}", bookmark.getId()).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(bookmark.getId())))
-                .andExpect(jsonPath("$.url", is(bookmark.getUrl())))
-                .andExpect(jsonPath("$.tags[0]", is(bookmark.getTags().iterator().next())))
-        ;
-
-        new Verifications() {{
-            repository.findBookmarkById(11);
-            times = 1;
-        }};
-
-    }
-
-    @Test
-    public void findNotExistingBookmarkYieldsNotFound(@Mocked final BookmarkRepository repository) throws Exception {
-        new Expectations() {{
-            repository.findBookmarkById(11);
-            result = new NotFoundException();
-        }};
-
-        MockMvc mockMvc = standaloneSetup(new TabooService(repository)).build();
-        mockMvc.perform(get("/taboo/bookmarks/{id}", 11).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-        ;
-
-        new Verifications() {{
-            repository.findBookmarkById(11);
-            times = 1;
-        }};
-    }
-
-    @Test
-    public void findBookmarksWithAllTags(@Mocked final BookmarkRepository repository) throws Exception {
-        List<Bookmark> bookmarks = createBookmarks(1, 2, 3, 4, 5);
-        bookmarks.get(1).getTags().add("abc");
-        bookmarks.get(3).getTags().add("abc");
-
-        Bookmark bookmark = bookmarks.get(1);
+    public void findBookmarksWithAllTags() throws Exception {
+        Bookmark bookmark = createBookmarks(2).get(0);
+        bookmark.getTags().add("abc");
 
         new Expectations() {{
             repository.findBookmarksWithTags(Arrays.asList("tag2", "abc"), true);
             result = Arrays.asList(bookmark);
         }};
 
-        MockMvc mockMvc = standaloneSetup(new TabooService(repository)).build();
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
         mockMvc.perform(get("/taboo/bookmarks")
                 .param("tag", "tag2", "abc")
                 .accept(MediaType.APPLICATION_JSON))
@@ -123,37 +60,34 @@ public class TabooServiceTest {
             repository.findBookmarksWithTags(Arrays.asList("tag2", "abc"), true);
             times = 1;
         }};
-
     }
 
     @Test
-    public void findBookmarksWithAnyTag(@Mocked final BookmarkRepository repository) throws Exception {
-        List<Bookmark> bookmarks = createBookmarks(1, 2, 3, 4, 5);
+    public void findBookmarksWithAnyTag() throws Exception {
+        List<Bookmark> bookmarks = createBookmarks(2, 3);
+        bookmarks.get(0).getTags().add("abc");
         bookmarks.get(1).getTags().add("abc");
-        bookmarks.get(3).getTags().add("abc");
 
         new Expectations() {{
             repository.findBookmarksWithTags(Arrays.asList("tag2", "abc"), false);
-            result = Arrays.asList(bookmarks.get(1), bookmarks.get(3));
+            result = bookmarks;
         }};
 
-        MockMvc mockMvc = standaloneSetup(new TabooService(repository)).build();
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
         mockMvc.perform(get("/taboo/bookmarks")
                 .param("tag", "tag2", "abc")
                 .param("op", "or")
                 .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(2)))
-                .andExpect(jsonPath("$[0].id", is(bookmarks.get(1).getId()))) // id check is enough here
-                .andExpect(jsonPath("$[1].id", is(bookmarks.get(3).getId())))
+                .andExpect(jsonPath("$[0].id", is(bookmarks.get(0).getId()))) // id check is enough here
+                .andExpect(jsonPath("$[1].id", is(bookmarks.get(1).getId())))
         ;
 
         new Verifications() {{
             repository.findBookmarksWithTags(Arrays.asList("tag2", "abc"), false);
             times = 1;
         }};
-
     }
 
     /**
@@ -169,5 +103,72 @@ public class TabooServiceTest {
             bookmarks.add(aBookmark().withId(id).withUrl("url" + id).addTag("tag" + id).build());
         }
         return bookmarks;
+    }
+
+    @Test
+    public void findExistingBookmark() throws Exception {
+        final Bookmark bookmark = createBookmarks(11).get(0);
+        new Expectations() {{
+            repository.findBookmarkById(11);
+            result = bookmark;
+        }};
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(get("/taboo/bookmarks/{id}", bookmark.getId()).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(bookmark.getId())))
+                .andExpect(jsonPath("$.url", is(bookmark.getUrl())))
+                .andExpect(jsonPath("$.tags[0]", is(bookmark.getTags().iterator().next())))
+        ;
+
+        new Verifications() {{
+            repository.findBookmarkById(11);
+            times = 1;
+        }};
+    }
+
+    @Test
+    public void findNotExistingBookmarkYieldsNotFound() throws Exception {
+        new Expectations() {{
+            repository.findBookmarkById(11);
+            result = new NotFoundException("bookmark 11");
+        }};
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(get("/taboo/bookmarks/{id}", 11).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+        ;
+
+        new Verifications() {{
+            repository.findBookmarkById(11);
+            times = 1;
+        }};
+    }
+
+    @Test
+    public void getAllBookmarks() throws Exception {
+        List<Bookmark> bookmarks = createBookmarks(23, 42);
+
+        new Expectations() {{
+            repository.findAllBookmarks();
+            result = bookmarks;
+        }};
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(get("/taboo/bookmarks").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(2)))
+                .andExpect(jsonPath("$[0].id", is(bookmarks.get(0).getId())))
+                .andExpect(jsonPath("$[0].url", is(bookmarks.get(0).getUrl())))
+                .andExpect(jsonPath("$[0].tags[0]", is(bookmarks.get(0).getTags().iterator().next())))
+                .andExpect(jsonPath("$[1].id", is(bookmarks.get(1).getId())))
+                .andExpect(jsonPath("$[1].url", is(bookmarks.get(1).getUrl())))
+                .andExpect(jsonPath("$[1].tags[0]", is(bookmarks.get(1).getTags().iterator().next())))
+        ;
+
+        new Verifications() {{
+            repository.findAllBookmarks();
+            times = 1;
+        }};
     }
 }

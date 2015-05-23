@@ -75,13 +75,15 @@ public class TabooService {
     }
 
     /**
-     * ExceptionHandler for NotFoundException. just returns an empty body with the 404 status code.
+     * ExceptionHandler for NotFoundException. returns the exception's error message in the body with the 404 status
+     * code.
      *
-     * @return HTTP NOT_FOUND Response Status
+     * @return HTTP NOT_FOUND Response Status and error message
      */
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void notFoundExceptionHandler() {
+    public String notFoundExceptionHandler(NotFoundException e) {
+        return e.getMessage();
     }
 
 // --------------------------- main() method ---------------------------
