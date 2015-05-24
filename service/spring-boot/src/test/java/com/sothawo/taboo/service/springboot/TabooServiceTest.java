@@ -133,7 +133,7 @@ public class TabooServiceTest {
     @Test
     public void findBookmarksWithAllTags() throws Exception {
         Bookmark bookmark = createBookmarks(2).get(0);
-        bookmark.getTags().add("abc");
+        bookmark.addTag("abc");
 
         new Expectations() {{
             repository.findBookmarksWithTags(Arrays.asList("tag2", "abc"), true);
@@ -158,8 +158,8 @@ public class TabooServiceTest {
     @Test
     public void findBookmarksWithAnyTag() throws Exception {
         List<Bookmark> bookmarks = createBookmarks(2, 3);
-        bookmarks.get(0).getTags().add("abc");
-        bookmarks.get(1).getTags().add("abc");
+        bookmarks.get(0).addTag("abc");
+        bookmarks.get(1).addTag("abc");
 
         new Expectations() {{
             repository.findBookmarksWithTags(Arrays.asList("tag2", "abc"), false);

@@ -56,7 +56,7 @@ public class BookmarkBuilder {
         Bookmark bookmark = new Bookmark();
         bookmark.setId(id);
         bookmark.setUrl(url);
-        bookmark.setTags(tags);
+        tags.stream().forEach(bookmark::addTag);
         return bookmark;
     }
 
