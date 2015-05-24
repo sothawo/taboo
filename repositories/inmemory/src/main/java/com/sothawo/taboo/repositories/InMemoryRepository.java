@@ -5,15 +5,13 @@
  */
 package com.sothawo.taboo.repositories;
 
+import com.google.common.collect.Sets;
 import com.sothawo.taboo.common.AlreadyExistsException;
 import com.sothawo.taboo.common.Bookmark;
 import com.sothawo.taboo.common.BookmarkRepository;
 import com.sothawo.taboo.common.NotFoundException;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -68,6 +66,26 @@ public class InMemoryRepository implements BookmarkRepository {
 
     @Override
     public Collection<Bookmark> findBookmarksWithTags(Collection<String> tags, boolean opAnd) {
-        return null;
+        Map<String, Set<Bookmark>> bookmarksForTag = new HashMap<>();
+        for (String tag : tags) {
+            bookmarksForTag.put(tag, new HashSet<>());
+            bookmarks.values().stream()
+                    .filter(bookmark -> bookmark.getTags().contains(tag))
+                    .forEach(bookmark -> bookmarksForTag.get(tag).add(bookmark));
+        }
+
+        Set<Bookmark> foundBookmarks = null;
+        for (Set<Bookmark> bookmarkSet : bookmarksForTag.values()) {
+            if (null == foundBookmarks) {
+                foundBookmarks = bookmarkSet;
+            } else {
+                if (opAnd) {
+                    foundBookmarks = Sets.intersection(foundBookmarks, bookmarkSet);
+                } else {
+                    foundBookmarks = Sets.union(foundBookmarks, bookmarkSet);
+                }
+            }
+        }
+        return foundBookmarks;
     }
 }

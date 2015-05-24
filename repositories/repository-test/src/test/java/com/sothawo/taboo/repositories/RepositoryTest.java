@@ -15,9 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -98,9 +96,42 @@ public class RepositoryTest {
     }
 
     @Test(expected = NotFoundException.class)
-    public void findBookmarkByNotExistingId() throws Exception {
+    public void findBookmarkByIdNotExisting() throws Exception {
         BookmarkRepository repository = repositoryClass.newInstance();
         repository.findBookmarkById(42);
         fail("NotFoundException expected");
+    }
+
+    @Test
+    public void findBookmarksWithTagsAnd() throws Exception {
+        BookmarkRepository repository = repositoryClass.newInstance();
+        Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").addTag("common").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").addTag("common").build();
+        Bookmark bookmark3 = aBookmark().withUrl("url3").addTag("tag3").build();
+        repository.createBookmark(bookmark1);
+        repository.createBookmark(bookmark2);
+        repository.createBookmark(bookmark3);
+
+        Collection<Bookmark> bookmarks =
+                repository.findBookmarksWithTags(Arrays.asList("tag2", "common"), true);
+
+        assertThat(bookmarks.size(), is(1));
+        assertThat(bookmarks, hasItem(bookmark2));
+    }
+    @Test
+    public void findBookmarksWithTagsOr() throws Exception {
+        BookmarkRepository repository = repositoryClass.newInstance();
+        Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").addTag("common").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").addTag("common").build();
+        Bookmark bookmark3 = aBookmark().withUrl("url3").addTag("tag3").build();
+        repository.createBookmark(bookmark1);
+        repository.createBookmark(bookmark2);
+        repository.createBookmark(bookmark3);
+
+        Collection<Bookmark> bookmarks =
+                repository.findBookmarksWithTags(Arrays.asList("tag2", "common"), false);
+
+        assertThat(bookmarks.size(), is(2));
+        assertThat(bookmarks, hasItems(bookmark1, bookmark2));
     }
 }
