@@ -21,10 +21,13 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -33,7 +36,9 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 public class TabooServiceTest {
-// ------------------------------ FIELDS ------------------------------
+    private static final String TABOO_BOOKMARKS = "/taboo/bookmarks";
+
+    // ------------------------------ FIELDS ------------------------------
 
     // the service to be tested, will be created by JMockit and injected with the repository which is mocked
     @Tested
@@ -60,11 +65,13 @@ public class TabooServiceTest {
         }};
 
         MockMvc mockMvc = standaloneSetup(tabooService).build();
-        mockMvc.perform(post("/taboo/bookmarks")
+        mockMvc.perform(post(TABOO_BOOKMARKS)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(convertObjectToJsonBytes(bookmarkIn)))
                 .andExpect(status().isCreated())
+                .andExpect(header().string("Location", endsWith(TABOO_BOOKMARKS +
+                        "/11")))
                 .andExpect(jsonPath("$.id", is(bookmarkOut.getId())))
                 .andExpect(jsonPath("$.url", is(bookmarkOut.getUrl())))
         ;
@@ -84,7 +91,7 @@ public class TabooServiceTest {
         }};
 
         MockMvc mockMvc = standaloneSetup(tabooService).build();
-        mockMvc.perform(post("/taboo/bookmarks")
+        mockMvc.perform(post(TABOO_BOOKMARKS)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(convertObjectToJsonBytes(bookmarkIn)))
@@ -102,7 +109,7 @@ public class TabooServiceTest {
         Bookmark bookmarkIn = aBookmark().withId(11).withUrl("url").addTag("tag").build();
 
         MockMvc mockMvc = standaloneSetup(tabooService).build();
-        mockMvc.perform(post("/taboo/bookmarks")
+        mockMvc.perform(post(TABOO_BOOKMARKS)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(convertObjectToJsonBytes(bookmarkIn)))
@@ -118,7 +125,7 @@ public class TabooServiceTest {
     @Test
     public void createBookmarksWithNoBodyYieldsBadRequest() throws Exception {
         MockMvc mockMvc = standaloneSetup(tabooService).build();
-        mockMvc.perform(post("/taboo/bookmarks")
+        mockMvc.perform(post(TABOO_BOOKMARKS)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -141,7 +148,7 @@ public class TabooServiceTest {
         }};
 
         MockMvc mockMvc = standaloneSetup(tabooService).build();
-        mockMvc.perform(get("/taboo/bookmarks")
+        mockMvc.perform(get(TABOO_BOOKMARKS)
                 .param("tag", "tag2", "abc")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -167,7 +174,7 @@ public class TabooServiceTest {
         }};
 
         MockMvc mockMvc = standaloneSetup(tabooService).build();
-        mockMvc.perform(get("/taboo/bookmarks")
+        mockMvc.perform(get(TABOO_BOOKMARKS)
                 .param("tag", "tag2", "abc")
                 .param("op", "or")
                 .accept(MediaType.APPLICATION_JSON))
@@ -233,7 +240,7 @@ public class TabooServiceTest {
         }};
 
         MockMvc mockMvc = standaloneSetup(tabooService).build();
-        mockMvc.perform(get("/taboo/bookmarks").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(TABOO_BOOKMARKS).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(2)))
                 .andExpect(jsonPath("$[0].id", is(bookmarks.get(0).getId())))

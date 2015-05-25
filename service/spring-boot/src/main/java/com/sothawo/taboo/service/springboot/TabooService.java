@@ -12,9 +12,13 @@ import com.sothawo.taboo.common.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -59,15 +63,24 @@ public class TabooService {
      *         when bookmark has it's id set
      */
     @RequestMapping(value = "/bookmarks", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    public Bookmark createBookmark(@RequestBody Bookmark bookmark) {
+    public ResponseEntity<Bookmark> createBookmark(@RequestBody Bookmark bookmark, UriComponentsBuilder ucb) {
         if (null == bookmark) {
             throw new IllegalArgumentException("bookmark must not be null");
         }
         if (null != bookmark.getId()) {
             throw new IllegalArgumentException("id must not be set");
         }
-        return repository.createBookmark(bookmark);
+
+        Bookmark createdBookmark = repository.createBookmark(bookmark);
+        HttpHeaders headers = new HttpHeaders();
+        URI locationUri = ucb
+                .path("/taboo/bookmarks/")
+                .path(String.valueOf(createdBookmark.getId()))
+                .build().toUri();
+        headers.setLocation(locationUri);
+        ResponseEntity<Bookmark> responseEntity =
+                new ResponseEntity<Bookmark>(createdBookmark, headers, HttpStatus.CREATED);
+        return responseEntity;
     }
 
     /**
@@ -126,6 +139,7 @@ public class TabooService {
     public String notFoundExceptionHandler(NotFoundException e) {
         return e.getMessage();
     }
+
     /**
      * ExceptionHandler for AlreadyExistsException. returns the exception's error message in the body with the 409
      * status code.
