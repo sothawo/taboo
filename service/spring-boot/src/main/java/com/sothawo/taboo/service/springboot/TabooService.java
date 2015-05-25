@@ -31,11 +31,18 @@ public class TabooService {
 // ------------------------------ FIELDS ------------------------------
 
     /** the repository for the bookmarks */
+    @Autowired
     private BookmarkRepository repository;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-    @Autowired
+    /**
+     * no arg ctor is needed for spring boot main; therefore the @Autowired annotation is put to the field and not to
+     * the constructor with a parameter
+     */
+    public TabooService() {
+    }
+
     public TabooService(BookmarkRepository repository) {
         this.repository = Objects.requireNonNull(repository);
     }
