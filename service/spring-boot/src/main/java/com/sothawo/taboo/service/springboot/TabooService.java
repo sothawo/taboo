@@ -28,25 +28,17 @@ import java.util.Objects;
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
-@SpringBootApplication
 @RestController // contains @ResponseBody
 @RequestMapping("/taboo")
 public class TabooService {
 // ------------------------------ FIELDS ------------------------------
 
-    /** the repository for the bookmarks */
-    @Autowired
+    /** the repository for the bookmarks, injected in constructor */
     private BookmarkRepository repository;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-    /**
-     * no arg ctor is needed for spring boot main; therefore the @Autowired annotation is put to the field and not to
-     * the constructor with a parameter
-     */
-    public TabooService() {
-    }
-
+    @Autowired
     public TabooService(BookmarkRepository repository) {
         this.repository = Objects.requireNonNull(repository);
     }
@@ -152,9 +144,4 @@ public class TabooService {
         return e.getMessage();
     }
 
-// --------------------------- main() method ---------------------------
-
-    public static void main(String[] args) {
-        SpringApplication.run(TabooService.class, args);
-    }
 }
