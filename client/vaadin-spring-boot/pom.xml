@@ -50,6 +50,11 @@
             <artifactId>vaadin-spring-boot-starter</artifactId>
             <version>${vaadin.springboot.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
 
         <dependency>
             <!-- before JUnit, otherwise the test classes must be annotated with @RunWith(JMockit.class) which may

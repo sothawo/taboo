@@ -9,8 +9,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import javax.annotation.PostConstruct;
 
@@ -20,14 +19,16 @@ import javax.annotation.PostConstruct;
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 @SpringComponent
+@EnableConfigurationProperties(TabooRestClientConfigurationProperties.class)
 public class TabooRestClient implements TabooClient {
 // ------------------------------ FIELDS ------------------------------
 
     /** Logger */
     private final static Logger logger = LoggerFactory.getLogger(TabooClient.class);
 
-    /** base url of the service, injected from confguration */
-    @Value("${taboo.service.url}")
+    @Autowired
+    private TabooRestClientConfigurationProperties properties;
+
     private String tabooUrl;
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -49,6 +50,8 @@ public class TabooRestClient implements TabooClient {
 
     @PostConstruct
     public void init() {
+        tabooUrl = properties.getHost().getProtocol() + "://" + properties.getHost().getName() + ':'
+                + properties.getHost().getPort() + '/' + properties.getContext();
         logger.debug("taboo url: {}", tabooUrl);
     }
 }
