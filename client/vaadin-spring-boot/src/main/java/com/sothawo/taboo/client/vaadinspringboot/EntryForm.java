@@ -9,13 +9,16 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.server.Page;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Component for entering new bookmark data.
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
+@SpringComponent
 public class EntryForm extends CustomComponent {
 // ------------------------------ FIELDS ------------------------------
 
@@ -29,6 +32,11 @@ public class EntryForm extends CustomComponent {
 
     /** the data object that gets the entered data */
     private EntryData data;
+
+    /** the taboo service where new entries are stored */
+    @Autowired
+    private TabooClient taboo;
+
 // --------------------------- CONSTRUCTORS ---------------------------
 
     /**
