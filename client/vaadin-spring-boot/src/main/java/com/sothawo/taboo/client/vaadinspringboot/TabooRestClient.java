@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-
 import java.util.Collection;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
@@ -53,9 +52,11 @@ public class TabooRestClient implements TabooClient {
     public void storeNewBookmark(String url, Collection<String> tags) {
         BookmarkBuilder bookmarkBuilder = aBookmark().withUrl(url);
         tags.stream().filter(s -> !s.isEmpty()).forEach(bookmarkBuilder::addTag);
-        Bookmark bookmark = bookmarkBuilder.build();
+
         RestTemplate rest = new RestTemplate();
-        ResponseEntity<Bookmark> response =  rest.postForEntity(tabooUrl + "/bookmarks", bookmark, Bookmark.class);
+        ResponseEntity<Bookmark> response =
+                rest.postForEntity(tabooUrl + "/bookmarks", bookmarkBuilder.build(), Bookmark.class);
+        logger.debug("stored bookmark: {}", response.toString());
     }
 
 // -------------------------- OTHER METHODS --------------------------
