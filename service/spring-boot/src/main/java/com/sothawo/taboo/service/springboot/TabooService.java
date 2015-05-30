@@ -10,8 +10,6 @@ import com.sothawo.taboo.common.Bookmark;
 import com.sothawo.taboo.common.BookmarkRepository;
 import com.sothawo.taboo.common.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,9 +68,7 @@ public class TabooService {
                 .path(String.valueOf(createdBookmark.getId()))
                 .build().toUri();
         headers.setLocation(locationUri);
-        ResponseEntity<Bookmark> responseEntity =
-                new ResponseEntity<Bookmark>(createdBookmark, headers, HttpStatus.CREATED);
-        return responseEntity;
+        return new ResponseEntity<>(createdBookmark, headers, HttpStatus.CREATED);
     }
 
     /**

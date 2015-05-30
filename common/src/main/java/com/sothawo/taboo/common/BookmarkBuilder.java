@@ -29,7 +29,7 @@ public class BookmarkBuilder {
      *
      * @return a BookmarkBuilder
      */
-    public final static BookmarkBuilder aBookmark() {
+    public static BookmarkBuilder aBookmark() {
         return new BookmarkBuilder();
     }
 
