@@ -24,7 +24,7 @@ public class ClientUI extends UI {
     private static final String TABOO = "taboo";
 
     @Autowired
-    private EntryForm entryForm;
+    private EntryFormComponent entryFormComponent;
 
 // -------------------------- OTHER METHODS --------------------------
 
@@ -65,7 +65,7 @@ public class ClientUI extends UI {
         Panel panel = new Panel("new bookmark");
         VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
-        layout.addComponent(entryForm);
+        layout.addComponent(entryFormComponent);
         panel.setContent(layout);
         return panel;
     }

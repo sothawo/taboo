@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 @SpringComponent
-public class EntryForm extends CustomComponent {
+public class EntryFormComponent extends CustomComponent {
 // ------------------------------ FIELDS ------------------------------
 
     /** TextField that will to a 'bookmark' property */
@@ -43,7 +43,7 @@ public class EntryForm extends CustomComponent {
     /**
      * creates a EntryForm. Layout is horizontal
      */
-    public EntryForm() {
+    public EntryFormComponent() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setWidth("100%");
         layout.setSpacing(true);
