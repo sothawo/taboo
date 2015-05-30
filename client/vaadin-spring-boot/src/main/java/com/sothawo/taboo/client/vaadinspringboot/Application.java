@@ -18,7 +18,8 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 @SpringBootApplication
 public class Application {
 
-    @Bean public static PropertySourcesPlaceholderConfigurer placeholderCOnfigurer() {
+    // neede if @Value is to be injected in fields from properties
+    @Bean public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
     }
 

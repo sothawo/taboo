@@ -13,6 +13,10 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Component for entering new bookmark data.
  *
@@ -90,7 +94,24 @@ public class EntryForm extends CustomComponent {
      * sends the entered data to the taboo service.
      */
     private void saveEntryData() {
-        handleException(new UnsupportedOperationException("not yet implemented."));
+        try {
+            taboo.storeNewBookmark(data.bookmark, getTags());
+        } catch (Exception e) {
+            handleException(e);
+        }
+    }
+
+    /**
+     * returns an array of the entered tags. The input is converted to lowercase and split in tags which only contain
+     * alphanumeric characters
+     * @return tag array
+     */
+    private Collection<String> getTags() {
+        String tagsString = data.getTags();
+        if (null == tagsString || tagsString.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(tagsString.toLowerCase().split("\\W"));
     }
 
 // -------------------------- INNER CLASSES --------------------------

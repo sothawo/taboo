@@ -16,9 +16,12 @@ The project is split in the service and client directories and there in the diff
 
 ### service implementations
 
-* spring-boot service implementation basics
-
+* spring-boot service implementation
 
 ### repositories
 
 * first basic inmemory implementation 
+
+### clients
+
+* first skeleton implementation of vaadin-spring client

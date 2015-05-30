@@ -9,6 +9,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Main UI class.
@@ -21,6 +22,9 @@ public class ClientUI extends UI {
 // ------------------------------ FIELDS ------------------------------
 
     private static final String TABOO = "taboo";
+
+    @Autowired
+    private EntryForm entryForm;
 
 // -------------------------- OTHER METHODS --------------------------
 
@@ -61,7 +65,7 @@ public class ClientUI extends UI {
         Panel panel = new Panel("new bookmark");
         VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
-        layout.addComponent(new EntryForm());
+        layout.addComponent(entryForm);
         panel.setContent(layout);
         return panel;
     }

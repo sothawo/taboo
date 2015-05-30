@@ -5,6 +5,8 @@
  */
 package com.sothawo.taboo.client.vaadinspringboot;
 
+import java.util.Collection;
+
 /**
  * Implementations of this interface communicate with a taboo service.
  *
@@ -19,5 +21,5 @@ public interface TabooClient {
      * @param tags
      *         the tags for the bookmark
      */
-    void storeNewBookmark(String url, String... tags);
+    void storeNewBookmark(String url, Collection<String> tags);
 }
