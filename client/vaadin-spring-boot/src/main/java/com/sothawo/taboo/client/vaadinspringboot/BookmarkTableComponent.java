@@ -26,15 +26,17 @@ public class BookmarkTableComponent extends CustomComponent {
         layout.setSizeFull();
 
         table = new Table();
+        table.addStyleName("bookmarks-table");
         table.addContainerProperty("URL", String.class, null);
         for (int i = 1; i <= 50; i++) {
             table.addItem(new Object[]{"http://www.sotahwo.com/" + i}, i);
         }
         layout.addComponent(table);
         table.setWidth("100%");
-
-        table.setPageLength(table.size());
         layout.setExpandRatio(table, 1);
+
+        // set table length to table size and let the surrounding container scroll
+        table.setPageLength(table.size());
 
         setCompositionRoot(layout);
     }

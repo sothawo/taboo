@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
-@Theme("valo")
+@Theme("taboo")
 @SpringUI
 public class ClientUI extends UI {
 // ------------------------------ FIELDS ------------------------------

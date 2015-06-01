@@ -12,7 +12,7 @@
 
     <logger name="com.sothawo" level="debug" />
 
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
