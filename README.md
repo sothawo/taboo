@@ -1,5 +1,5 @@
 # taboo
-a small collection of backend and frontend implementations for a bookmark service.
+a small collection of service, repository and frontend implementations for a bookmark service.
 
 ## purpose of this project
 

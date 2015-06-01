@@ -23,8 +23,17 @@ public class ClientUI extends UI {
 
     private static final String TABOO = "taboo";
 
+    /** componente for entering a new bookmark. */
     @Autowired
     private EntryFormComponent entryFormComponent;
+
+    /** component for defining the fileter for the bookmarks to display. */
+    @Autowired
+    private BookmarkFilterComponent bookmarkFilterComponent;
+
+    /** component for showing the bookmarks */
+    @Autowired
+    private BookmarkTableComponent bookmarkTableComponent;
 
 // -------------------------- OTHER METHODS --------------------------
 
@@ -49,16 +58,32 @@ public class ClientUI extends UI {
     }
 
     /**
-     * creates the component for the existing bookmarks.
+     * creates the component for the bookmarks. Contains a BookmarkTableComponent and a BookmarkFilterComponent.
+     *
      * @return new Component
      */
     private Component createBookmarkComponent() {
         Panel panel = new Panel("bookmarks");
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.setWidth("100%");
+        layout.setSpacing(true);
+        layout.setMargin(true);
+
+        layout.addComponent(bookmarkTableComponent);
+//        bookmarkTableComponent.setWidth("80%");
+        layout.setExpandRatio(bookmarkTableComponent, 1);
+
+        layout.addComponent(bookmarkFilterComponent);
+//        bookmarkFilterComponent.setWidth("20%");
+//        layout.setExpandRatio(bookmarkFilterComponent, 1);
+
+        panel.setContent(layout);
         return panel;
     }
 
     /**
      * creates the component where the user can add bookmarks with tags
+     *
      * @return new Component
      */
     private Component createEntryComponent() {

@@ -41,7 +41,7 @@ public class EntryFormComponent extends CustomComponent {
 // --------------------------- CONSTRUCTORS ---------------------------
 
     /**
-     * creates a EntryForm. Layout is horizontal
+     * creates a EntryForm. Layout is horizontal.
      */
     public EntryFormComponent() {
         HorizontalLayout layout = new HorizontalLayout();
