@@ -94,6 +94,7 @@
                 <directory>src/main/resources</directory>
             </resource>
             <resource>
+                <!-- needed for custom themes, this is not copied by default in the jar packaging mode -->
                 <directory>src/main/webapp</directory>
             </resource>
         </resources>
@@ -104,41 +105,18 @@
                 <executions>
                     <execution>
                         <goals>
+                            <goal>update-theme</goal>
+                            <goal>compile-theme</goal>
+                            <!--
                             <goal>clean</goal>
                             <goal>resources</goal>
-                            <goal>update-theme</goal>
                             <goal>update-widgetset</goal>
                             <goal>compile</goal>
-                            <goal>compile-theme</goal>
+                            -->
                         </goals>
                     </execution>
                 </executions>
             </plugin>
-            <!--
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <classpathScope>compile</classpathScope>
-                            <mainClass>com.vaadin.sass.SassCompiler</mainClass>
-                            <arguments>
-                                <argument>src/main/resources/VAADIN/themes/taboo/styles.scss
-                                </argument>
-                                <argument>src/main/resources/VAADIN/themes/taboo/styles.css
-                                </argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

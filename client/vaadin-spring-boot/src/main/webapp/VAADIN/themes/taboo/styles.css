@@ -12409,3 +12409,7 @@ h1.no-margin, .v-label-h1.no-margin, h2.no-margin, .v-label-h2.no-margin, h3.no-
 .v-table-bookmarks-table .v-table-cell-content {
 	height: 100px;
 }
+
+.v-app {
+	background-color: salmon;
+}
