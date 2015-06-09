@@ -50,6 +50,7 @@
             <artifactId>vaadin-spring-boot-starter</artifactId>
             <version>${vaadin.springboot.version}</version>
         </dependency>
+        <!-- for autoprocessing of configuration properties -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>

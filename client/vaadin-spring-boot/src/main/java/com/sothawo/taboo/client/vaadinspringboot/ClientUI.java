@@ -11,6 +11,11 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
+
 /**
  * Main UI class.
  *
@@ -55,6 +60,10 @@ public class ClientUI extends UI {
         layout.addComponent(bookmarkComponent);
         bookmarkComponent.setHeight("100%");
         layout.setExpandRatio(bookmarkComponent, 1);
+
+        bookmarkTableComponent.setBookmarks(
+                IntStream.rangeClosed(1, 50).mapToObj(i -> aBookmark().withUrl("http://www.sothawo.com/" + i).build())
+                        .collect(Collectors.toList()));
     }
 
     /**
