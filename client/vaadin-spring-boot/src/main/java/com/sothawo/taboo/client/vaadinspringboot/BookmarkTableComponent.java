@@ -11,13 +11,10 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 
 /**
  * Component for showing the bookmarks.
@@ -30,11 +27,15 @@ public class BookmarkTableComponent extends CustomComponent {
 
     /** the item id for the bookmark column in the table */
     private static final String BOOKMARK_ITEM_ID = "bookmark";
+
     /** the table for the bookmarks */
     private final Table table;
 
     /** Vaadin Container for the table */
     private final IndexedContainer container = new IndexedContainer();
+    /** the taboo service where new entries are stored */
+    @Autowired
+    private TabooClient taboo;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -43,6 +44,7 @@ public class BookmarkTableComponent extends CustomComponent {
         layout.setSizeFull();
 
         table = new Table();
+        table.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
         table.addStyleName("bookmarks-table");
 
         // one column with a custom component
@@ -59,6 +61,8 @@ public class BookmarkTableComponent extends CustomComponent {
         setCompositionRoot(layout);
     }
 
+// -------------------------- OTHER METHODS --------------------------
+
     /**
      * sets the given bookmarks in the table
      *
@@ -70,5 +74,19 @@ public class BookmarkTableComponent extends CustomComponent {
         container.removeAllItems();
         bookmarks.stream().map(BookmarkTableEntryComponent::new).forEach(component -> container.addItem(component)
                 .getItemProperty(BOOKMARK_ITEM_ID).setValue(component));
+    }
+
+    /**
+     * shows all the bookmarks from the system with the given tags (logical ANDed).
+     *
+     * @param tags
+     *         the tags for the bookmarks
+     */
+    public void showBookmarksWithTags(Collection<String> tags) {
+        try {
+            setBookmarks(taboo.getBookmarks(tags));
+        } catch (Exception e) {
+            ClientUI.handleException(e);
+        }
     }
 }

@@ -5,7 +5,10 @@
  */
 package com.sothawo.taboo.client.vaadinspringboot;
 
+import com.sothawo.taboo.common.Bookmark;
+import com.sothawo.taboo.common.BookmarkBuilder;
 import com.vaadin.annotations.Theme;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -40,6 +43,20 @@ public class ClientUI extends UI {
     @Autowired
     private BookmarkTableComponent bookmarkTableComponent;
 
+// -------------------------- STATIC METHODS --------------------------
+
+    /**
+     * shows the message of an exception in a notification
+     *
+     * @param e
+     *         Exception
+     */
+    public static  void handleException(Exception e) {
+        Notification notification = new Notification("Error", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+        notification.setDelayMsec(-1);
+        notification.show(Page.getCurrent());
+    }
+
 // -------------------------- OTHER METHODS --------------------------
 
     @Override
@@ -61,9 +78,8 @@ public class ClientUI extends UI {
         bookmarkComponent.setHeight("100%");
         layout.setExpandRatio(bookmarkComponent, 1);
 
-        bookmarkTableComponent.setBookmarks(
-                IntStream.rangeClosed(1, 50).mapToObj(i -> aBookmark().withUrl("http://www.sothawo.com/" + i).build())
-                        .collect(Collectors.toList()));
+        // intially load all bookmarks
+        bookmarkTableComponent.showBookmarksWithTags(null);
     }
 
     /**

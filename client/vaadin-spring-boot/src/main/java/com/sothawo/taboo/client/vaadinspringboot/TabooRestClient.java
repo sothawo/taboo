@@ -12,11 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 
@@ -42,6 +45,32 @@ public class TabooRestClient implements TabooClient {
 
 
 // --------------------- Interface TabooClient ---------------------
+
+    /**
+     * retrieves all bookmarks with the given tags
+     *
+     * @param tags
+     *         the tags of the bookmarks
+     * @return list of bookmarks
+     */
+    @Override
+    public Collection<Bookmark> getBookmarks(Collection<String> tags) {
+        RestTemplate rest = new RestTemplate();
+        // need to build the arguments as string as they have the same name
+        String queryParam = "";
+        if (null != tags) {
+            queryParam = '?' + tags.stream().map(tag -> "tag=" + tag).collect(Collectors.joining("&"));
+        }
+
+        String url = tabooUrl + "/bookmarks" + queryParam;
+        logger.debug("get Bookmarks: {}", url);
+        ResponseEntity<Bookmark[]> response = rest.getForEntity(url, Bookmark[].class);
+
+        HttpStatus status = response.getStatusCode();
+        logger.debug("get bookmarks: {} {}", status.toString(), status.getReasonPhrase());
+
+        return Arrays.asList(response.getBody());
+    }
 
     /**
      * @param url

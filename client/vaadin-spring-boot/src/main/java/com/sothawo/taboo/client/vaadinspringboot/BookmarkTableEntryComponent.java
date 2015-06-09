@@ -28,7 +28,7 @@ public class BookmarkTableEntryComponent extends CustomComponent {
         layout.setSizeFull();
 
         layout.addComponent(new Label(bookmark.getUrl()));
-
+        layout.addComponent(new Label(String.join(", ", bookmark.getTags())));
         setCompositionRoot(layout);
     }
 }

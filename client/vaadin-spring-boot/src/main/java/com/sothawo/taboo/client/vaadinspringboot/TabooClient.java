@@ -5,6 +5,8 @@
  */
 package com.sothawo.taboo.client.vaadinspringboot;
 
+import com.sothawo.taboo.common.Bookmark;
+
 import java.util.Collection;
 
 /**
@@ -13,6 +15,17 @@ import java.util.Collection;
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 public interface TabooClient {
+// -------------------------- OTHER METHODS --------------------------
+
+    /**
+     * retrieves all bookmarks with the given tags
+     *
+     * @param tags
+     *         the tags of the bookmarks
+     * @return list of bookmarks
+     */
+    Collection<Bookmark> getBookmarks(Collection<String> tags);
+
     /**
      * stores a new Bookmark in the service.
      *

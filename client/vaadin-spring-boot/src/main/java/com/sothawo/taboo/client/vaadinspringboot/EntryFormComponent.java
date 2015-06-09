@@ -9,10 +9,11 @@ import com.sothawo.taboo.common.TagUtil;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Collection;
 
 /**
  * Component for entering new bookmark data.
@@ -23,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class EntryFormComponent extends CustomComponent {
 // ------------------------------ FIELDS ------------------------------
 
-    /** TextField that will to a 'bookmark' property */
+    /** TextField that will bind to a 'bookmark' property */
     @PropertyId("bookmark") // not necessary when TextField is named like property
     private TextField bookmark = new TextField("bookmark");
 
@@ -37,6 +38,10 @@ public class EntryFormComponent extends CustomComponent {
     /** the taboo service where new entries are stored */
     @Autowired
     private TabooClient taboo;
+
+    /** the TableComponent */
+    @Autowired
+    private BookmarkTableComponent bookmarkTableComponent;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -66,7 +71,7 @@ public class EntryFormComponent extends CustomComponent {
                 binder.commit();
                 saveEntryData();
             } catch (FieldGroup.CommitException e) {
-                handleException(e);
+                ClientUI.handleException(e);
             }
         });
         layout.addComponent(buttonSave);
@@ -76,29 +81,20 @@ public class EntryFormComponent extends CustomComponent {
     }
 
     /**
-     * shows the message of an exception in a notification
-     *
-     * @param e
-     *         Exception
-     */
-    private void handleException(Exception e) {
-        Notification notification = new Notification("Error", e.getMessage(), Notification.Type.ERROR_MESSAGE);
-        notification.setDelayMsec(-1);
-        notification.show(Page.getCurrent());
-    }
-
-    /**
-     * sends the entered data to the taboo service.
+     * sends the entered data to the taboo service and then display all the bookmarks with the tags for the just eneterd
+     * bookmark.
      */
     private void saveEntryData() {
         try {
-            taboo.storeNewBookmark(data.bookmark, TagUtil.split(data.getTags()));
+            Collection<String> tags = TagUtil.split(data.getTags());
+            taboo.storeNewBookmark(data.bookmark, tags);
+            bookmarkTableComponent.showBookmarksWithTags(tags);
         } catch (Exception e) {
-            handleException(e);
+            ClientUI.handleException(e);
         }
     }
 
-    // -------------------------- INNER CLASSES --------------------------
+// -------------------------- INNER CLASSES --------------------------
 
     /**
      * Data object containing the new entered bookmark data.
