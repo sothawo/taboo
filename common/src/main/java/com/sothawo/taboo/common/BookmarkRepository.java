@@ -27,6 +27,7 @@ public interface BookmarkRepository {
      *         if a bookmark with the given url already exists
      */
     Bookmark createBookmark(Bookmark bookmark);
+
     /**
      * returns all bookmarks in the repository.
      *
@@ -55,4 +56,9 @@ public interface BookmarkRepository {
      * @return the bookmarks
      */
     Collection<Bookmark> findBookmarksWithTags(Collection<String> tags, boolean opAnd);
+
+    /**
+     * removes all bookmarks from the reository.
+     */
+    void purge();
 }

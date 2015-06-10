@@ -88,4 +88,12 @@ public class InMemoryRepository implements BookmarkRepository {
         }
         return foundBookmarks;
     }
+
+    /**
+     * removes all bookmarks from the reository.
+     */
+    @Override
+    public void purge() {
+        bookmarks.clear();
+    }
 }

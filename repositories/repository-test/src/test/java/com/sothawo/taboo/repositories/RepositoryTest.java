@@ -4,6 +4,7 @@ import com.sothawo.taboo.common.AlreadyExistsException;
 import com.sothawo.taboo.common.Bookmark;
 import com.sothawo.taboo.common.BookmarkRepository;
 import com.sothawo.taboo.common.NotFoundException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -29,6 +30,9 @@ public class RepositoryTest {
     @Parameter(0)
     public Class<BookmarkRepository> repositoryClass;
 
+    /** created in #setupRepository() method */
+    private BookmarkRepository repository;
+
 // -------------------------- STATIC METHODS --------------------------
 
     @Parameters
@@ -40,7 +44,6 @@ public class RepositoryTest {
 
     @Test
     public void createBookmark() throws Exception {
-        BookmarkRepository repository = repositoryClass.newInstance();
         Bookmark bookmarkIn = aBookmark().withUrl("url1").addTag("tag1").build();
 
         Bookmark bookmarkOut = repository.createBookmark(bookmarkIn);
@@ -54,7 +57,6 @@ public class RepositoryTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void createBookmarkWithId() throws Exception {
-        BookmarkRepository repository = repositoryClass.newInstance();
         Bookmark bookmarkIn = aBookmark().withId(11).withUrl("url1").addTag("tag1").build();
 
         repository.createBookmark(bookmarkIn);
@@ -63,7 +65,6 @@ public class RepositoryTest {
 
     @Test(expected = AlreadyExistsException.class)
     public void createBookmarksWithExistingUrl() throws Exception {
-        BookmarkRepository repository = repositoryClass.newInstance();
         Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").build();
         Bookmark bookmark2 = aBookmark().withUrl("url1").addTag("tag2").build();
 
@@ -74,7 +75,6 @@ public class RepositoryTest {
 
     @Test
     public void findAllBookmarks() throws Exception {
-        BookmarkRepository repository = repositoryClass.newInstance();
         Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").build();
         Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").build();
 
@@ -87,7 +87,6 @@ public class RepositoryTest {
 
     @Test
     public void findBookmarkById() throws Exception {
-        BookmarkRepository repository = repositoryClass.newInstance();
         Bookmark bookmark = repository.createBookmark(aBookmark().withUrl("url1").addTag("tag1").build());
 
         Bookmark foundBookmark = repository.findBookmarkById(bookmark.getId());
@@ -97,14 +96,12 @@ public class RepositoryTest {
 
     @Test(expected = NotFoundException.class)
     public void findBookmarkByIdNotExisting() throws Exception {
-        BookmarkRepository repository = repositoryClass.newInstance();
         repository.findBookmarkById(42);
         fail("NotFoundException expected");
     }
 
     @Test
     public void findBookmarksWithTagsAnd() throws Exception {
-        BookmarkRepository repository = repositoryClass.newInstance();
         Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").addTag("common").build();
         Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").addTag("common").build();
         Bookmark bookmark3 = aBookmark().withUrl("url3").addTag("tag3").build();
@@ -118,9 +115,9 @@ public class RepositoryTest {
         assertThat(bookmarks.size(), is(1));
         assertThat(bookmarks, hasItem(bookmark2));
     }
+
     @Test
     public void findBookmarksWithTagsOr() throws Exception {
-        BookmarkRepository repository = repositoryClass.newInstance();
         Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").addTag("common").build();
         Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").addTag("common").build();
         Bookmark bookmark3 = aBookmark().withUrl("url3").addTag("tag3").build();
@@ -133,5 +130,17 @@ public class RepositoryTest {
 
         assertThat(bookmarks.size(), is(2));
         assertThat(bookmarks, hasItems(bookmark1, bookmark2));
+    }
+
+    @Test
+    public void repositoryHasNoBookmarksOnCreation() throws Exception {
+        Collection<Bookmark> bookmarks = repository.findAllBookmarks();
+        assertThat(bookmarks.size(), is(0));
+    }
+
+    @Before
+    public void setupRepository() throws Exception {
+        repository = repositoryClass.newInstance();
+        repository.purge();
     }
 }
