@@ -16,7 +16,7 @@ import java.util.Collection;
 public class BookmarkBuilder {
 // ------------------------------ FIELDS ------------------------------
     /** the id of the bookmark */
-    private Integer id;
+    private String id;
     /** the url for the bookmark */
     private String url;
     /** the tags for the bookmark */
@@ -79,7 +79,7 @@ public class BookmarkBuilder {
      *         new id
      * @return this object
      */
-    public BookmarkBuilder withId(int id) {
+    public BookmarkBuilder withId(String id) {
         this.id = id;
         return this;
     }

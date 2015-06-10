@@ -57,7 +57,7 @@ public class RepositoryTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void createBookmarkWithId() throws Exception {
-        Bookmark bookmarkIn = aBookmark().withId(11).withUrl("url1").addTag("tag1").build();
+        Bookmark bookmarkIn = aBookmark().withId("11").withUrl("url1").addTag("tag1").build();
 
         repository.createBookmark(bookmarkIn);
         fail("expected IllegalArgumentException");
@@ -96,7 +96,7 @@ public class RepositoryTest {
 
     @Test(expected = NotFoundException.class)
     public void findBookmarkByIdNotExisting() throws Exception {
-        repository.findBookmarkById(42);
+        repository.findBookmarkById("42");
         fail("NotFoundException expected");
     }
 

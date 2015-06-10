@@ -100,7 +100,7 @@ public class TabooService {
      *         when no Bookmarks is found for the id
      */
     @RequestMapping(value = "/bookmarks/{id}", method = RequestMethod.GET)
-    public Bookmark findBookmarkById(@PathVariable(value = "id") Integer id) {
+    public Bookmark findBookmarkById(@PathVariable(value = "id") String id) {
         return repository.findBookmarkById(id);
     }
 

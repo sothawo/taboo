@@ -33,7 +33,7 @@ public class BookmarkTableComponent extends CustomComponent {
 
     /** Vaadin Container for the table */
     private final IndexedContainer container = new IndexedContainer();
-    
+
     /** the taboo service where new entries are stored */
     @Autowired
     private TabooClient taboo;

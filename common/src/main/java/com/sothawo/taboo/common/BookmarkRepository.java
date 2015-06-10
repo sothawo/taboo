@@ -44,7 +44,7 @@ public interface BookmarkRepository {
      * @throws NotFoundException
      *         if no bookmark is found for the given id
      */
-    Bookmark findBookmarkById(Integer id);
+    Bookmark findBookmarkById(String id);
 
     /**
      * returns all bookmarks that have all of the given tags.

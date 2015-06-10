@@ -54,7 +54,7 @@ public class TabooServiceTest {
     @Test
     public void createBookmark() throws Exception {
         Bookmark bookmarkIn = aBookmark().withUrl("url").addTag("tag").build();
-        Bookmark bookmarkOut = aBookmark().withId(11).withUrl("url").addTag("tag").build();
+        Bookmark bookmarkOut = aBookmark().withId("11").withUrl("url").addTag("tag").build();
 
         new Expectations() {{
             repository.createBookmark(bookmarkIn);
@@ -103,7 +103,7 @@ public class TabooServiceTest {
 
     @Test
     public void createBookmarksWithIdYieldsPreconditionFailed() throws Exception {
-        Bookmark bookmarkIn = aBookmark().withId(11).withUrl("url").addTag("tag").build();
+        Bookmark bookmarkIn = aBookmark().withId("11").withUrl("url").addTag("tag").build();
 
         MockMvc mockMvc = standaloneSetup(tabooService).build();
         mockMvc.perform(post(TABOO_BOOKMARKS)
@@ -136,7 +136,7 @@ public class TabooServiceTest {
 
     @Test
     public void findBookmarksWithAllTags() throws Exception {
-        Bookmark bookmark = createBookmarks(2).get(0);
+        Bookmark bookmark = createBookmarks("2").get(0);
         bookmark.addTag("abc");
 
         new Expectations() {{
@@ -161,7 +161,7 @@ public class TabooServiceTest {
 
     @Test
     public void findBookmarksWithAnyTag() throws Exception {
-        List<Bookmark> bookmarks = createBookmarks(2, 3);
+        List<Bookmark> bookmarks = createBookmarks("2", "3");
         bookmarks.get(0).addTag("abc");
         bookmarks.get(1).addTag("abc");
 
@@ -189,9 +189,9 @@ public class TabooServiceTest {
 
     @Test
     public void findExistingBookmark() throws Exception {
-        final Bookmark bookmark = createBookmarks(11).get(0);
+        final Bookmark bookmark = createBookmarks("11").get(0);
         new Expectations() {{
-            repository.findBookmarkById(11);
+            repository.findBookmarkById("11");
             result = bookmark;
         }};
 
@@ -204,7 +204,7 @@ public class TabooServiceTest {
         ;
 
         new Verifications() {{
-            repository.findBookmarkById(11);
+            repository.findBookmarkById("11");
             times = 1;
         }};
     }
@@ -212,7 +212,7 @@ public class TabooServiceTest {
     @Test
     public void findNotExistingBookmarkYieldsNotFound() throws Exception {
         new Expectations() {{
-            repository.findBookmarkById(11);
+            repository.findBookmarkById("11");
             result = new NotFoundException("bookmark 11");
         }};
 
@@ -222,14 +222,14 @@ public class TabooServiceTest {
         ;
 
         new Verifications() {{
-            repository.findBookmarkById(11);
+            repository.findBookmarkById("11");
             times = 1;
         }};
     }
 
     @Test
     public void getAllBookmarks() throws Exception {
-        List<Bookmark> bookmarks = createBookmarks(23, 42);
+        List<Bookmark> bookmarks = createBookmarks("23", "42");
 
         new Expectations() {{
             repository.findAllBookmarks();
@@ -261,9 +261,9 @@ public class TabooServiceTest {
      *         id values for the Bookmark objects to create
      * @return a list of bookmarks
      */
-    private List<Bookmark> createBookmarks(int... ids) {
+    private List<Bookmark> createBookmarks(String... ids) {
         List<Bookmark> bookmarks = new ArrayList<>();
-        for (int id : ids) {
+        for (String id : ids) {
             bookmarks.add(aBookmark().withId(id).withUrl("url" + id).addTag("tag" + id).build());
         }
         return bookmarks;

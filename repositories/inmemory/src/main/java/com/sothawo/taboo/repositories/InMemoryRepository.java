@@ -45,7 +45,7 @@ public class InMemoryRepository implements BookmarkRepository {
             throw new AlreadyExistsException("bookmark with url: " + bookmark.getUrl());
         }
 
-        bookmark.setId(nextId.getAndIncrement());
+        bookmark.setId("" + nextId.getAndIncrement());
         bookmarks.put(bookmark.getUrl(), bookmark);
         return bookmark;
     }
@@ -56,8 +56,8 @@ public class InMemoryRepository implements BookmarkRepository {
     }
 
     @Override
-    public Bookmark findBookmarkById(Integer id) {
-        Integer idToSearch = Objects.requireNonNull(id);
+    public Bookmark findBookmarkById(String id) {
+        String idToSearch = Objects.requireNonNull(id);
         return bookmarks.values().stream()
                 .filter(b -> b.getId().equals(idToSearch))
                 .findFirst()
