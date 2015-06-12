@@ -44,6 +44,18 @@ public class TabooService {
 // -------------------------- OTHER METHODS --------------------------
 
     /**
+     * ExceptionHandler for AlreadyExistsException. returns the exception's error message in the body with the 409
+     * status code.
+     *
+     * @return HTTP CONFLICT Response Status and error message
+     */
+    @ExceptionHandler(AlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String alreadyExistsExceptionHandler(AlreadyExistsException e) {
+        return e.getMessage();
+    }
+
+    /**
      * creates a new bookmark in the repository
      *
      * @param bookmark
@@ -91,6 +103,16 @@ public class TabooService {
     }
 
     /**
+     * return all tags from the repository.
+     *
+     * @return collection of tags
+     */
+    @RequestMapping(value = "/tags", method = RequestMethod.GET)
+    public Collection<String> findAlltags() {
+        return repository.findAllTags();
+    }
+
+    /**
      * returns the bookmark with the given id.
      *
      * @param id
@@ -127,17 +149,4 @@ public class TabooService {
     public String notFoundExceptionHandler(NotFoundException e) {
         return e.getMessage();
     }
-
-    /**
-     * ExceptionHandler for AlreadyExistsException. returns the exception's error message in the body with the 409
-     * status code.
-     *
-     * @return HTTP CONFLICT Response Status and error message
-     */
-    @ExceptionHandler(AlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String alreadyExistsExceptionHandler(AlreadyExistsException e) {
-        return e.getMessage();
-    }
-
 }

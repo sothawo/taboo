@@ -26,6 +26,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
@@ -33,9 +34,10 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 public class TabooServiceTest {
-    private static final String TABOO_BOOKMARKS = "/taboo/bookmarks";
+// ------------------------------ FIELDS ------------------------------
 
-    // ------------------------------ FIELDS ------------------------------
+    private static final String TABOO_BOOKMARKS = "/taboo/bookmarks";
+    private static final String TABOO_TAGS = "/taboo/tags";
 
     // the service to be tested, will be created by JMockit and injected with the repository which is mocked
     @Tested
@@ -253,6 +255,34 @@ public class TabooServiceTest {
             times = 1;
         }};
     }
+
+    @Test
+    public void getAllTags() throws Exception {
+        String[] tags = new String[]{"tag1", "tag3", "tag2", "tag42"};
+
+        new Expectations() {{
+            repository.findAllTags();
+            result = Arrays.asList(tags);
+        }};
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(get(TABOO_TAGS).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(4)))
+                .andExpect(jsonPath("$[0]", is(tags[0])))
+                .andExpect(jsonPath("$[1]", is(tags[1])))
+                .andExpect(jsonPath("$[2]", is(tags[2])))
+                .andExpect(jsonPath("$[3]", is(tags[3])))
+        ;
+
+        new Verifications() {{
+            repository.findAllTags();
+            times = 1;
+        }};
+    }
+
+
 
     /**
      * helper method to create a list of bookmarks.
