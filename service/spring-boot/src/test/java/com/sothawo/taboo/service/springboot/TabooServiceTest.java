@@ -267,7 +267,6 @@ public class TabooServiceTest {
 
         MockMvc mockMvc = standaloneSetup(tabooService).build();
         mockMvc.perform(get(TABOO_TAGS).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(4)))
                 .andExpect(jsonPath("$[0]", is(tags[0])))

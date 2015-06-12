@@ -31,17 +31,20 @@ import java.util.Objects;
 public class TabooService {
 // ------------------------------ FIELDS ------------------------------
 
-    /** the repository for the bookmarks, injected in constructor */
+    /** the repository for the bookmarks, injected in constructor or explicitly set in no-arg-ctor */
     private BookmarkRepository repository;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-    @Autowired
     public TabooService(BookmarkRepository repository) {
         this.repository = Objects.requireNonNull(repository);
     }
 
-// -------------------------- OTHER METHODS --------------------------
+    public TabooService() {
+        repository = Application.getSpringMongoRepository();
+    }
+
+    // -------------------------- OTHER METHODS --------------------------
 
     /**
      * ExceptionHandler for AlreadyExistsException. returns the exception's error message in the body with the 409

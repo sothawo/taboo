@@ -7,8 +7,6 @@ package com.sothawo.taboo.repositories.springmongo;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.util.Collection;
-
 /**
  * The interface for the mongo repository to be created by Spring.
  *

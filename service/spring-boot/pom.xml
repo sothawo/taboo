@@ -38,10 +38,23 @@
             <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- when using inmemory -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>repository-inmemory</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <!-- when using spring-mongo -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>repository-spring-mongo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+            <!-- bundled with spring-data-mongo is 1.9.x, spring boot needs 1.10. -->
+            <version>1.10.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -7,9 +7,14 @@ package com.sothawo.taboo.service.springboot;
 
 import com.sothawo.taboo.common.BookmarkRepository;
 import com.sothawo.taboo.repositories.InMemoryRepository;
+import com.sothawo.taboo.repositories.InMemoryRepositoryFactory;
+import com.sothawo.taboo.repositories.springmongo.SpringMongoRepository;
+import com.sothawo.taboo.repositories.springmongo.SpringMongoRepositoryFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 /**
  * Main application class.
@@ -20,9 +25,13 @@ import org.springframework.context.annotation.Bean;
 public class Application {
 // -------------------------- OTHER METHODS --------------------------
 
-    @Bean
-    public BookmarkRepository getRepository() {
-        return new InMemoryRepository();
+    public static BookmarkRepository getInMemoryRepository() {
+        return new InMemoryRepositoryFactory().createRepository(null);
+    }
+
+    public static BookmarkRepository getSpringMongoRepository() {
+        BookmarkRepository repository = new SpringMongoRepositoryFactory().createRepository(null);
+        return repository;
     }
 
 // --------------------------- main() method ---------------------------
