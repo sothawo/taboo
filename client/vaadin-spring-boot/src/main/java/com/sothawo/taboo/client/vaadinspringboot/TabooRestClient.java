@@ -76,6 +76,7 @@ public class TabooRestClient implements TabooClient {
      * @param url
      *         the url of the bookmark
      * @param tags
+     *         the tags of the bookmark
      */
     @Override
     public void storeNewBookmark(String url, Collection<String> tags) {

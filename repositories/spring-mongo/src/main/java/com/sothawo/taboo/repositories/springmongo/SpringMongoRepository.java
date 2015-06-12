@@ -14,7 +14,12 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
 
 /**
  * BookmarkRepository implementation with a mongodb database accessed by spring-data-mongo.
@@ -103,7 +108,14 @@ public class SpringMongoRepository implements BookmarkRepository {
      */
     @Override
     public Collection<Bookmark> findBookmarksWithTags(Collection<String> tags, boolean opAnd) {
-        throw new UnsupportedOperationException("not implemented");
+        if (null == tags || tags.size() == 0) {
+            return Collections.emptyList();
+        }
+
+        List<MongoBookmark> mongoBookmarks = opAnd
+                ? mongo.find(query(where("tags").all(tags)), MongoBookmark.class)
+                : mongo.find(query(where("tags").in(tags)), MongoBookmark.class);
+        return mongoBookmarks.stream().map(MongoBookmark::toCommon).collect(Collectors.toList());
     }
 
     /**

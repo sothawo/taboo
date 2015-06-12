@@ -40,7 +40,7 @@ public class SpringMongoRepositoryFactory implements BookmarkRepositoryFactory {
                 System.getProperties().setProperty("spring.profiles.active", options[0]);
             }
             context = new AnnotationConfigApplicationContext(MongoConfig.class);
-            logger.info("created MongoConfig for database {}", context.getBean(MongoConfig.class).getDatabaseName());
+            logger.debug("created MongoConfig for database {}", context.getBean(MongoConfig.class).getDatabaseName());
         }
         return context.getBean(SpringMongoRepository.class);
     }

@@ -45,7 +45,7 @@ public class InMemoryRepository implements BookmarkRepository {
             throw new AlreadyExistsException("bookmark with url: " + bookmark.getUrl());
         }
 
-        bookmark.setId("" + nextId.getAndIncrement());
+        bookmark.setId(String.valueOf(nextId.getAndIncrement()));
         bookmarks.put(bookmark.getUrl(), bookmark);
         return bookmark;
     }

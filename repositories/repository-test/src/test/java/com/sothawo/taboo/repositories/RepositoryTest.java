@@ -13,7 +13,6 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 import static org.hamcrest.CoreMatchers.*;
@@ -49,7 +48,8 @@ public class RepositoryTest {
         return Arrays.asList(new Object[][]
                 {
                         {InMemoryRepositoryFactory.class, null},
-                        {SpringMongoRepositoryFactory.class, new String[]{MongoConfig.TEST_PROFILE}} // Spring test profile
+                        {SpringMongoRepositoryFactory.class, new String[]{MongoConfig.TEST_PROFILE}}
+                        // Spring test profile
                 });
     }
 

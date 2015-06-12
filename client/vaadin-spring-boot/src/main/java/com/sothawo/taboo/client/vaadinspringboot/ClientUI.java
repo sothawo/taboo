@@ -5,19 +5,12 @@
  */
 package com.sothawo.taboo.client.vaadinspringboot;
 
-import com.sothawo.taboo.common.Bookmark;
-import com.sothawo.taboo.common.BookmarkBuilder;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 
 /**
  * Main UI class.
@@ -51,7 +44,7 @@ public class ClientUI extends UI {
      * @param e
      *         Exception
      */
-    public static  void handleException(Exception e) {
+    public static void handleException(Exception e) {
         Notification notification = new Notification("Error", e.getMessage(), Notification.Type.ERROR_MESSAGE);
         notification.setDelayMsec(-1);
         notification.show(Page.getCurrent());
