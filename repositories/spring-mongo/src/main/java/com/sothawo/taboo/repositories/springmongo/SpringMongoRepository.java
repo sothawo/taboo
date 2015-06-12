@@ -32,13 +32,11 @@ public class SpringMongoRepository implements BookmarkRepository {
     /** name of the bookmarks collection */
     public static final String COLLECTION_BOOKMARKS = "bookmarks";
 
-    /**
-     * TODO: remove the mongo-template bean that is used to work with the database.
-     */
+    /** the mongo template for custom queries*/
     @Autowired
     private MongoOperations mongo;
 
-    /** the backend repo created by Spring */
+    /** the backend repo created by Spring for simple operations */
     @Autowired
     private MongoBookmarkRepository mongoRepository;
 
