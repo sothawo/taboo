@@ -20,8 +20,9 @@ The project is split in the service and client directories and there in the diff
 
 ### repositories
 
-* first basic inmemory implementation 
+* basic inmemory implementation 
+* mongo implementation with spring
 
 ### clients
 
-* first skeleton implementation of vaadin-spring client
+* vaadin-spring client
