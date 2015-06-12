@@ -1,9 +1,8 @@
 package com.sothawo.taboo.repositories;
 
-import com.sothawo.taboo.common.AlreadyExistsException;
-import com.sothawo.taboo.common.Bookmark;
-import com.sothawo.taboo.common.BookmarkRepository;
-import com.sothawo.taboo.common.NotFoundException;
+import com.sothawo.taboo.common.*;
+import com.sothawo.taboo.repositories.springmongo.MongoConfig;
+import com.sothawo.taboo.repositories.springmongo.SpringMongoRepositoryFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +13,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 import static org.hamcrest.CoreMatchers.*;
@@ -28,16 +28,29 @@ public class RepositoryTest {
 // ------------------------------ FIELDS ------------------------------
 
     @Parameter(0)
-    public Class<BookmarkRepository> repositoryClass;
+    public Class<BookmarkRepositoryFactory> repositoryFactoryClass;
+
+    @Parameter(1)
+    public String[] factoryOptions;
 
     /** created in #setupRepository() method */
     private BookmarkRepository repository;
 
 // -------------------------- STATIC METHODS --------------------------
 
+    /**
+     * get the parameters for the tests. For every test class execution this is a list of {BookmarkFactory.class,
+     * String[] factoryOptions}
+     *
+     * @return test parameters
+     */
     @Parameters
     public static List<Object[]> parameters() {
-        return Arrays.asList(new Object[][]{{InMemoryRepository.class}});
+        return Arrays.asList(new Object[][]
+                {
+                        {InMemoryRepositoryFactory.class, null},
+                        {SpringMongoRepositoryFactory.class, new String[]{MongoConfig.TEST_PROFILE}} // Spring test profile
+                });
     }
 
 // -------------------------- OTHER METHODS --------------------------
@@ -140,7 +153,8 @@ public class RepositoryTest {
 
     @Before
     public void setupRepository() throws Exception {
-        repository = repositoryClass.newInstance();
+        repository = repositoryFactoryClass.newInstance().createRepository(factoryOptions);
         repository.purge();
     }
+
 }

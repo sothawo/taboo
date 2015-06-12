@@ -20,5 +20,6 @@
     <modules>
         <module>repository-test</module>
         <module>inmemory</module>
+        <module>spring-mongo</module>
     </modules>
 </project>
