@@ -16,6 +16,7 @@ import java.util.List;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -125,7 +126,7 @@ public class RepositoryTest {
         Collection<Bookmark> bookmarks =
                 repository.findBookmarksWithTags(Arrays.asList("tag2", "common"), true);
 
-        assertThat(bookmarks.size(), is(1));
+        assertThat(bookmarks, hasSize(1));
         assertThat(bookmarks, hasItem(bookmark2));
     }
 
@@ -141,14 +142,36 @@ public class RepositoryTest {
         Collection<Bookmark> bookmarks =
                 repository.findBookmarksWithTags(Arrays.asList("tag2", "common"), false);
 
-        assertThat(bookmarks.size(), is(2));
+        assertThat(bookmarks, hasSize(2));
         assertThat(bookmarks, hasItems(bookmark1, bookmark2));
+    }
+
+    @Test
+    public void findAllTags() throws Exception {
+        Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").addTag("common").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").addTag("common").build();
+        Bookmark bookmark3 = aBookmark().withUrl("url3").addTag("tag3").build();
+        repository.createBookmark(bookmark1);
+        repository.createBookmark(bookmark2);
+        repository.createBookmark(bookmark3);
+
+        Collection<String> tags = repository.findAllTags();
+
+        assertThat(tags, hasSize(4));
+        assertThat(tags, hasItems("tag1", "tag2", "tag3", "common"));
+    }
+
+    @Test
+    public void findTagsOnNewRepositoryYieldsEmptyList() throws Exception {
+        Collection<String> tags = repository.findAllTags();
+
+        assertThat(tags, hasSize(0));
     }
 
     @Test
     public void repositoryHasNoBookmarksOnCreation() throws Exception {
         Collection<Bookmark> bookmarks = repository.findAllBookmarks();
-        assertThat(bookmarks.size(), is(0));
+        assertThat(bookmarks, hasSize(0));
     }
 
     @Before
@@ -156,5 +179,4 @@ public class RepositoryTest {
         repository = repositoryFactoryClass.newInstance().createRepository(factoryOptions);
         repository.purge();
     }
-
 }

@@ -32,7 +32,7 @@ public class SpringMongoRepository implements BookmarkRepository {
     /** name of the bookmarks collection */
     public static final String COLLECTION_BOOKMARKS = "bookmarks";
 
-    /** the mongo template for custom queries*/
+    /** the mongo template for custom queries */
     @Autowired
     private MongoOperations mongo;
 
@@ -75,6 +75,19 @@ public class SpringMongoRepository implements BookmarkRepository {
     @Override
     public Collection<Bookmark> findAllBookmarks() {
         return mongoRepository.findAll().stream().map(MongoBookmark::toCommon).collect(Collectors.toList());
+    }
+
+    /**
+     * returns all tags that are stored in the repository.
+     *
+     * @return Collection of tags, may be emoty, not null
+     */
+    @Override
+    public Collection<String> findAllTags() {
+        // this is ugly, as the distinct method returns an untyped list, at the moment the only way to get the
+        // distinct values from mongo
+        //noinspection unchecked
+        return mongo.getCollection(SpringMongoRepository.COLLECTION_BOOKMARKS).distinct("tags");
     }
 
     /**

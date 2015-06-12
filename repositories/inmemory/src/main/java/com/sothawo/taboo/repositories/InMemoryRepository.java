@@ -13,6 +13,7 @@ import com.sothawo.taboo.common.NotFoundException;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * InMemory BookmarkRepository implementation. Just offers functionality, no performance.
@@ -53,6 +54,12 @@ public class InMemoryRepository implements BookmarkRepository {
     @Override
     public Collection<Bookmark> findAllBookmarks() {
         return bookmarks.values();
+    }
+
+    @Override
+    public Collection<String> findAllTags() {
+        return bookmarks.values().stream().flatMap(bookmark -> bookmark.getTags().stream())
+                .collect(Collectors.toSet());
     }
 
     @Override

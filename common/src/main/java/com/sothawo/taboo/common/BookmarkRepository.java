@@ -36,6 +36,13 @@ public interface BookmarkRepository {
     Collection<Bookmark> findAllBookmarks();
 
     /**
+     * returns all tgas that are stored in the repository.
+     *
+     * @return Collection of tags, may be emoty, not null
+     */
+    Collection<String> findAllTags();
+
+    /**
      * returns the bookmark for the given id.
      *
      * @param id
