@@ -5,11 +5,16 @@
  */
 package com.sothawo.taboo.repositories.springmongo;
 
+import com.sothawo.taboo.common.AlreadyExistsException;
 import com.sothawo.taboo.common.Bookmark;
 import com.sothawo.taboo.common.BookmarkRepository;
+import com.sothawo.taboo.common.NotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * BookmarkRepository implementation with a mongodb database accessed by spring-data-mongo.
@@ -18,6 +23,20 @@ import java.util.Collection;
  */
 @Component
 public class SpringMongoRepository implements BookmarkRepository {
+
+    /** name of the bookmarks collection */
+    public static final String COLLECTION_BOOKMARKS = "bookmarks";
+
+    /**
+     * TODO: remove the mongo-template bean that is used to work with the database.
+     */
+    @Autowired
+    private MongoOperations mongo;
+
+    /** the backend repo created by Spring */
+    @Autowired
+    private MongoBookmarkRepository mongoRepository;
+
     /**
      * creates a bookmark in the repository.
      *
@@ -31,7 +50,18 @@ public class SpringMongoRepository implements BookmarkRepository {
      */
     @Override
     public Bookmark createBookmark(Bookmark bookmark) {
-        throw new UnsupportedOperationException("not implemented");
+        if (null == bookmark) {
+            throw new IllegalArgumentException("bookmark is null");
+        }
+        if (null != bookmark.getId()) {
+            throw new IllegalArgumentException("is is not null");
+        }
+
+        if (null != mongoRepository.findByUrl(bookmark.getUrl())) {
+            throw new AlreadyExistsException("bookmark with url: " + bookmark.getUrl());
+        }
+
+        return mongoRepository.save(MongoBookmark.fromCommon(bookmark)).toCommon();
     }
 
     /**
@@ -41,7 +71,7 @@ public class SpringMongoRepository implements BookmarkRepository {
      */
     @Override
     public Collection<Bookmark> findAllBookmarks() {
-        throw new UnsupportedOperationException("not implemented");
+        return mongoRepository.findAll().stream().map(MongoBookmark::toCommon).collect(Collectors.toList());
     }
 
     /**
@@ -55,7 +85,11 @@ public class SpringMongoRepository implements BookmarkRepository {
      */
     @Override
     public Bookmark findBookmarkById(String id) {
-        throw new UnsupportedOperationException("not implemented");
+        MongoBookmark mongoBookmark = mongoRepository.findOne(id);
+        if (null == mongoBookmark) {
+            throw new NotFoundException("no bookmark with id " + id);
+        }
+        return mongoBookmark.toCommon();
     }
 
     /**
@@ -77,6 +111,6 @@ public class SpringMongoRepository implements BookmarkRepository {
      */
     @Override
     public void purge() {
-//        throw new UnsupportedOperationException("not implemented");
+        mongoRepository.deleteAll();
     }
 }
