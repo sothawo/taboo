@@ -73,6 +73,23 @@ public class TabooRestClient implements TabooClient {
     }
 
     /**
+     * get all the tags available in the service.
+     *
+     * @return
+     */
+    @Override
+    public Collection<String> getTags() {
+        RestTemplate rest = new RestTemplate();
+        String url = tabooUrl + "/tags";
+        logger.debug("get tags: {}", url);
+        ResponseEntity<String[]> response = rest.getForEntity(url, String[].class);
+        HttpStatus status = response.getStatusCode();
+        logger.debug("get bookmarks: {} {}", status.toString(), status.getReasonPhrase());
+
+        return Arrays.asList(response.getBody());
+    }
+
+    /**
      * @param url
      *         the url of the bookmark
      * @param tags

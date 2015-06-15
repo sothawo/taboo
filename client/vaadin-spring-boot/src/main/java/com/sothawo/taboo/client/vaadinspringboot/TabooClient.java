@@ -27,6 +27,12 @@ public interface TabooClient {
     Collection<Bookmark> getBookmarks(Collection<String> tags);
 
     /**
+     * get all the tags available in the service.
+     * @return
+     */
+    Collection<String> getTags();
+
+    /**
      * stores a new Bookmark in the service.
      *
      * @param url

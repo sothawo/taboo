@@ -10,19 +10,29 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.themes.ValoTheme;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * a component that displays a list of tags as a continuous flow of buttons.
+ * a component that displays a list of tags as a continuous flow of buttons. There can be a Listener registered (only
+ * one).
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 public class TagListComponent extends CustomComponent {
 // ------------------------------ FIELDS ------------------------------
 
+    /** Logger */
+    private static final Logger logger = LoggerFactory.getLogger(TagListComponent.class);
     /** the layout containing the tags. */
     private final Layout layout;
+    /** the tags */
+    private final Collection<String> tags = new ArrayList<>();
+    /** the listener that is notified when a tag is selected. */
+    private Listener listener;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -34,17 +44,61 @@ public class TagListComponent extends CustomComponent {
         setCompositionRoot(layout);
     }
 
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+    public Collection<String> getTags() {
+        return tags;
+    }
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
 // -------------------------- OTHER METHODS --------------------------
 
     public void setTags(Collection<String> tags) {
+        this.tags.clear();
         layout.removeAllComponents();
         if (null != tags) {
             tags.stream().forEach(tag -> {
-                Button tagComponent = new Button(tag);
-                tagComponent.addStyleName("taglist-entry");
-                tagComponent.addStyleName(ValoTheme.BUTTON_TINY);
-                layout.addComponent(tagComponent);
+                Button tagButton = new Button(tag);
+                tagButton.addStyleName("taglist-entry");
+                tagButton.addStyleName(ValoTheme.BUTTON_TINY);
+                tagButton.addClickListener(clickEvent -> tagSelect(clickEvent.getButton().getCaption()));
+                layout.addComponent(tagButton);
+                this.tags.add(tag);
             });
         }
+    }
+
+    /**
+     * called when a tag  is selected in the tag list. Logging and calling a selcted Listener.
+     *
+     * @param tag
+     *         the selected tag
+     */
+    private void tagSelect(String tag) {
+        logger.info("tag {} selected", tag);
+        if (null != listener) {
+            listener.tagSelected(tag);
+        }
+    }
+
+// -------------------------- INNER CLASSES --------------------------
+
+    /**
+     * a listener is notified when a tag is selected.
+     */
+    @FunctionalInterface
+    public interface Listener {
+// -------------------------- OTHER METHODS --------------------------
+
+        /**
+         * called when a tag was selected.
+         *
+         * @param tag
+         *         the tag
+         */
+        void tagSelected(String tag);
     }
 }
