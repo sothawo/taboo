@@ -70,9 +70,6 @@ public class ClientUI extends UI {
         layout.addComponent(bookmarkComponent);
         bookmarkComponent.setHeight("100%");
         layout.setExpandRatio(bookmarkComponent, 1);
-
-        // intially load all bookmarks
-        bookmarkTableComponent.showBookmarksWithTags(null);
     }
 
     /**

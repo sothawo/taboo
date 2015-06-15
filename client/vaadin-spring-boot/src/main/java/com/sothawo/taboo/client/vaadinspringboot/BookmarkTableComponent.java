@@ -6,6 +6,7 @@
 package com.sothawo.taboo.client.vaadinspringboot;
 
 import com.sothawo.taboo.common.Bookmark;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.CustomComponent;
@@ -33,10 +34,6 @@ public class BookmarkTableComponent extends CustomComponent {
 
     /** Vaadin Container for the table */
     private final IndexedContainer container = new IndexedContainer();
-
-    /** the taboo service where new entries are stored */
-    @Autowired
-    private TabooClient taboo;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -72,20 +69,10 @@ public class BookmarkTableComponent extends CustomComponent {
      */
     public void setBookmarks(Collection<Bookmark> bookmarks) {
         Objects.requireNonNull(bookmarks);
-        container.removeAllItems();
-        bookmarks.stream().map(BookmarkTableEntryComponent::new).forEach(component -> container.addItem(component)
-                .getItemProperty(BOOKMARK_ITEM_ID).setValue(component));
-    }
-
-    /**
-     * shows all the bookmarks from the system with the given tags (logical ANDed).
-     *
-     * @param tags
-     *         the tags for the bookmarks
-     */
-    public void showBookmarksWithTags(Collection<String> tags) {
         try {
-            setBookmarks(taboo.getBookmarks(tags));
+            container.removeAllItems();
+            bookmarks.stream().map(BookmarkTableEntryComponent::new).forEach(component -> container.addItem(component)
+                    .getItemProperty(BOOKMARK_ITEM_ID).setValue(component));
         } catch (Exception e) {
             ClientUI.handleException(e);
         }

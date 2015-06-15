@@ -41,7 +41,7 @@ public class EntryFormComponent extends CustomComponent {
 
     /** the TableComponent */
     @Autowired
-    private BookmarkTableComponent bookmarkTableComponent;
+    private BookmarkFilterComponent bookmarkFilterComponent;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -88,7 +88,7 @@ public class EntryFormComponent extends CustomComponent {
         try {
             Collection<String> tags = TagUtil.split(data.getTags());
             taboo.storeNewBookmark(data.bookmark, tags);
-            bookmarkTableComponent.showBookmarksWithTags(tags);
+            bookmarkFilterComponent.setSelectedTags(tags);
         } catch (Exception e) {
             ClientUI.handleException(e);
         }

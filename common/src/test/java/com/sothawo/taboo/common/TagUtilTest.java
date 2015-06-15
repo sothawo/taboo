@@ -22,10 +22,10 @@ public class TagUtilTest {
 
     @Test
     public void splitConvertsToLowerCase() throws Exception {
-        Collection<String> tags = TagUtil.split("#+Eins zwei /DREI, vieR-");
+        Collection<String> tags = TagUtil.split("#+Eins zwei2 /DREI, vieR- fünf");
 
-        assertThat(tags.size(), is(4));
-        assertThat((tags), hasItems("eins", "zwei", "drei", "vier"));
+        assertThat(tags.size(), is(5));
+        assertThat((tags), hasItems("eins", "zwei2", "drei", "vier", "fünf"));
     }
 
     @Test
@@ -66,6 +66,6 @@ public class TagUtilTest {
 
     @Test
     public void splitWithNoValidCharactersYieldsEmptyCollection() throws Exception {
-        assertThat(TagUtil.split("+*´ß ?=)( &&$").isEmpty(), is(true));
+        assertThat(TagUtil.split("+*´@ ?=)( &&$").isEmpty(), is(true));
     }
 }

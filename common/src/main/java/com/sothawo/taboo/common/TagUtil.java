@@ -29,7 +29,7 @@ public final class TagUtil {
     public static Collection<String> split(String s) {
         return (null == s || s.isEmpty())
                 ? Collections.emptyList()
-                : Arrays.asList(s.toLowerCase().split("\\W+")).stream().filter(t -> !t.isEmpty())
+                : Arrays.asList(s.toLowerCase().split("[^a-zA-ZäöüÄÖÜß0-9]+")).stream().filter(t -> !t.isEmpty())
                 .collect(Collectors.toSet());
     }
 
