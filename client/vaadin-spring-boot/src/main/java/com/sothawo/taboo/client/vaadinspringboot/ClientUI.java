@@ -89,11 +89,11 @@ public class ClientUI extends UI {
 
         layout.addComponent(bookmarkTableComponent);
 //        bookmarkTableComponent.setWidth("80%");
-        layout.setExpandRatio(bookmarkTableComponent, 1);
+        layout.setExpandRatio(bookmarkTableComponent, 3);
 
         layout.addComponent(bookmarkFilterComponent);
 //        bookmarkFilterComponent.setWidth("20%");
-//        layout.setExpandRatio(bookmarkFilterComponent, 1);
+        layout.setExpandRatio(bookmarkFilterComponent, 1);
 
         panel.setContent(layout);
         return panel;

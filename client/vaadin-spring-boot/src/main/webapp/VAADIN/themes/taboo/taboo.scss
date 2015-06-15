@@ -3,9 +3,17 @@
 @mixin taboo {
   @include valo;
 
+  // cells of the bookmarks table
   .v-table-bookmarks-table .v-table-cell-content {
       height: 100px;
   }
+
+  // Taglist layout
+  .v-csslayout-taglist .taglist-entry {
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
 }
 
 
