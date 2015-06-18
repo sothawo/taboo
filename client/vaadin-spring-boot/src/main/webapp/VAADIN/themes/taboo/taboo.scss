@@ -5,7 +5,17 @@
 
   // cells of the bookmarks table
   .v-table-bookmarks-table .v-table-cell-content {
-      height: 100px;
+    height: 75px;
+  }
+
+  .v-table-bookmarks-table .bookmark-url {
+    font-size: larger;
+    margin-bottom: 5px;
+  }
+
+  .v-table-bookmarks-table .bookmark-tags {
+    font-size: smaller;
+    margin-bottom: 5px;
   }
 
   // Taglist layout
@@ -13,8 +23,6 @@
     margin-right: 10px;
     margin-bottom: 10px;
   }
-
 }
-
 
 @include taboo;

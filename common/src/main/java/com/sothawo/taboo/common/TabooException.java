@@ -11,6 +11,8 @@ package com.sothawo.taboo.common;
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 public class TabooException extends RuntimeException {
+// --------------------------- CONSTRUCTORS ---------------------------
+
     public TabooException(String message) {
         super(message);
     }

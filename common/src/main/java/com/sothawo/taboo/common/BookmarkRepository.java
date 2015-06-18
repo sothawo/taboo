@@ -36,7 +36,7 @@ public interface BookmarkRepository {
     Collection<Bookmark> findAllBookmarks();
 
     /**
-     * returns all tgas that are stored in the repository.
+     * returns all tags that are stored in the repository.
      *
      * @return Collection of tags, may be emoty, not null
      */
@@ -65,7 +65,7 @@ public interface BookmarkRepository {
     Collection<Bookmark> findBookmarksWithTags(Collection<String> tags, boolean opAnd);
 
     /**
-     * removes all bookmarks from the reository.
+     * removes all bookmarks from the repository.
      */
     void purge();
 }

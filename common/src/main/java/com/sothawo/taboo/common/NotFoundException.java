@@ -11,6 +11,8 @@ package com.sothawo.taboo.common;
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 public class NotFoundException extends TabooException {
+// --------------------------- CONSTRUCTORS ---------------------------
+
     public NotFoundException(String message) {
         super(message);
     }

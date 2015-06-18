@@ -6,8 +6,11 @@
 package com.sothawo.taboo.client.vaadinspringboot;
 
 import com.sothawo.taboo.common.Bookmark;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -26,9 +29,18 @@ public class BookmarkTableEntryComponent extends CustomComponent {
         this.bookmark = bookmark;
         VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
+        layout.addStyleName("bookmark-entry");
 
-        layout.addComponent(new Label(bookmark.getUrl()));
-        layout.addComponent(new Label(String.join(", ", bookmark.getTags())));
+        Link link = new Link(bookmark.getUrl(), new ExternalResource(bookmark.getUrl()));
+        link.setStyleName("bookmark-url");
+        // Open the URL in a new window/tab
+        link.setTargetName("_blank");
+        layout.addComponent(link);
+
+        Label tags = new Label(String.join(", ", bookmark.getTags()));
+        tags.setStyleName("bookmark-tags");
+        layout.addComponent(tags);
+
         setCompositionRoot(layout);
     }
 }

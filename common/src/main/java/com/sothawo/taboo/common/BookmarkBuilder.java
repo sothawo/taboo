@@ -15,6 +15,7 @@ import java.util.Collection;
  */
 public class BookmarkBuilder {
 // ------------------------------ FIELDS ------------------------------
+
     /** the id of the bookmark */
     private String id;
     /** the url for the bookmark */
@@ -61,18 +62,6 @@ public class BookmarkBuilder {
     }
 
     /**
-     * sets the url for the Bookmark.
-     *
-     * @param url
-     *         the url
-     * @return this object
-     */
-    public BookmarkBuilder withUrl(String url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
      * sets the id of the bookmark.
      *
      * @param id
@@ -81,6 +70,18 @@ public class BookmarkBuilder {
      */
     public BookmarkBuilder withId(String id) {
         this.id = id;
+        return this;
+    }
+
+    /**
+     * sets the url for the Bookmark.
+     *
+     * @param url
+     *         the url
+     * @return this object
+     */
+    public BookmarkBuilder withUrl(String url) {
+        this.url = url;
         return this;
     }
 }

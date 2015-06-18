@@ -12,6 +12,7 @@ import static org.junit.Assert.*;
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 public class BookmarkTest {
+// -------------------------- OTHER METHODS --------------------------
 
     @Test
     public void tagsAreLowercase() throws Exception {
