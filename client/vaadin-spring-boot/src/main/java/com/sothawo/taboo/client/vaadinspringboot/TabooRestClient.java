@@ -58,7 +58,7 @@ public class TabooRestClient implements TabooClient {
         RestTemplate rest = new RestTemplate();
         // need to build the arguments as string as they have the same name
         String queryParam = "";
-        if (null != tags) {
+        if (null != tags && !tags.isEmpty()) {
             queryParam = '?' + tags.stream().map(tag -> "tag=" + tag).collect(Collectors.joining("&"));
         }
 

@@ -12407,12 +12407,12 @@ h1.no-margin, .v-label-h1.no-margin, h2.no-margin, .v-label-h2.no-margin, h3.no-
 }
 
 .v-table-bookmarks-table .v-table-cell-content {
-	height: 100px;
+	height: 75px;
 }
 
 .v-table-bookmarks-table .bookmark-url {
 	font-size: larger;
-	margin-bottom: 5px;
+	margin-bottom: 15px;
 }
 
 .v-table-bookmarks-table .bookmark-tags {
