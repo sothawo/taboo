@@ -51,6 +51,19 @@ public class InMemoryRepository implements BookmarkRepository {
         return bookmark;
     }
 
+    /**
+     * deletes the bookmark with the given id
+     *
+     * @param id
+     *         id of the bookmark to delete
+     * @throws NotFoundException
+     *         if no bookmark is found for the given id
+     */
+    @Override
+    public void deleteBookmark(String id) {
+        bookmarks.remove(findBookmarkById(id).getUrl());
+    }
+
     @Override
     public Collection<Bookmark> findAllBookmarks() {
         return bookmarks.values();

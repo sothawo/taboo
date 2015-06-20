@@ -29,6 +29,16 @@ public interface BookmarkRepository {
     Bookmark createBookmark(Bookmark bookmark);
 
     /**
+     * deletes the bookmark with the given id
+     *
+     * @param id
+     *         id of the bookmark to delete
+     * @throws NotFoundException
+     *         if no bookmark is found for the given id
+     */
+    void deleteBookmark(String id);
+
+    /**
      * returns all bookmarks in the repository.
      *
      * @return the bookmarks

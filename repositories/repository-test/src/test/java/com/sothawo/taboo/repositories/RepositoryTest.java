@@ -88,6 +88,28 @@ public class RepositoryTest {
     }
 
     @Test
+    public void deleteExistingBookmark() throws Exception {
+        Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").build();
+
+        bookmark1 = repository.createBookmark(bookmark1);
+        bookmark2 = repository.createBookmark(bookmark2);
+
+        repository.deleteBookmark(bookmark2.getId());
+        Collection<Bookmark> allBookmarks = repository.findAllBookmarks();
+
+        assertThat(allBookmarks, hasSize(1));
+        assertThat(allBookmarks, hasItems(bookmark1));
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void deleteNotExistingBookmark() throws Exception {
+        repository.deleteBookmark("42");
+
+        fail("expected NotFoundException");
+    }
+
+    @Test
     public void findAllBookmarks() throws Exception {
         Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").build();
         Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").build();
@@ -97,6 +119,21 @@ public class RepositoryTest {
 
         Collection<Bookmark> allBookmarks = repository.findAllBookmarks();
         assertThat(allBookmarks, hasItems(bookmark1, bookmark2));
+    }
+
+    @Test
+    public void findAllTags() throws Exception {
+        Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").addTag("common").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").addTag("common").build();
+        Bookmark bookmark3 = aBookmark().withUrl("url3").addTag("tag3").build();
+        repository.createBookmark(bookmark1);
+        repository.createBookmark(bookmark2);
+        repository.createBookmark(bookmark3);
+
+        Collection<String> tags = repository.findAllTags();
+
+        assertThat(tags, hasSize(4));
+        assertThat(tags, hasItems("tag1", "tag2", "tag3", "common"));
     }
 
     @Test
@@ -144,21 +181,6 @@ public class RepositoryTest {
 
         assertThat(bookmarks, hasSize(2));
         assertThat(bookmarks, hasItems(bookmark1, bookmark2));
-    }
-
-    @Test
-    public void findAllTags() throws Exception {
-        Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").addTag("common").build();
-        Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").addTag("common").build();
-        Bookmark bookmark3 = aBookmark().withUrl("url3").addTag("tag3").build();
-        repository.createBookmark(bookmark1);
-        repository.createBookmark(bookmark2);
-        repository.createBookmark(bookmark3);
-
-        Collection<String> tags = repository.findAllTags();
-
-        assertThat(tags, hasSize(4));
-        assertThat(tags, hasItems("tag1", "tag2", "tag3", "common"));
     }
 
     @Test

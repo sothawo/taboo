@@ -9,7 +9,6 @@ import com.sothawo.taboo.common.AlreadyExistsException;
 import com.sothawo.taboo.common.Bookmark;
 import com.sothawo.taboo.common.BookmarkRepository;
 import com.sothawo.taboo.common.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,15 +35,15 @@ public class TabooService {
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-    public TabooService(BookmarkRepository repository) {
-        this.repository = Objects.requireNonNull(repository);
-    }
-
     public TabooService() {
         repository = Application.getSpringMongoRepository();
     }
 
-    // -------------------------- OTHER METHODS --------------------------
+    public TabooService(BookmarkRepository repository) {
+        this.repository = Objects.requireNonNull(repository);
+    }
+
+// -------------------------- OTHER METHODS --------------------------
 
     /**
      * ExceptionHandler for AlreadyExistsException. returns the exception's error message in the body with the 409
@@ -84,6 +83,20 @@ public class TabooService {
                 .build().toUri();
         headers.setLocation(locationUri);
         return new ResponseEntity<>(createdBookmark, headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * deletes a bookmark from the repository
+     *
+     * @param id
+     *         id of the bookmark to delete
+     * @throws NotFoundException
+     *         when no Bookmarks is found for the id
+     */
+    @RequestMapping(value = "/bookmarks/{id}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBookmarkById(@PathVariable(value = "id") String id) {
+        repository.deleteBookmark(id);
     }
 
     /**
@@ -137,7 +150,7 @@ public class TabooService {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
-    public String illegalArgumentException(IllegalArgumentException e) {
+    public String exceptionHandlerIllegalArgumentException(IllegalArgumentException e) {
         return e.getMessage();
     }
 
@@ -149,7 +162,7 @@ public class TabooService {
      */
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String notFoundExceptionHandler(NotFoundException e) {
+    public String exceptionHandlerNotFoundException(NotFoundException e) {
         return e.getMessage();
     }
 }

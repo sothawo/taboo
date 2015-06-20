@@ -28,6 +28,7 @@ import static org.springframework.data.mongodb.core.query.Query.query;
  */
 @Component
 public class SpringMongoRepository implements BookmarkRepository {
+// ------------------------------ FIELDS ------------------------------
 
     /** name of the bookmarks collection */
     public static final String COLLECTION_BOOKMARKS = "bookmarks";
@@ -39,6 +40,11 @@ public class SpringMongoRepository implements BookmarkRepository {
     /** the backend repo created by Spring for simple operations */
     @Autowired
     private MongoBookmarkRepository mongoRepository;
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface BookmarkRepository ---------------------
 
     /**
      * creates a bookmark in the repository.
@@ -65,6 +71,22 @@ public class SpringMongoRepository implements BookmarkRepository {
         }
 
         return mongoRepository.save(MongoBookmark.fromCommon(bookmark)).toCommon();
+    }
+
+    /**
+     * deletes the bookmark with the given id
+     *
+     * @param id
+     *         id of the bookmark to delete
+     * @throws NotFoundException
+     *         if no bookmark is found for the given id
+     */
+    @Override
+    public void deleteBookmark(String id) {
+        if (!mongoRepository.exists(id)) {
+            throw new NotFoundException("bookmark with id " + id);
+        }
+        mongoRepository.delete(id);
     }
 
     /**

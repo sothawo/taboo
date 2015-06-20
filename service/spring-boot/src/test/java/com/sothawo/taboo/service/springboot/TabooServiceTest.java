@@ -24,8 +24,7 @@ import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -133,6 +132,43 @@ public class TabooServiceTest {
         new Verifications() {{
             repository.createBookmark((Bookmark) any);
             times = 0;
+        }};
+    }
+
+    @Test
+    public void deleteExistingBookmark() throws Exception {
+        final String id = "42";
+        new Expectations() {{
+            repository.deleteBookmark(id);
+        }};
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(delete(TABOO_BOOKMARKS + "/{id}", id).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+        ;
+
+        new Verifications() {{
+            repository.deleteBookmark(id);
+            times = 1;
+        }};
+    }
+
+    @Test
+    public void deleteNotExistingBookmark() throws Exception {
+        final String id = "42";
+        new Expectations() {{
+            repository.deleteBookmark(id);
+            result = new NotFoundException("");
+        }};
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(delete(TABOO_BOOKMARKS + "/{id}", id).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+        ;
+
+        new Verifications() {{
+            repository.deleteBookmark(id);
+            times = 1;
         }};
     }
 
@@ -256,6 +292,21 @@ public class TabooServiceTest {
         }};
     }
 
+    /**
+     * helper method to create a list of bookmarks.
+     *
+     * @param ids
+     *         id values for the Bookmark objects to create
+     * @return a list of bookmarks
+     */
+    private List<Bookmark> createBookmarks(String... ids) {
+        List<Bookmark> bookmarks = new ArrayList<>();
+        for (String id : ids) {
+            bookmarks.add(aBookmark().withId(id).withUrl("url" + id).addTag("tag" + id).build());
+        }
+        return bookmarks;
+    }
+
     @Test
     public void getAllTags() throws Exception {
         String[] tags = new String[]{"tag1", "tag3", "tag2", "tag42"};
@@ -279,22 +330,5 @@ public class TabooServiceTest {
             repository.findAllTags();
             times = 1;
         }};
-    }
-
-
-
-    /**
-     * helper method to create a list of bookmarks.
-     *
-     * @param ids
-     *         id values for the Bookmark objects to create
-     * @return a list of bookmarks
-     */
-    private List<Bookmark> createBookmarks(String... ids) {
-        List<Bookmark> bookmarks = new ArrayList<>();
-        for (String id : ids) {
-            bookmarks.add(aBookmark().withId(id).withUrl("url" + id).addTag("tag" + id).build());
-        }
-        return bookmarks;
     }
 }
