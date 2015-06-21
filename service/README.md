@@ -33,6 +33,10 @@ gets all bookmarks that have any of the given tags, tag parameter can be used mu
 creates a new bookmark. the bookmark data must be sent as JSON data in the body. The id of the bookmark must not be 
 set.
 
-#### _GET/taboo/tags_
+#### _GET /taboo/tags_
 
 gets all tags from the repository (no duplicates)
+
+#### _DELETE /taboo/bookmarks/{id}_
+ 
+deletes the bookmark with the given id 
