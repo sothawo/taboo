@@ -32,6 +32,8 @@
         <junit.version>4.12</junit.version>
         <vaadin.version>7.4.7</vaadin.version>
         <vaadin.springboot.version>1.0.0.beta3</vaadin.springboot.version>
+        <vaadin.confirmdialog.version>2.1.2</vaadin.confirmdialog.version>
+
     </properties>
 
     <modules>
@@ -114,6 +116,13 @@
             <artifactId>hamcrest-library</artifactId>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>vaadin-addons</id>
+            <url>http://maven.vaadin.com/vaadin-addons</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>

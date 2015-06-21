@@ -39,12 +39,31 @@ public class TabooRestClient implements TabooClient {
     @Autowired
     private TabooRestClientConfigurationProperties properties;
 
+    /** taboo url */
     private String tabooUrl;
+
+    /** taboo url for bookmarks */
+    private String tabooUrlBookmarks;
+
+    /** taboo url for tags */
+    private String tabooUrlTags;
 
 // ------------------------ INTERFACE METHODS ------------------------
 
 
 // --------------------- Interface TabooClient ---------------------
+
+    /**
+     * deletes the given bookmark.
+     *
+     * @param bookmark
+     *         the bookmark to delete
+     */
+    @Override
+    public void deleteBookmark(Bookmark bookmark) {
+        RestTemplate rest = new RestTemplate();
+        rest.delete(tabooUrlBookmarks + "/" + bookmark.getId());
+    }
 
     /**
      * retrieves all bookmarks with the given tags
@@ -62,7 +81,7 @@ public class TabooRestClient implements TabooClient {
             queryParam = '?' + tags.stream().map(tag -> "tag=" + tag).collect(Collectors.joining("&"));
         }
 
-        String url = tabooUrl + "/bookmarks" + queryParam;
+        String url = tabooUrlBookmarks + queryParam;
         logger.debug("get Bookmarks: {}", url);
         ResponseEntity<Bookmark[]> response = rest.getForEntity(url, Bookmark[].class);
 
@@ -80,9 +99,8 @@ public class TabooRestClient implements TabooClient {
     @Override
     public Collection<String> getTags() {
         RestTemplate rest = new RestTemplate();
-        String url = tabooUrl + "/tags";
-        logger.debug("get tags: {}", url);
-        ResponseEntity<String[]> response = rest.getForEntity(url, String[].class);
+        logger.debug("get tags: {}", tabooUrlTags);
+        ResponseEntity<String[]> response = rest.getForEntity(tabooUrlTags, String[].class);
         HttpStatus status = response.getStatusCode();
         logger.debug("get bookmarks: {} {}", status.toString(), status.getReasonPhrase());
 
@@ -102,7 +120,7 @@ public class TabooRestClient implements TabooClient {
 
         RestTemplate rest = new RestTemplate();
         ResponseEntity<Bookmark> response =
-                rest.postForEntity(tabooUrl + "/bookmarks", bookmarkBuilder.build(), Bookmark.class);
+                rest.postForEntity(tabooUrlBookmarks, bookmarkBuilder.build(), Bookmark.class);
         logger.debug("stored bookmark: {}", response.toString());
     }
 
@@ -113,5 +131,7 @@ public class TabooRestClient implements TabooClient {
         tabooUrl = properties.getHost().getProtocol() + "://" + properties.getHost().getName() + ':'
                 + properties.getHost().getPort() + '/' + properties.getContext();
         logger.debug("taboo url: {}", tabooUrl);
+        tabooUrlBookmarks = tabooUrl + "/bookmarks";
+        tabooUrlTags = tabooUrl + "/tags";
     }
 }

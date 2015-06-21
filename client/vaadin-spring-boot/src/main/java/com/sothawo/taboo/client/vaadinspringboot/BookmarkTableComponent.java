@@ -6,13 +6,14 @@
 package com.sothawo.taboo.client.vaadinspringboot;
 
 import com.sothawo.taboo.common.Bookmark;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -28,6 +29,14 @@ public class BookmarkTableComponent extends CustomComponent {
 
     /** the item id for the bookmark column in the table */
     private static final String BOOKMARK_ITEM_ID = "bookmark";
+
+    /** the taboo service */
+    @Autowired
+    private TabooClient taboo;
+
+    /** the filter definition component. */
+    @Autowired
+    private BookmarkFilterComponent bookmarkFilterComponent;
 
     /** the table for the bookmarks */
     private final Table table;
@@ -62,6 +71,27 @@ public class BookmarkTableComponent extends CustomComponent {
 // -------------------------- OTHER METHODS --------------------------
 
     /**
+     * delete the given bookmark after confirmation.
+     *
+     * @param bookmark
+     */
+    public void deleteBookmark(Bookmark bookmark) {
+        ConfirmDialog.show(UI.getCurrent(), "Delete bookmark '" + bookmark.getUrl() + "'?",
+                (ConfirmDialog.Listener) dialog -> {
+                    if (dialog.isConfirmed()) {
+                        try {
+                            // Confirmed to continue, delete
+                            taboo.deleteBookmark(bookmark);
+                            // reload the remaining bookmarks
+                            bookmarkFilterComponent.loadBookmarksForSelectedTags();
+                        } catch (RuntimeException e) {
+                            ClientUI.handleException(e);
+                        }
+                    }
+                });
+    }
+
+    /**
      * sets the given bookmarks in the table
      *
      * @param bookmarks
@@ -71,8 +101,9 @@ public class BookmarkTableComponent extends CustomComponent {
         Objects.requireNonNull(bookmarks);
         try {
             container.removeAllItems();
-            bookmarks.stream().map(BookmarkTableEntryComponent::new).forEach(component -> container.addItem(component)
-                    .getItemProperty(BOOKMARK_ITEM_ID).setValue(component));
+            bookmarks.stream().map((bookmark) -> new BookmarkTableEntryComponent(this, bookmark)).forEach(component ->
+                    container.addItem(component)
+                            .getItemProperty(BOOKMARK_ITEM_ID).setValue(component));
         } catch (Exception e) {
             ClientUI.handleException(e);
         }

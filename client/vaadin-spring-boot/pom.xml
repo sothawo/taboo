@@ -66,6 +66,12 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
+        <!-- Vaadin addons -->
+        <dependency>
+            <groupId>org.vaadin.addon</groupId>
+            <artifactId>confirmdialog</artifactId>
+            <version>${vaadin.confirmdialog.version}</version>
+        </dependency>
 
         <dependency>
             <!-- before JUnit, otherwise the test classes must be annotated with @RunWith(JMockit.class) which may

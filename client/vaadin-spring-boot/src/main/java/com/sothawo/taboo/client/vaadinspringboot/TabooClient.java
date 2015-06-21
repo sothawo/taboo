@@ -18,6 +18,11 @@ public interface TabooClient {
 // -------------------------- OTHER METHODS --------------------------
 
     /**
+     * deletes the given bookmark.
+     * @param bookmark the bookmark to delete
+     */
+    void deleteBookmark(Bookmark bookmark);
+    /**
      * retrieves all bookmarks with the given tags
      *
      * @param tags

@@ -30,6 +30,9 @@ import java.util.Objects;
 public class TabooService {
 // ------------------------------ FIELDS ------------------------------
 
+    private static final String OP_OR = "or";
+    private static final String OP_AND = "and";
+
     /** the repository for the bookmarks, injected in constructor or explicitly set in no-arg-ctor */
     private BookmarkRepository repository;
 
@@ -100,6 +103,30 @@ public class TabooService {
     }
 
     /**
+     * ExceptionHandler for IllegalArgumentException. returns the exception's error message in the body with the 412
+     * status code.
+     *
+     * @return HTTP PRECONDITION_FAILED Response Status and error message
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
+    public String exceptionHandlerIllegalArgumentException(IllegalArgumentException e) {
+        return e.getMessage();
+    }
+
+    /**
+     * ExceptionHandler for NotFoundException. returns the exception's error message in the body with the 404 status
+     * code.
+     *
+     * @return HTTP NOT_FOUND Response Status and error message
+     */
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String exceptionHandlerNotFoundException(NotFoundException e) {
+        return e.getMessage();
+    }
+
+    /**
      * gets all the bookmarks from the repository
      *
      * @param tags
@@ -110,12 +137,10 @@ public class TabooService {
      */
     @RequestMapping(value = "/bookmarks", method = RequestMethod.GET)
     public Collection<Bookmark> findAllBookmarks(@RequestParam(value = "tag", required = false) List<String> tags,
-                                                 @RequestParam(value = "op", defaultValue = "and") String op) {
-        if (null != tags) {
-            return repository.findBookmarksWithTags(tags, !"or".equalsIgnoreCase(op));
-        } else {
-            return repository.findAllBookmarks();
-        }
+                                                 @RequestParam(value = "op", defaultValue = OP_AND) String op) {
+        return (null != tags)
+                ? repository.findBookmarksWithTags(tags, !OP_OR.equalsIgnoreCase(op))
+                : repository.findAllBookmarks();
     }
 
     /**
@@ -140,29 +165,5 @@ public class TabooService {
     @RequestMapping(value = "/bookmarks/{id}", method = RequestMethod.GET)
     public Bookmark findBookmarkById(@PathVariable(value = "id") String id) {
         return repository.findBookmarkById(id);
-    }
-
-    /**
-     * ExceptionHandler for IllegalArgumentException. returns the exception's error message in the body with the 412
-     * status code.
-     *
-     * @return HTTP PRECONDITION_FAILED Response Status and error message
-     */
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
-    public String exceptionHandlerIllegalArgumentException(IllegalArgumentException e) {
-        return e.getMessage();
-    }
-
-    /**
-     * ExceptionHandler for NotFoundException. returns the exception's error message in the body with the 404 status
-     * code.
-     *
-     * @return HTTP NOT_FOUND Response Status and error message
-     */
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String exceptionHandlerNotFoundException(NotFoundException e) {
-        return e.getMessage();
     }
 }

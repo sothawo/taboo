@@ -35,7 +35,7 @@ public class BookmarkFilterComponent extends CustomComponent {
     private final TagListComponent selectedTagList = new TagListComponent();
     /** TagLisComponent for available tags */
     private final TagListComponent availableTagList = new TagListComponent();
-    /** the taboo service where new entries are stored */
+    /** the taboo service */
     @Autowired
     private TabooClient taboo;
     /** the component for showing the bookmarks */
@@ -105,25 +105,6 @@ public class BookmarkFilterComponent extends CustomComponent {
     }
 
     /**
-     * sets the selected tags list, loads the bookmarks, forwards them to the display and sets the available tags list.
-     *
-     * @param tags
-     *         the selected tags
-     */
-    public void setSelectedTags(Collection<String> tags) {
-        Set<String> selectedTags = new HashSet<>();
-        selectedTags.addAll(tags);
-        selectedTagList.setTags(selectedTags);
-        // collect the tags from the bookmarks, remove the tags that are already selected and set in the available
-        // tags list get the bookmarks and set the set of selected tags
-        Collection<Bookmark> bookmarks = taboo.getBookmarks(selectedTags);
-        bookmarkTableComponent.setBookmarks(bookmarks);
-        availableTagList.setTags(Sets.difference(
-                bookmarks.stream().flatMap(bookmark -> bookmark.getTags().stream()).collect(Collectors.toSet()),
-                selectedTags));
-    }
-
-    /**
      * initialize after wiring.
      */
     @PostConstruct
@@ -152,5 +133,32 @@ public class BookmarkFilterComponent extends CustomComponent {
         tags.addAll(selectedTagList.getTags());
         tags.remove(tag);
         setSelectedTags(tags);
+    }
+
+    /**
+     * sets the selected tags list, loads the bookmarks, forwards them to the display and sets the available tags list.
+     *
+     * @param tags
+     *         the selected tags
+     */
+    public void setSelectedTags(Collection<String> tags) {
+        Set<String> selectedTags = new HashSet<>();
+        selectedTags.addAll(tags);
+        selectedTagList.setTags(selectedTags);
+        loadBookmarksForSelectedTags();
+    }
+
+    /**
+     * load the bookmarks for the selected tags and adjusts the list of available tags.
+     */
+    public void loadBookmarksForSelectedTags() {
+        Set<String> selectedTags = new HashSet<>(selectedTagList.getTags());
+        // collect the tags from the bookmarks, remove the tags that are already selected and set in the available
+        // tags list get the bookmarks and set the set of selected tags
+        Collection<Bookmark> bookmarks = taboo.getBookmarks(selectedTags);
+        bookmarkTableComponent.setBookmarks(bookmarks);
+        availableTagList.setTags(Sets.difference(
+                bookmarks.stream().flatMap(bookmark -> bookmark.getTags().stream()).collect(Collectors.toSet()),
+                selectedTags));
     }
 }
