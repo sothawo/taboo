@@ -25,7 +25,6 @@ import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
@@ -54,8 +53,8 @@ public class TabooServiceTest {
 
     @Test
     public void createBookmark() throws Exception {
-        Bookmark bookmarkIn = aBookmark().withUrl("url").addTag("tag").build();
-        Bookmark bookmarkOut = aBookmark().withId("11").withUrl("url").addTag("tag").build();
+        Bookmark bookmarkIn = aBookmark().withUrl("url").withTitle("title").addTag("tag").build();
+        Bookmark bookmarkOut = aBookmark().withId("11").withUrl("url").withTitle("title").addTag("tag").build();
 
         new Expectations() {{
             repository.createBookmark(bookmarkIn);
@@ -72,6 +71,7 @@ public class TabooServiceTest {
                         "/11")))
                 .andExpect(jsonPath("$.id", is(bookmarkOut.getId())))
                 .andExpect(jsonPath("$.url", is(bookmarkOut.getUrl())))
+                .andExpect(jsonPath("$.title", is(bookmarkOut.getTitle())))
         ;
         new Verifications() {{
             repository.createBookmark(bookmarkIn);
@@ -81,7 +81,7 @@ public class TabooServiceTest {
 
     @Test
     public void createBookmarksWithExistingUrlYieldsConflict() throws Exception {
-        Bookmark bookmarkIn = aBookmark().withUrl("url").addTag("tag").build();
+        Bookmark bookmarkIn = aBookmark().withUrl("url").withTitle("title").addTag("tag").build();
 
         new Expectations() {{
             repository.createBookmark((Bookmark) any);
@@ -104,7 +104,7 @@ public class TabooServiceTest {
 
     @Test
     public void createBookmarksWithIdYieldsPreconditionFailed() throws Exception {
-        Bookmark bookmarkIn = aBookmark().withId("11").withUrl("url").addTag("tag").build();
+        Bookmark bookmarkIn = aBookmark().withId("11").withUrl("url").withTitle("title").addTag("tag").build();
 
         MockMvc mockMvc = standaloneSetup(tabooService).build();
         mockMvc.perform(post(TABOO_BOOKMARKS)
@@ -280,9 +280,11 @@ public class TabooServiceTest {
                 .andExpect(jsonPath("$.*", hasSize(2)))
                 .andExpect(jsonPath("$[0].id", is(bookmarks.get(0).getId())))
                 .andExpect(jsonPath("$[0].url", is(bookmarks.get(0).getUrl())))
+                .andExpect(jsonPath("$[0].title", is(bookmarks.get(0).getTitle())))
                 .andExpect(jsonPath("$[0].tags[0]", is(bookmarks.get(0).getTags().iterator().next())))
                 .andExpect(jsonPath("$[1].id", is(bookmarks.get(1).getId())))
                 .andExpect(jsonPath("$[1].url", is(bookmarks.get(1).getUrl())))
+                .andExpect(jsonPath("$[1].title", is(bookmarks.get(1).getTitle())))
                 .andExpect(jsonPath("$[1].tags[0]", is(bookmarks.get(1).getTags().iterator().next())))
         ;
 
@@ -302,7 +304,8 @@ public class TabooServiceTest {
     private List<Bookmark> createBookmarks(String... ids) {
         List<Bookmark> bookmarks = new ArrayList<>();
         for (String id : ids) {
-            bookmarks.add(aBookmark().withId(id).withUrl("url" + id).addTag("tag" + id).build());
+            bookmarks
+                    .add(aBookmark().withId(id).withUrl("url" + id).withTitle("title" + id).addTag("tag" + id).build());
         }
         return bookmarks;
     }

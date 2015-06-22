@@ -22,6 +22,9 @@ public class Bookmark {
     private String id;
     /** the URL the bookmark points to as String */
     private String url = "";
+    /** the title of a bookmark */
+    private String title = "";
+
     /** the tags of the bookmark */
     private Collection<String> tags = new HashSet<>();
 
@@ -33,6 +36,14 @@ public class Bookmark {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getUrl() {

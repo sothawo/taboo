@@ -19,7 +19,9 @@ public class BookmarkBuilder {
     /** the id of the bookmark */
     private String id;
     /** the url for the bookmark */
-    private String url;
+    private String url = "";
+    /** the title for the bookmark */
+    private String title  = "";
     /** the tags for the bookmark */
     private Collection<String> tags = new ArrayList<>();
 
@@ -57,6 +59,7 @@ public class BookmarkBuilder {
         Bookmark bookmark = new Bookmark();
         bookmark.setId(id);
         bookmark.setUrl(url);
+        bookmark.setTitle(title);
         tags.stream().forEach(bookmark::addTag);
         return bookmark;
     }
@@ -70,6 +73,16 @@ public class BookmarkBuilder {
      */
     public BookmarkBuilder withId(String id) {
         this.id = id;
+        return this;
+    }
+
+    /**
+     * sets the title for the bookmark.
+     * @param title the title 
+     * @return this object
+     */
+    public BookmarkBuilder withTitle(String title) {
+        this.title = title;
         return this;
     }
 

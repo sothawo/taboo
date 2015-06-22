@@ -18,7 +18,7 @@ import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 
 /**
  * Bookmark class for the mongo db. We can't use the common Bookmark class here, because we need to put Spring
- * annotations on this class and can't chaneg the common class.
+ * annotations on this class and can't chaneg the common class. Besides that, the object is quite the same.
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
@@ -30,6 +30,8 @@ public class MongoBookmark {
     private String id;
 
     private String url;
+
+    private String title;
 
     @Indexed
     private Collection<String> tags = new LinkedHashSet<>();
@@ -47,6 +49,7 @@ public class MongoBookmark {
         MongoBookmark mongoBookmark = new MongoBookmark();
         mongoBookmark.setId(bookmark.getId());
         mongoBookmark.setUrl(bookmark.getUrl());
+        mongoBookmark.setTitle(bookmark.getTitle());
         mongoBookmark.getTags().addAll(bookmark.getTags());
         return mongoBookmark;
     }
@@ -69,6 +72,14 @@ public class MongoBookmark {
         this.tags = tags;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getUrl() {
         return url;
     }
@@ -85,8 +96,7 @@ public class MongoBookmark {
      * @return common Bookmark object
      */
     public Bookmark toCommon() {
-        BookmarkBuilder bookmarkBuilder = aBookmark().withId(id);
-        bookmarkBuilder.withUrl(url);
+        BookmarkBuilder bookmarkBuilder = aBookmark().withId(id).withUrl(url).withTitle(title);
         tags.stream().forEach(bookmarkBuilder::addTag);
         return bookmarkBuilder.build();
     }

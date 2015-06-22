@@ -58,20 +58,21 @@ public class RepositoryTest {
 
     @Test
     public void createBookmark() throws Exception {
-        Bookmark bookmarkIn = aBookmark().withUrl("url1").addTag("tag1").build();
+        Bookmark bookmarkIn = aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").build();
 
         Bookmark bookmarkOut = repository.createBookmark(bookmarkIn);
 
         assertThat(bookmarkOut, is(notNullValue()));
         assertThat(bookmarkOut.getId(), is(notNullValue()));
         assertThat(bookmarkOut.getUrl(), is(bookmarkIn.getUrl()));
+        assertThat(bookmarkOut.getTitle(), is(bookmarkIn.getTitle()));
         assertThat(bookmarkOut.getTags().size(), is(1));
         assertThat(bookmarkOut.getTags().iterator().next(), is(bookmarkIn.getTags().iterator().next()));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void createBookmarkWithId() throws Exception {
-        Bookmark bookmarkIn = aBookmark().withId("11").withUrl("url1").addTag("tag1").build();
+        Bookmark bookmarkIn = aBookmark().withId("11").withUrl("url1").withTitle("title1").addTag("tag1").build();
 
         repository.createBookmark(bookmarkIn);
         fail("expected IllegalArgumentException");
@@ -79,8 +80,8 @@ public class RepositoryTest {
 
     @Test(expected = AlreadyExistsException.class)
     public void createBookmarksWithExistingUrl() throws Exception {
-        Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").build();
-        Bookmark bookmark2 = aBookmark().withUrl("url1").addTag("tag2").build();
+        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url1").withTitle("title1").addTag("tag2").build();
 
         repository.createBookmark(bookmark1);
         repository.createBookmark(bookmark2);
@@ -89,8 +90,8 @@ public class RepositoryTest {
 
     @Test
     public void deleteExistingBookmark() throws Exception {
-        Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").build();
-        Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").build();
+        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("title2").addTag("tag2").build();
 
         bookmark1 = repository.createBookmark(bookmark1);
         bookmark2 = repository.createBookmark(bookmark2);
@@ -111,8 +112,8 @@ public class RepositoryTest {
 
     @Test
     public void findAllBookmarks() throws Exception {
-        Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").build();
-        Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").build();
+        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("title2").addTag("tag2").build();
 
         repository.createBookmark(bookmark1);
         repository.createBookmark(bookmark2);
@@ -123,9 +124,9 @@ public class RepositoryTest {
 
     @Test
     public void findAllTags() throws Exception {
-        Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").addTag("common").build();
-        Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").addTag("common").build();
-        Bookmark bookmark3 = aBookmark().withUrl("url3").addTag("tag3").build();
+        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").addTag("common").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("title2").addTag("tag2").addTag("common").build();
+        Bookmark bookmark3 = aBookmark().withUrl("url3").withTitle("title3").addTag("tag3").build();
         repository.createBookmark(bookmark1);
         repository.createBookmark(bookmark2);
         repository.createBookmark(bookmark3);
@@ -138,7 +139,7 @@ public class RepositoryTest {
 
     @Test
     public void findBookmarkById() throws Exception {
-        Bookmark bookmark = repository.createBookmark(aBookmark().withUrl("url1").addTag("tag1").build());
+        Bookmark bookmark = repository.createBookmark(aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").build());
 
         Bookmark foundBookmark = repository.findBookmarkById(bookmark.getId());
 
@@ -153,9 +154,9 @@ public class RepositoryTest {
 
     @Test
     public void findBookmarksWithTagsAnd() throws Exception {
-        Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").addTag("common").build();
-        Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").addTag("common").build();
-        Bookmark bookmark3 = aBookmark().withUrl("url3").addTag("tag3").build();
+        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").addTag("common").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("title2").addTag("tag2").addTag("common").build();
+        Bookmark bookmark3 = aBookmark().withUrl("url3").withTitle("title3").addTag("tag3").build();
         repository.createBookmark(bookmark1);
         repository.createBookmark(bookmark2);
         repository.createBookmark(bookmark3);
@@ -169,9 +170,9 @@ public class RepositoryTest {
 
     @Test
     public void findBookmarksWithTagsOr() throws Exception {
-        Bookmark bookmark1 = aBookmark().withUrl("url1").addTag("tag1").addTag("common").build();
-        Bookmark bookmark2 = aBookmark().withUrl("url2").addTag("tag2").addTag("common").build();
-        Bookmark bookmark3 = aBookmark().withUrl("url3").addTag("tag3").build();
+        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").addTag("common").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("title2").addTag("tag2").addTag("common").build();
+        Bookmark bookmark3 = aBookmark().withUrl("url3").withTitle("title3").addTag("tag3").build();
         repository.createBookmark(bookmark1);
         repository.createBookmark(bookmark2);
         repository.createBookmark(bookmark3);
