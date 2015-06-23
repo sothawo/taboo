@@ -40,10 +40,8 @@ public interface TabooClient {
     /**
      * stores a new Bookmark in the service.
      *
-     * @param url
-     *         the url of the bookmark
-     * @param tags
-     *         the tags for the bookmark
+     * @param bookmark
+     *         the bookmark to store
      */
-    void storeNewBookmark(String url, Collection<String> tags);
+    void storeNewBookmark(Bookmark bookmark);
 }

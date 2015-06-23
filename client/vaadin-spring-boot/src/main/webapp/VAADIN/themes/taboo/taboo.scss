@@ -8,14 +8,18 @@
     height: 75px;
   }
 
-  .v-table-bookmarks-table .bookmark-url {
+  .v-table-bookmarks-table .bookmark-title {
     font-size: larger;
-    margin-bottom: 15px;
+    //margin-bottom: 15px;
+  }
+
+  .v-table-bookmarks-table .bookmark-url {
+    //margin-bottom: 15px;
   }
 
   .v-table-bookmarks-table .bookmark-tags {
     font-size: smaller;
-    margin-bottom: 5px;
+    //margin-bottom: 5px;
   }
 
   // Taglist layout

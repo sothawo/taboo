@@ -108,19 +108,12 @@ public class TabooRestClient implements TabooClient {
     }
 
     /**
-     * @param url
-     *         the url of the bookmark
-     * @param tags
-     *         the tags of the bookmark
+     * @param bookmark the bookmark to save
      */
     @Override
-    public void storeNewBookmark(String url, Collection<String> tags) {
-        BookmarkBuilder bookmarkBuilder = aBookmark().withUrl(url);
-        tags.stream().filter(s -> !s.isEmpty()).forEach(bookmarkBuilder::addTag);
-
+    public void storeNewBookmark(Bookmark bookmark) {
         RestTemplate rest = new RestTemplate();
-        ResponseEntity<Bookmark> response =
-                rest.postForEntity(tabooUrlBookmarks, bookmarkBuilder.build(), Bookmark.class);
+        ResponseEntity<Bookmark> response = rest.postForEntity(tabooUrlBookmarks, bookmark, Bookmark.class);
         logger.debug("stored bookmark: {}", response.toString());
     }
 

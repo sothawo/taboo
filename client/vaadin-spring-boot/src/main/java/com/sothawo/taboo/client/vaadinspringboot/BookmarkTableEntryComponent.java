@@ -10,11 +10,10 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  * Component to display a Bookmark in the Bookmarks table. On the right are buttons for edit and delete, the main area
- * has the bookmark url and the tags.
+ * has the bookmark title,  url and the tags.
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
@@ -41,6 +40,16 @@ public class BookmarkTableEntryComponent extends CustomComponent {
         // vertical layout with the bookmarks elements
         VerticalLayout bookmarkLayout = new VerticalLayout();
         bookmarkLayout.addStyleName("bookmark-entry");
+        bookmarkLayout.setSpacing(true);
+//        bookmarkLayout.setMargin(true);
+
+        String bookmarkTitle = bookmark.getTitle();
+        if (null == bookmarkTitle || bookmarkTitle.isEmpty()) {
+            bookmarkTitle = bookmark.getUrl();
+        }
+        Label title = new Label(bookmarkTitle);
+        title.setStyleName("bookmark-title");
+        bookmarkLayout.addComponent(title);
 
         Link link = new Link(bookmark.getUrl(), new ExternalResource(bookmark.getUrl()));
         link.setStyleName("bookmark-url");
@@ -54,6 +63,7 @@ public class BookmarkTableEntryComponent extends CustomComponent {
 
         bookmarkLayout.setWidth("100%");
         hLayout.addComponent(bookmarkLayout);
+        hLayout.setExpandRatio(bookmarkLayout, 1.0f);
 
         // vertical layout with buttons
         VerticalLayout buttonLayout = new VerticalLayout();
@@ -74,7 +84,7 @@ public class BookmarkTableEntryComponent extends CustomComponent {
         button.addClickListener(clickEvent -> bookmarkTableComponent.deleteBookmark(bookmark));
 
         hLayout.addComponent(buttonLayout);
-        hLayout.setExpandRatio(bookmarkLayout, 1.0f);
+        hLayout.setComponentAlignment(buttonLayout, Alignment.MIDDLE_CENTER);
 
         setCompositionRoot(hLayout);
     }

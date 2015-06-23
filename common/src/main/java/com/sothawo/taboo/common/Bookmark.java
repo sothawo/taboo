@@ -11,7 +11,9 @@ import java.util.HashSet;
 import java.util.Objects;
 
 /**
- * The bookmark POJO. Tags when added are converted to lowercase and duplicate tags are removed.
+ * The bookmark POJO. Tags when added are converted to lowercase and duplicate tags are removed. A Tag has a unique id,
+ * which is assigned by the repository, a title, which normally is taken from the website's title, a URL, which is
+ * unique and a colleciton of tags.
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
@@ -20,11 +22,10 @@ public class Bookmark {
 
     /** the id of the bookmark */
     private String id;
-    /** the URL the bookmark points to as String */
-    private String url = "";
     /** the title of a bookmark */
     private String title = "";
-
+    /** the URL the bookmark points to as String */
+    private String url = "";
     /** the tags of the bookmark */
     private Collection<String> tags = new HashSet<>();
 

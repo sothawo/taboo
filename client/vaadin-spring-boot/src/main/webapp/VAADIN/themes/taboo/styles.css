@@ -12410,14 +12410,12 @@ h1.no-margin, .v-label-h1.no-margin, h2.no-margin, .v-label-h2.no-margin, h3.no-
 	height: 75px;
 }
 
-.v-table-bookmarks-table .bookmark-url {
+.v-table-bookmarks-table .bookmark-title {
 	font-size: larger;
-	margin-bottom: 15px;
 }
 
 .v-table-bookmarks-table .bookmark-tags {
 	font-size: smaller;
-	margin-bottom: 5px;
 }
 
 .v-csslayout-taglist .taglist-entry {
