@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * a component that displays a list of tags as a continuous flow of buttons. There can be a Listener registered (only
@@ -60,14 +61,17 @@ public class TagListComponent extends CustomComponent {
         this.tags.clear();
         layout.removeAllComponents();
         if (null != tags) {
-            tags.stream().forEach(tag -> {
-                Button tagButton = new Button(tag);
-                tagButton.addStyleName("taglist-entry");
-                tagButton.addStyleName(ValoTheme.BUTTON_TINY);
-                tagButton.addClickListener(clickEvent -> tagSelect(clickEvent.getButton().getCaption()));
-                layout.addComponent(tagButton);
-                this.tags.add(tag);
-            });
+            tags.stream()
+                    .filter(Objects::nonNull)
+                    .filter(tag -> !tag.isEmpty())
+                    .forEach(tag -> {
+                        Button tagButton = new Button(tag);
+                        tagButton.addStyleName("taglist-entry");
+                        tagButton.addStyleName(ValoTheme.BUTTON_TINY);
+                        tagButton.addClickListener(clickEvent -> tagSelect(clickEvent.getButton().getCaption()));
+                        layout.addComponent(tagButton);
+                        this.tags.add(tag);
+                    });
         }
     }
 

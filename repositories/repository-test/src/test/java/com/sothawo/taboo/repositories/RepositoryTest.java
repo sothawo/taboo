@@ -192,6 +192,16 @@ public class RepositoryTest {
     }
 
     @Test
+    public void findTagsWhenNoTagsExistYieldsEmptyList() throws Exception {
+        Bookmark bookmark = aBookmark().withUrl("url1").withTitle("title1").build();
+        repository.createBookmark(bookmark);
+
+        Collection<String> tags = repository.findAllTags();
+
+        assertThat(tags, hasSize(0));
+    }
+
+    @Test
     public void repositoryHasNoBookmarksOnCreation() throws Exception {
         Collection<Bookmark> bookmarks = repository.findAllBookmarks();
         assertThat(bookmarks, hasSize(0));

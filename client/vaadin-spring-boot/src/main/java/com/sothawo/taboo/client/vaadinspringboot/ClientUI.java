@@ -5,6 +5,7 @@
  */
 package com.sothawo.taboo.client.vaadinspringboot;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
@@ -13,12 +14,13 @@ import com.vaadin.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Main UI class.
+ * Main UI class. Annotated as @Push, so that afetr UI.access() calls, the content is pushed to the client
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 @Theme("taboo")
 @SpringUI
+@Push
 public class ClientUI extends UI {
 // ------------------------------ FIELDS ------------------------------
 
@@ -85,11 +87,9 @@ public class ClientUI extends UI {
         layout.setMargin(true);
 
         layout.addComponent(bookmarkTableComponent);
-//        bookmarkTableComponent.setWidth("80%");
         layout.setExpandRatio(bookmarkTableComponent, 3);
 
         layout.addComponent(bookmarkFilterComponent);
-//        bookmarkFilterComponent.setWidth("20%");
         layout.setExpandRatio(bookmarkFilterComponent, 1);
 
         panel.setContent(layout);
