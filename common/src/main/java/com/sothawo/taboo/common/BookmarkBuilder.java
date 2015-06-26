@@ -23,7 +23,7 @@ public final class BookmarkBuilder {
     /** the title for the bookmark. */
     private String title = "";
     /** the tags for the bookmark. */
-    private Collection<String> tags = new ArrayList<>();
+    private final Collection<String> tags = new ArrayList<>();
 
 // -------------------------- STATIC METHODS --------------------------
 

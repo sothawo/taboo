@@ -27,7 +27,7 @@ public final class Bookmark {
     /** the URL the bookmark points to as String. */
     private String url = "";
     /** the tags of the bookmark. */
-    private Collection<String> tags = new HashSet<>();
+    private final Collection<String> tags = new HashSet<>();
 
 // --------------------- GETTER / SETTER METHODS ---------------------
 
