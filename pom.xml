@@ -30,7 +30,7 @@
         <jmockit.version>1.16</jmockit.version>
         <jsonPath.version>2.0.0</jsonPath.version>
         <junit.version>4.12</junit.version>
-        <vaadin.version>7.4.7</vaadin.version>
+        <vaadin.version>7.5.0</vaadin.version>
         <vaadin.springboot.version>1.0.0.beta3</vaadin.springboot.version>
         <vaadin.confirmdialog.version>2.1.2</vaadin.confirmdialog.version>
 
