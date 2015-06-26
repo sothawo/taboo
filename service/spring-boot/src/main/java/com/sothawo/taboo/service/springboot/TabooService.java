@@ -12,12 +12,18 @@ import com.sothawo.taboo.common.NotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,19 +37,30 @@ import java.util.Objects;
 public class TabooService {
 // ------------------------------ FIELDS ------------------------------
 
+    /** OR operation. */
     private static final String OP_OR = "or";
+    /** AND operation. */
     private static final String OP_AND = "and";
 
-    /** the repository for the bookmarks, injected in constructor or explicitly set in no-arg-ctor */
+    /** the repository for the bookmarks, injected in constructor or explicitly set in no-arg-ctor. */
     private BookmarkRepository repository;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
+    /**
+     * create a service and use a hardcoded repository.
+     */
     public TabooService() {
         repository = Application.getSpringMongoRepository();
     }
 
-    public TabooService(BookmarkRepository repository) {
+    /**
+     * create a Service with a given repository.
+     *
+     * @param repository
+     *         the repository to use
+     */
+    public TabooService(final BookmarkRepository repository) {
         this.repository = Objects.requireNonNull(repository);
     }
 
@@ -53,25 +70,30 @@ public class TabooService {
      * ExceptionHandler for AlreadyExistsException. returns the exception's error message in the body with the 409
      * status code.
      *
+     * @param e
+     *         the exception to handle
      * @return HTTP CONFLICT Response Status and error message
      */
     @ExceptionHandler(AlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String alreadyExistsExceptionHandler(AlreadyExistsException e) {
+    public final String alreadyExistsExceptionHandler(final AlreadyExistsException e) {
         return e.getMessage();
     }
 
     /**
-     * creates a new bookmark in the repository
+     * creates a new bookmark in the repository.
      *
      * @param bookmark
      *         new bookmark to be created
+     * @param ucb
+     *         uri component builder to build the created uri
      * @return the created bookmark
      * @throws IllegalArgumentException
      *         when bookmark has it's id set
      */
     @RequestMapping(value = "/bookmarks", method = RequestMethod.POST)
-    public ResponseEntity<Bookmark> createBookmark(@RequestBody Bookmark bookmark, UriComponentsBuilder ucb) {
+    public final ResponseEntity<Bookmark> createBookmark(@RequestBody final Bookmark bookmark,
+                                                         final UriComponentsBuilder ucb) {
         if (null == bookmark) {
             throw new IllegalArgumentException("bookmark must not be null");
         }
@@ -90,7 +112,7 @@ public class TabooService {
     }
 
     /**
-     * deletes a bookmark from the repository
+     * deletes a bookmark from the repository.
      *
      * @param id
      *         id of the bookmark to delete
@@ -99,7 +121,7 @@ public class TabooService {
      */
     @RequestMapping(value = "/bookmarks/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteBookmarkById(@PathVariable(value = "id") String id) {
+    public final void deleteBookmarkById(@PathVariable(value = "id") final String id) {
         repository.deleteBookmark(id);
     }
 
@@ -107,11 +129,13 @@ public class TabooService {
      * ExceptionHandler for IllegalArgumentException. returns the exception's error message in the body with the 412
      * status code.
      *
+     * @param e
+     *         the exception to handle
      * @return HTTP PRECONDITION_FAILED Response Status and error message
      */
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
-    public String exceptionHandlerIllegalArgumentException(IllegalArgumentException e) {
+    public final String exceptionHandlerIllegalArgumentException(final IllegalArgumentException e) {
         return e.getMessage();
     }
 
@@ -119,11 +143,13 @@ public class TabooService {
      * ExceptionHandler for NotFoundException. returns the exception's error message in the body with the 404 status
      * code.
      *
+     * @param e
+     *         the exception to handle
      * @return HTTP NOT_FOUND Response Status and error message
      */
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String exceptionHandlerNotFoundException(NotFoundException e) {
+    public final String exceptionHandlerNotFoundException(final NotFoundException e) {
         return e.getMessage();
     }
 
@@ -141,9 +167,12 @@ public class TabooService {
      * @return all bookmarks
      */
     @RequestMapping(value = "/bookmarks", method = RequestMethod.GET)
-    public Collection<Bookmark> findAllBookmarks(@RequestParam(value = "tag", required = false) List<String> tags,
-                                                 @RequestParam(value = "op", defaultValue = OP_AND) String op,
-                                                 @RequestParam(value = "title", required = false) String title) {
+    public final Collection<Bookmark> findAllBookmarks(@RequestParam(value = "tag", required = false)
+                                                       final List<String> tags,
+                                                       @RequestParam(value = "op", defaultValue = OP_AND)
+                                                       final String op,
+                                                       @RequestParam(value = "title", required = false)
+                                                       final String title) {
         Collection<Bookmark> bookmarks;
         if (null != tags) {
             bookmarks = repository.findBookmarksWithTags(tags, !OP_OR.equalsIgnoreCase(op));
@@ -163,7 +192,7 @@ public class TabooService {
      * @return collection of tags
      */
     @RequestMapping(value = "/tags", method = RequestMethod.GET)
-    public Collection<String> findAlltags() {
+    public final Collection<String> findAlltags() {
         return repository.findAllTags();
     }
 
@@ -177,7 +206,7 @@ public class TabooService {
      *         when no Bookmarks is found for the id
      */
     @RequestMapping(value = "/bookmarks/{id}", method = RequestMethod.GET)
-    public Bookmark findBookmarkById(@PathVariable(value = "id") String id) {
+    public final Bookmark findBookmarkById(@PathVariable(value = "id") final String id) {
         return repository.findBookmarkById(id);
     }
 }
