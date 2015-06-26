@@ -13,40 +13,67 @@ import java.util.Objects;
 /**
  * The bookmark POJO. Tags when added are converted to lowercase and duplicate tags are removed. A Tag has a unique id,
  * which is assigned by the repository, a title, which normally is taken from the website's title, a URL, which is
- * unique and a colleciton of tags.
+ * unique and a collection of tags.
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
-public class Bookmark {
+public final class Bookmark {
 // ------------------------------ FIELDS ------------------------------
 
-    /** the id of the bookmark */
+    /** the id of the bookmark. */
     private String id;
-    /** the title of a bookmark */
+    /** the title of a bookmark. */
     private String title = "";
-    /** the URL the bookmark points to as String */
+    /** the URL the bookmark points to as String. */
     private String url = "";
-    /** the tags of the bookmark */
+    /** the tags of the bookmark. */
     private Collection<String> tags = new HashSet<>();
 
 // --------------------- GETTER / SETTER METHODS ---------------------
 
+    /**
+     * gets the id.
+     *
+     * @return the id
+     */
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    /**
+     * sets the id.
+     *
+     * @param id
+     *         new id
+     */
+    public void setId(final String id) {
         this.id = id;
     }
 
+    /**
+     * gets the title.
+     *
+     * @return the title
+     */
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    /**
+     * setes the title.
+     *
+     * @param title
+     *         new title
+     */
+    public void setTitle(final String title) {
         this.title = title;
     }
 
+    /**
+     * gets the url.
+     *
+     * @return the url
+     */
     public String getUrl() {
         return url;
     }
@@ -54,9 +81,13 @@ public class Bookmark {
 // ------------------------ CANONICAL METHODS ------------------------
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Bookmark bookmark = (Bookmark) o;
 
@@ -78,7 +109,7 @@ public class Bookmark {
      * @throws NullPointerException
      *         when tga is null
      */
-    public void addTag(String tag) {
+    public void addTag(final String tag) {
         tags.add(Objects.requireNonNull(tag).toLowerCase());
     }
 
@@ -91,7 +122,15 @@ public class Bookmark {
         return Collections.unmodifiableCollection(tags);
     }
 
-    public void setUrl(String url) {
+    /**
+     * sets the url.
+     *
+     * @param url
+     *         new url
+     * @throws NullPointerException
+     *         when url is null
+     */
+    public void setUrl(final String url) {
         this.url = Objects.requireNonNull(url);
     }
 }

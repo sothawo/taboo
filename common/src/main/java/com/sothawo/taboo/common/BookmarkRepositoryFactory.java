@@ -14,7 +14,7 @@ public interface BookmarkRepositoryFactory {
 // -------------------------- OTHER METHODS --------------------------
 
     /**
-     * create a BookmarkRepository
+     * create a BookmarkRepository.
      *
      * @param options
      *         options for creating the repository

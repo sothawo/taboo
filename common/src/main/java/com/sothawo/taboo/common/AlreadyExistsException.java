@@ -13,7 +13,13 @@ package com.sothawo.taboo.common;
 public class AlreadyExistsException extends TabooException {
 // --------------------------- CONSTRUCTORS ---------------------------
 
-    public AlreadyExistsException(String message) {
+    /**
+     * creates an AlreadyExistsException with a message.
+     *
+     * @param message
+     *         the message
+     */
+    public AlreadyExistsException(final String message) {
         super(message);
     }
 }

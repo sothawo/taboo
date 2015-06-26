@@ -26,7 +26,7 @@ public final class TagUtil {
      *         the input String
      * @return the separated Tags.
      */
-    public static Collection<String> split(String s) {
+    public static Collection<String> split(final String s) {
         return (null == s || s.isEmpty())
                 ? Collections.emptyList()
                 : Arrays.asList(s.toLowerCase().split("[^a-zA-ZäöüÄÖÜß0-9]+")).stream().filter(t -> !t.isEmpty())
@@ -35,6 +35,9 @@ public final class TagUtil {
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
+    /**
+     * private ctor.
+     */
     private TagUtil() {
     }
 }

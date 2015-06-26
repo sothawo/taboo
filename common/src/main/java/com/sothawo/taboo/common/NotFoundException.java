@@ -13,7 +13,13 @@ package com.sothawo.taboo.common;
 public class NotFoundException extends TabooException {
 // --------------------------- CONSTRUCTORS ---------------------------
 
-    public NotFoundException(String message) {
+    /**
+     * creates a NotFoundException with the given message.
+     *
+     * @param message
+     *         the message
+     */
+    public NotFoundException(final String message) {
         super(message);
     }
 }

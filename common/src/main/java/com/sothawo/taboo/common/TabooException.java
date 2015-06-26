@@ -13,7 +13,13 @@ package com.sothawo.taboo.common;
 public class TabooException extends RuntimeException {
 // --------------------------- CONSTRUCTORS ---------------------------
 
-    public TabooException(String message) {
+    /**
+     * creates a TabooException with the given message.
+     *
+     * @param message
+     *         the message
+     */
+    public TabooException(final String message) {
         super(message);
     }
 }

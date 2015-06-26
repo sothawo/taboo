@@ -29,7 +29,7 @@ public interface BookmarkRepository {
     Bookmark createBookmark(Bookmark bookmark);
 
     /**
-     * deletes the bookmark with the given id
+     * deletes the bookmark with the given id.
      *
      * @param id
      *         id of the bookmark to delete
@@ -70,15 +70,18 @@ public interface BookmarkRepository {
      *         the tags to be searched
      * @param opAnd
      *         if true, the tags are to be combined using AND, otherwise OR
-     * @return the bookmarks
+     * @return the found bookmarks
      */
     Collection<Bookmark> findBookmarksWithTags(Collection<String> tags, boolean opAnd);
 
     /**
-     * returns the bookmarks where the title contains the given string
+     * returns the bookmarks where the title contains the given string.
+     *
      * @param title
+     *         the title substring to search
+     * @return the found bookmarks
      */
-    Collection<Bookmark>  findBookmarksWithTitle(String title);
+    Collection<Bookmark> findBookmarksWithTitle(String title);
 
     /**
      * removes all bookmarks from the repository.
