@@ -212,4 +212,20 @@ public class RepositoryTest {
         repository = repositoryFactoryClass.newInstance().createRepository(factoryOptions);
         repository.purge();
     }
+
+    @Test
+    public void findBookmarkByTitle() throws Exception {
+        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("Hello world").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("world wide web").build();
+        Bookmark bookmark3 = aBookmark().withUrl("url3").withTitle("say hello").build();
+        repository.createBookmark(bookmark1);
+        repository.createBookmark(bookmark2);
+        repository.createBookmark(bookmark3);
+
+        Collection<Bookmark> bookmarks =
+                repository.findBookmarksWithTitle("hello");
+
+        assertThat(bookmarks, hasSize(2));
+        assertThat(bookmarks, hasItems(bookmark1, bookmark3));
+    }
 }

@@ -25,6 +25,7 @@ import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
@@ -292,6 +293,32 @@ public class TabooServiceTest {
             repository.findAllBookmarks();
             times = 1;
         }};
+    }
+
+    @Test
+    public void findBookmarksByTitle() throws Exception {
+        Bookmark bookmark = createBookmarks("1", "2").get(0);
+
+        new Expectations() {{
+            repository.findBookmarksWithTitle("title1");
+            result = Collections.singletonList(bookmark);
+        }};
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(get(TABOO_BOOKMARKS)
+                .param("title", "title1")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(1)))
+                .andExpect(jsonPath("$[0].id", is(bookmark.getId()))) // id check is enough here
+        ;
+
+        new Verifications() {{
+            repository.findBookmarksWithTitle("title1");
+            times = 1;
+        }};
+
     }
 
     /**

@@ -75,6 +75,12 @@ public interface BookmarkRepository {
     Collection<Bookmark> findBookmarksWithTags(Collection<String> tags, boolean opAnd);
 
     /**
+     * returns the bookmarks where the title contains the given string
+     * @param title
+     */
+    Collection<Bookmark>  findBookmarksWithTitle(String title);
+
+    /**
      * removes all bookmarks from the repository.
      */
     void purge();

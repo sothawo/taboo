@@ -13,12 +13,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 
 /**
- * Bookmark class for the mongo db. We can't use the common Bookmark class here, because we need to put Spring
- * annotations on this class and can't chaneg the common class. Besides that, the object is quite the same.
+ * Bookmark class for the mongo db.
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
@@ -26,13 +26,21 @@ import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 public class MongoBookmark {
 // ------------------------------ FIELDS ------------------------------
 
+    /** unique db id */
     @Id
     private String id;
 
+    /** bookmark's url */
     private String url;
 
+    /** bookmark's title */
     private String title;
 
+    /** bookmark's title in lowercase for searching */
+    @Indexed
+    private String lowerTitle;
+
+    /** bookmark's tags */
     @Indexed
     private Collection<String> tags = new LinkedHashSet<>();
 
@@ -49,7 +57,9 @@ public class MongoBookmark {
         MongoBookmark mongoBookmark = new MongoBookmark();
         mongoBookmark.setId(bookmark.getId());
         mongoBookmark.setUrl(bookmark.getUrl());
-        mongoBookmark.setTitle(bookmark.getTitle());
+        String title = Optional.ofNullable(bookmark.getTitle()).orElse("");
+        mongoBookmark.setTitle(title);
+        mongoBookmark.setLowerTitle(title.toLowerCase());
         mongoBookmark.getTags().addAll(bookmark.getTags());
         return mongoBookmark;
     }
@@ -62,6 +72,14 @@ public class MongoBookmark {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getLowerTitle() {
+        return lowerTitle;
+    }
+
+    public void setLowerTitle(String lowerTitle) {
+        this.lowerTitle = lowerTitle;
     }
 
     public Collection<String> getTags() {

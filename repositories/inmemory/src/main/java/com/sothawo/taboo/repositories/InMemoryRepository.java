@@ -110,6 +110,20 @@ public class InMemoryRepository implements BookmarkRepository {
     }
 
     /**
+     * returns the bookmarks where the title contains the given string
+     *
+     * @param title
+     */
+    @Override
+    public Collection<Bookmark> findBookmarksWithTitle(String title) {
+        final String titleToSearch = Objects.requireNonNull(title).toLowerCase();
+        return bookmarks.values().stream()
+                .filter(bookmark -> Objects.nonNull(bookmark.getTitle()))
+                .filter(bookmark -> bookmark.getTitle().toLowerCase().contains(titleToSearch))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * removes all bookmarks from the reository.
      */
     @Override

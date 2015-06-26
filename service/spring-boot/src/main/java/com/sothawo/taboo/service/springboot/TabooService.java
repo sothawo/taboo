@@ -17,6 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -127,20 +128,33 @@ public class TabooService {
     }
 
     /**
-     * gets all the bookmarks from the repository
+     * gets the bookmarks from the repository. There can be additional selection citeria, either tags or a title search
+     * string. The URL allows for tags AND a title search, but at the moment only one of these is used. When tags are
+     * sent, these are searched, only when no tags are sent, then the title is considered.
      *
      * @param tags
      *         optional list of tags
      * @param op
      *         if "or", tags are combined with OR, otherwise with AND
+     * @param title
+     *         optional title to be searched
      * @return all bookmarks
      */
     @RequestMapping(value = "/bookmarks", method = RequestMethod.GET)
     public Collection<Bookmark> findAllBookmarks(@RequestParam(value = "tag", required = false) List<String> tags,
-                                                 @RequestParam(value = "op", defaultValue = OP_AND) String op) {
-        return (null != tags)
-                ? repository.findBookmarksWithTags(tags, !OP_OR.equalsIgnoreCase(op))
-                : repository.findAllBookmarks();
+                                                 @RequestParam(value = "op", defaultValue = OP_AND) String op,
+                                                 @RequestParam(value = "title", required = false) String title) {
+        Collection<Bookmark> bookmarks;
+        if (null != tags) {
+            bookmarks = repository.findBookmarksWithTags(tags, !OP_OR.equalsIgnoreCase(op));
+        } else {
+            if (null != title) {
+                bookmarks = repository.findBookmarksWithTitle(title);
+            } else {
+                bookmarks = repository.findAllBookmarks();
+            }
+        }
+        return bookmarks;
     }
 
     /**

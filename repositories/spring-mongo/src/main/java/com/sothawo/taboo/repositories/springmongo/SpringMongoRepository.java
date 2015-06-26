@@ -152,6 +152,17 @@ public class SpringMongoRepository implements BookmarkRepository {
     }
 
     /**
+     * returns the bookmarks where the title contains the given string
+     *
+     * @param title
+     */
+    @Override
+    public Collection<Bookmark> findBookmarksWithTitle(String title) {
+        return mongoRepository.findByLowerTitleContaining(title).stream().map(MongoBookmark::toCommon).collect
+                (Collectors.toList());
+    }
+
+    /**
      * removes all bookmarks from the repository.
      */
     @Override

@@ -27,7 +27,11 @@ gets all bookmarks that have all of the given tags, tag parameter can be used mu
 #### _GET /taboo/bookmarks?op=or&?tag=t1&tag=t2_
 
 gets all bookmarks that have any of the given tags, tag parameter can be used multiple times
- 
+
+#### _GET /taboo/bookmarks?title=t
+
+gets all bookmarks where the title contains the given string
+
 #### _POST /taboo/bookmarks_
 
 creates a new bookmark. the bookmark data must be sent as JSON data in the body. The id of the bookmark must not be 

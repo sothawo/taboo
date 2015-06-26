@@ -5,7 +5,10 @@
  */
 package com.sothawo.taboo.repositories.springmongo;
 
+import com.sothawo.taboo.common.Bookmark;
 import org.springframework.data.mongodb.repository.MongoRepository;
+
+import java.util.Collection;
 
 /**
  * The interface for the mongo repository to be created by Spring.
@@ -14,6 +17,15 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  */
 public interface MongoBookmarkRepository extends MongoRepository<MongoBookmark, String> {
 // -------------------------- OTHER METHODS --------------------------
+
+    /**
+     * find all bookmarks with a title that contains the given string.
+     *
+     * @param s
+     *         the string to be searched in the title.
+     * @return Collection of found bookmarks
+     */
+    Collection<MongoBookmark> findByLowerTitleContaining(String s);
 
     /**
      * find an entry for a given url, the should at most be one
