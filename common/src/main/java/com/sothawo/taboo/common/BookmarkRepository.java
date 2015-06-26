@@ -8,7 +8,7 @@ package com.sothawo.taboo.common;
 import java.util.Collection;
 
 /**
- * Implementations of this class store and retrieve Bookmarks.
+ * Implementations of this interface store and retrieve Bookmarks.
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
