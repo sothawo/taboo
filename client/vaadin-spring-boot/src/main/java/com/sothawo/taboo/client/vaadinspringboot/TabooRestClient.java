@@ -6,7 +6,6 @@
 package com.sothawo.taboo.client.vaadinspringboot;
 
 import com.sothawo.taboo.common.Bookmark;
-import com.sothawo.taboo.common.BookmarkBuilder;
 import com.vaadin.spring.annotation.SpringComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +19,6 @@ import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
-
-import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 
 /**
  * REST Client for a taboo service.
@@ -92,6 +89,26 @@ public class TabooRestClient implements TabooClient {
     }
 
     /**
+     * retrieves all bookmarks that match a given title.
+     *
+     * @param title
+     *         the title to match
+     * @return matching bookmarks
+     */
+    @Override
+    public Collection<Bookmark> getBookmarks(String title) {
+        RestTemplate rest = new RestTemplate();
+        String url = tabooUrlBookmarks + "?title={title}";
+        logger.debug("get Bookmarks: {}", url);
+        ResponseEntity<Bookmark[]> response = rest.getForEntity(url, Bookmark[].class, title);
+
+        HttpStatus status = response.getStatusCode();
+        logger.debug("get bookmarks: {} {}", status.toString(), status.getReasonPhrase());
+
+        return Arrays.asList(response.getBody());
+    }
+
+    /**
      * get all the tags available in the service.
      *
      * @return
@@ -108,7 +125,8 @@ public class TabooRestClient implements TabooClient {
     }
 
     /**
-     * @param bookmark the bookmark to save
+     * @param bookmark
+     *         the bookmark to save
      */
     @Override
     public void storeNewBookmark(Bookmark bookmark) {

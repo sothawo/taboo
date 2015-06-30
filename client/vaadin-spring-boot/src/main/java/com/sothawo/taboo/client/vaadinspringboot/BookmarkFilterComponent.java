@@ -8,7 +8,15 @@ package com.sothawo.taboo.client.vaadinspringboot;
 import com.google.common.collect.Sets;
 import com.sothawo.taboo.common.Bookmark;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractTextField;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +25,9 @@ import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +61,8 @@ public class BookmarkFilterComponent extends CustomComponent {
         VerticalLayout layout = new VerticalLayout();
         layout.setSpacing(true);
 
+        layout.addComponent(createTitlePanel());
+
         Button clearSelection = new Button("clear");
         clearSelection.addClickListener(clickEvent -> resetTags());
         layout.addComponent(createTagListPanel("selected tags", selectedTagList, clearSelection));
@@ -82,6 +94,40 @@ public class BookmarkFilterComponent extends CustomComponent {
             layout.addComponent(additionalComponent);
             layout.setComponentAlignment(additionalComponent, Alignment.MIDDLE_CENTER);
         }
+        panel.setContent(layout);
+        return panel;
+    }
+
+    /**
+     * creates a Panel wiht a TextFeild to search in the bookmark's titles.
+     *
+     * @return Panel component
+     */
+    private Panel createTitlePanel() {
+        Panel panel = new Panel("Title");
+        VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(true);
+
+        TextField textFieldTitle = new TextField();
+        textFieldTitle.addTextChangeListener(evt -> {
+            String text = Optional.ofNullable(evt.getText()).orElse("");
+            if (!selectedTagList.getTags().isEmpty()) {
+                resetTags();
+            }
+            if (text.length() >= 2) {
+                // do that in background
+                ForkJoinPool.commonPool().submit(() -> {
+                    Collection<Bookmark> bookmarks = taboo.getBookmarks(text);
+                    // to show, back to UI thread
+                    UI.getCurrent().access(() -> setBookmarksToShow(bookmarks));
+                });
+            }
+        });
+        textFieldTitle.setTextChangeEventMode(AbstractTextField.TextChangeEventMode.LAZY);
+        textFieldTitle.setWidth("100%");
+
+        layout.addComponent(textFieldTitle);
+
         panel.setContent(layout);
         return panel;
     }
@@ -152,11 +198,21 @@ public class BookmarkFilterComponent extends CustomComponent {
      * load the bookmarks for the selected tags and adjusts the list of available tags.
      */
     public void loadBookmarksForSelectedTags() {
+        setBookmarksToShow(taboo.getBookmarks(selectedTagList.getTags()));
+    }
+
+    /**
+     * sets the bookmarks in the bookmark table component and updates the tag selection listst so that the available
+     * tags are the ones from the bookmarks without the already selected ones.
+     *
+     * @param bookmarks
+     *         the bookmarks to show
+     */
+    private void setBookmarksToShow(Collection<Bookmark> bookmarks) {
+        bookmarkTableComponent.setBookmarks(bookmarks);
         Set<String> selectedTags = new HashSet<>(selectedTagList.getTags());
         // collect the tags from the bookmarks, remove the tags that are already selected and set in the available
         // tags list get the bookmarks and set the set of selected tags
-        Collection<Bookmark> bookmarks = taboo.getBookmarks(selectedTags);
-        bookmarkTableComponent.setBookmarks(bookmarks);
         availableTagList.setTags(Sets.difference(
                 bookmarks.stream().flatMap(bookmark -> bookmark.getTags().stream()).collect(Collectors.toSet()),
                 selectedTags));

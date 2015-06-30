@@ -26,6 +26,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Spring-Boot Service implementation for the taboo backend service.
@@ -193,7 +194,7 @@ public class TabooService {
      */
     @RequestMapping(value = "/tags", method = RequestMethod.GET)
     public final Collection<String> findAlltags() {
-        return repository.findAllTags();
+        return repository.findAllTags().stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**

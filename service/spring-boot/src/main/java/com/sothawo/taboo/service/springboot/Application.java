@@ -17,7 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 @SpringBootApplication
-public final class Application {
+public class Application {
 // -------------------------- STATIC METHODS --------------------------
 
     /**
@@ -37,14 +37,6 @@ public final class Application {
     public static BookmarkRepository getSpringMongoRepository() {
         BookmarkRepository repository = new SpringMongoRepositoryFactory().createRepository(null);
         return repository;
-    }
-
-// --------------------------- CONSTRUCTORS ---------------------------
-
-    /**
-     * private ctor.
-     */
-    private Application() {
     }
 
 // --------------------------- main() method ---------------------------

@@ -30,7 +30,9 @@ gets all bookmarks that have any of the given tags, tag parameter can be used mu
 
 #### _GET /taboo/bookmarks?title=t
 
-gets all bookmarks where the title contains the given string
+gets all bookmarks where the title contains the given string. The URL allows for tags AND a 
+title search, but at the moment only one of these is used. When tags are sent, these are 
+searched, only when no tags are sent, then the title is considered.
 
 #### _POST /taboo/bookmarks_
 

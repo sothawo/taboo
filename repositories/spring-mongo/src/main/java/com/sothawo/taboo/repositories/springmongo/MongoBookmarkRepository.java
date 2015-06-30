@@ -5,7 +5,6 @@
  */
 package com.sothawo.taboo.repositories.springmongo;
 
-import com.sothawo.taboo.common.Bookmark;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Collection;

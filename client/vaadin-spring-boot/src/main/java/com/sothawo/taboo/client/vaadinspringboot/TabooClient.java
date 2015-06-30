@@ -19,9 +19,12 @@ public interface TabooClient {
 
     /**
      * deletes the given bookmark.
-     * @param bookmark the bookmark to delete
+     *
+     * @param bookmark
+     *         the bookmark to delete
      */
-    void deleteBookmark(Bookmark bookmark);
+    void deleteBookmark(final Bookmark bookmark);
+
     /**
      * retrieves all bookmarks with the given tags
      *
@@ -29,10 +32,20 @@ public interface TabooClient {
      *         the tags of the bookmarks
      * @return list of bookmarks
      */
-    Collection<Bookmark> getBookmarks(Collection<String> tags);
+    Collection<Bookmark> getBookmarks(final Collection<String> tags);
+
+    /**
+     * retrieves all bookmarks that match a given title.
+     *
+     * @param title
+     *         the title to match
+     * @return matching bookmarks
+     */
+    Collection<Bookmark> getBookmarks(final String title);
 
     /**
      * get all the tags available in the service.
+     *
      * @return
      */
     Collection<String> getTags();
@@ -43,5 +56,5 @@ public interface TabooClient {
      * @param bookmark
      *         the bookmark to store
      */
-    void storeNewBookmark(Bookmark bookmark);
+    void storeNewBookmark(final Bookmark bookmark);
 }
