@@ -51,6 +51,8 @@ public class BookmarkFilterComponent extends CustomComponent {
     /** the component for showing the bookmarks */
     @Autowired
     private BookmarkTableComponent bookmarkTableComponent;
+    /** text field to search in the titles. */
+    private TextField textFieldTitle;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -108,17 +110,13 @@ public class BookmarkFilterComponent extends CustomComponent {
         VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
 
-        TextField textFieldTitle = new TextField();
+        textFieldTitle = new TextField();
         textFieldTitle.addTextChangeListener(evt -> {
             String text = Optional.ofNullable(evt.getText()).orElse("");
             if (!selectedTagList.getTags().isEmpty()) {
                 resetTags();
             }
-            if (text.length() >= 2) {
-                // do that in background, to show use UI.access() to trigger push
-                CompletableFuture.supplyAsync(() -> taboo.getBookmarks(text))
-                        .thenAccept(bookmarks -> UI.getCurrent().access(() -> setBookmarksToShow(bookmarks)));
-            }
+            getBookmarksForTitle(text);
         });
         textFieldTitle.setTextChangeEventMode(AbstractTextField.TextChangeEventMode.LAZY);
         textFieldTitle.setWidth("100%");
@@ -129,6 +127,23 @@ public class BookmarkFilterComponent extends CustomComponent {
         return panel;
     }
 
+    /**
+     * loads the bookmarks which contain the given string in their title.
+     *
+     * @param title
+     *         the string to search for
+     */
+    private void getBookmarksForTitle(String title) {
+        if (0 == Optional.ofNullable(title).orElse("").length()) {
+            textFieldTitle.clear();
+            resetTags();
+        } else {
+            // do that in background, to show use UI.access() to trigger push
+            CompletableFuture.supplyAsync(() -> taboo.getBookmarks(title))
+                    .thenAccept(bookmarks -> UI.getCurrent().access(() -> setBookmarksToShow(bookmarks)));
+        }
+    }
+
 // -------------------------- OTHER METHODS --------------------------
 
     /**
@@ -137,6 +152,7 @@ public class BookmarkFilterComponent extends CustomComponent {
      * @param tag
      *         the tag to add
      */
+
     private void addTagToSelection(String tag) {
         logger.info("add tag {}", tag);
 
@@ -188,13 +204,13 @@ public class BookmarkFilterComponent extends CustomComponent {
         Set<String> selectedTags = new HashSet<>();
         selectedTags.addAll(tags);
         selectedTagList.setTags(selectedTags);
-        loadBookmarksForSelectedTags();
+        getBookmarksForSelectedTags();
     }
 
     /**
      * load the bookmarks for the selected tags and adjusts the list of available tags.
      */
-    public void loadBookmarksForSelectedTags() {
+    public void getBookmarksForSelectedTags() {
         setBookmarksToShow(taboo.getBookmarks(selectedTagList.getTags()));
     }
 
