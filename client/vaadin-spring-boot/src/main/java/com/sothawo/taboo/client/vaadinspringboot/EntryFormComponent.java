@@ -12,18 +12,23 @@ import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.CompletableFuture;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 
@@ -79,7 +84,9 @@ public class EntryFormComponent extends CustomComponent {
         hLayoutTop.setWidth("100%");
         hLayoutTop.setSpacing(true);
 
-        hLayoutTop.addComponent(title);
+        hLayoutTop.addComponent(url);
+        url.setWidth("100%");
+        hLayoutTop.setExpandRatio(url, 1);
 
         // a button to load the title
         Button buttonLoad = new Button(FontAwesome.DOWNLOAD);
@@ -88,21 +95,19 @@ public class EntryFormComponent extends CustomComponent {
         hLayoutTop.setComponentAlignment(buttonLoad, Alignment.BOTTOM_CENTER);
         buttonLoad.addClickListener(clickEvent -> downloadTitle());
 
-        hLayoutTop.addComponent(tags);
-        title.setWidth("100%");
-        hLayoutTop.setExpandRatio(title, 2);
-        tags.setWidth("100%");
-        hLayoutTop.setExpandRatio(tags, 1);
-
         vLayout.addComponent(hLayoutTop);
 
         HorizontalLayout hLayoutBottom = new HorizontalLayout();
         hLayoutBottom.setWidth("100%");
         hLayoutBottom.setSpacing(true);
 
-        hLayoutBottom.addComponent(url);
-        url.setWidth("100%");
-        hLayoutBottom.setExpandRatio(url, 1);
+        hLayoutBottom.addComponent(title);
+
+        hLayoutBottom.addComponent(tags);
+        title.setWidth("100%");
+        hLayoutBottom.setExpandRatio(title, 2);
+        tags.setWidth("100%");
+        hLayoutBottom.setExpandRatio(tags, 1);
 
         Button buttonSave = new Button("Save");
         buttonSave.addClickListener(event -> {
@@ -130,30 +135,29 @@ public class EntryFormComponent extends CustomComponent {
      * tries to download the title for the actual url.
      */
     private void downloadTitle() {
-         String urlString = url.getValue();
+        String urlString = url.getValue();
         if (null != urlString && !urlString.isEmpty()) {
             if (!urlString.startsWith("http")) {
                 urlString = "http://" + urlString;
             }
             final String finalUrl = urlString;
-            ForkJoinPool.commonPool().submit(() -> {
-                logger.debug("loading title for url {}", finalUrl);
+            logger.debug("loading title for url {}", finalUrl);
+            CompletableFuture.supplyAsync(() -> {
                 try {
-                    Connection connection = Jsoup.connect(finalUrl);
-                    connection = connection.timeout(3000);
-                    Document document = connection.get();
-                    String htmlTitle = document.title();
+                    String htmlTitle = Jsoup.connect(finalUrl).timeout(3000).get().title();
                     logger.debug("got title: {}", htmlTitle);
-                    UI.getCurrent().access(() -> {
-                        // because the UI is annotated with @Push, afetr the call to UI.access() the server will
-                        // push the data to the client.
-                        title.setValue(htmlTitle);
-                        url.setValue(finalUrl);
-                    });
+                    return htmlTitle;
                 } catch (IOException e) {
                     UI.getCurrent().access(() -> ClientUI.handleException(e));
+                    return "";
                 }
-            });
+            }).thenAccept(htmlTitle -> UI.getCurrent().access(() -> {
+                // because the UI is annotated with @Push, afetr the call to UI.access() the server will
+                // push the data to the client.
+                title.setValue(htmlTitle);
+                url.setValue(finalUrl);
+            }));
+
         }
     }
 

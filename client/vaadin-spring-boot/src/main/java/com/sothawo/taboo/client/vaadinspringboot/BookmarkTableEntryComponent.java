@@ -28,7 +28,7 @@ public class BookmarkTableEntryComponent extends CustomComponent {
      * creates an entry component.
      *
      * @param bookmarkTableComponent
-     *         the containe riof this object
+     *         the container for this object
      * @param bookmark
      *         the bookmark to show
      */
@@ -41,7 +41,6 @@ public class BookmarkTableEntryComponent extends CustomComponent {
         VerticalLayout bookmarkLayout = new VerticalLayout();
         bookmarkLayout.addStyleName("bookmark-entry");
         bookmarkLayout.setSpacing(true);
-//        bookmarkLayout.setMargin(true);
 
         String bookmarkTitle = bookmark.getTitle();
         if (null == bookmarkTitle || bookmarkTitle.isEmpty()) {

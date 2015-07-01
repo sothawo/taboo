@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -115,12 +115,9 @@ public class BookmarkFilterComponent extends CustomComponent {
                 resetTags();
             }
             if (text.length() >= 2) {
-                // do that in background
-                ForkJoinPool.commonPool().submit(() -> {
-                    Collection<Bookmark> bookmarks = taboo.getBookmarks(text);
-                    // to show, back to UI thread
-                    UI.getCurrent().access(() -> setBookmarksToShow(bookmarks));
-                });
+                // do that in background, to show use UI.access() to trigger push
+                CompletableFuture.supplyAsync(() -> taboo.getBookmarks(text))
+                        .thenAccept(bookmarks -> UI.getCurrent().access(() -> setBookmarksToShow(bookmarks)));
             }
         });
         textFieldTitle.setTextChangeEventMode(AbstractTextField.TextChangeEventMode.LAZY);
