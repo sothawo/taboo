@@ -152,13 +152,15 @@ public class SpringMongoRepository implements BookmarkRepository {
     }
 
     /**
-     * returns the bookmarks where the title contains the given string
+     * returns the bookmarks where the title contains the given string. The search must be case insensitive.
      *
-     * @param title
+     * @param s
+     *         the substring to search
+     * @return the found bookmarks
      */
     @Override
-    public Collection<Bookmark> findBookmarksWithTitle(String title) {
-        return mongoRepository.findByLowerTitleContaining(title).stream().map(MongoBookmark::toCommon).collect
+    public Collection<Bookmark> findBookmarksWithSearch(String s) {
+        return mongoRepository.findByLowerTitleContaining(s).stream().map(MongoBookmark::toCommon).collect
                 (Collectors.toList());
     }
 

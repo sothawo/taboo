@@ -52,3 +52,4 @@ public class MongoConfig extends AbstractMongoConfiguration {
         return new MongoClient();
     }
 }
+

@@ -64,6 +64,15 @@ public interface BookmarkRepository {
     Bookmark findBookmarkById(String id);
 
     /**
+     * returns the bookmarks where the title contains the given string. The search must be case insensitive.
+     *
+     * @param s
+     *         the substring to search
+     * @return the found bookmarks
+     */
+    Collection<Bookmark> findBookmarksWithSearch(String s);
+
+    /**
      * returns all bookmarks that have all of the given tags.
      *
      * @param tags
@@ -73,15 +82,6 @@ public interface BookmarkRepository {
      * @return the found bookmarks
      */
     Collection<Bookmark> findBookmarksWithTags(Collection<String> tags, boolean opAnd);
-
-    /**
-     * returns the bookmarks where the title contains the given string.
-     *
-     * @param title
-     *         the title substring to search
-     * @return the found bookmarks
-     */
-    Collection<Bookmark> findBookmarksWithTitle(String title);
 
     /**
      * removes all bookmarks from the repository.

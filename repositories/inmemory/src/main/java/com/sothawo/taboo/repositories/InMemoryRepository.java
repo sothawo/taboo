@@ -110,13 +110,15 @@ public class InMemoryRepository implements BookmarkRepository {
     }
 
     /**
-     * returns the bookmarks where the title contains the given string
+     * returns the bookmarks where the title contains the given string. The search must be case insensitive.
      *
-     * @param title
+     * @param s
+     *         the substring to search
+     * @return the found bookmarks
      */
     @Override
-    public Collection<Bookmark> findBookmarksWithTitle(String title) {
-        final String titleToSearch = Objects.requireNonNull(title).toLowerCase();
+    public Collection<Bookmark> findBookmarksWithSearch(String s) {
+        final String titleToSearch = Objects.requireNonNull(s).toLowerCase();
         return bookmarks.values().stream()
                 .filter(bookmark -> Objects.nonNull(bookmark.getTitle()))
                 .filter(bookmark -> bookmark.getTitle().toLowerCase().contains(titleToSearch))

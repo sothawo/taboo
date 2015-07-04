@@ -223,7 +223,7 @@ public class RepositoryTest {
         repository.createBookmark(bookmark3);
 
         Collection<Bookmark> bookmarks =
-                repository.findBookmarksWithTitle("hello");
+                repository.findBookmarksWithSearch("hello");
 
         assertThat(bookmarks, hasSize(2));
         assertThat(bookmarks, hasItems(bookmark1, bookmark3));

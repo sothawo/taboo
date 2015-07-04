@@ -28,11 +28,11 @@ gets all bookmarks that have all of the given tags, tag parameter can be used mu
 
 gets all bookmarks that have any of the given tags, tag parameter can be used multiple times
 
-#### _GET /taboo/bookmarks?title=t
+#### _GET /taboo/bookmarks?search=s
 
-gets all bookmarks where the title contains the given string. The URL allows for tags AND a 
-title search, but at the moment only one of these is used. When tags are sent, these are 
-searched, only when no tags are sent, then the title is considered.
+gets all bookmarks where the title contains the given string. 
+
+**when tags and a search string are specified both the tags and the search criteria must match**
 
 #### _POST /taboo/bookmarks_
 

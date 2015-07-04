@@ -296,17 +296,17 @@ public class TabooServiceTest {
     }
 
     @Test
-    public void findBookmarksByTitle() throws Exception {
+    public void findBookmarksBySearch() throws Exception {
         Bookmark bookmark = createBookmarks("1", "2").get(0);
 
         new Expectations() {{
-            repository.findBookmarksWithTitle("title1");
+            repository.findBookmarksWithSearch("search1");
             result = Collections.singletonList(bookmark);
         }};
 
         MockMvc mockMvc = standaloneSetup(tabooService).build();
         mockMvc.perform(get(TABOO_BOOKMARKS)
-                .param("title", "title1")
+                .param("search", "search1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -315,7 +315,7 @@ public class TabooServiceTest {
         ;
 
         new Verifications() {{
-            repository.findBookmarksWithTitle("title1");
+            repository.findBookmarksWithSearch("search1");
             times = 1;
         }};
 
