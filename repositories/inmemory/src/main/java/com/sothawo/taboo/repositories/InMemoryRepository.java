@@ -6,12 +6,17 @@
 package com.sothawo.taboo.repositories;
 
 import com.google.common.collect.Sets;
+import com.sothawo.taboo.common.AbstractBookmarkRepository;
 import com.sothawo.taboo.common.AlreadyExistsException;
 import com.sothawo.taboo.common.Bookmark;
-import com.sothawo.taboo.common.BookmarkRepository;
 import com.sothawo.taboo.common.NotFoundException;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -20,7 +25,7 @@ import java.util.stream.Collectors;
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
-public class InMemoryRepository implements BookmarkRepository {
+public class InMemoryRepository extends AbstractBookmarkRepository {
 // ------------------------------ FIELDS ------------------------------
 
     /** id generator */
@@ -84,6 +89,22 @@ public class InMemoryRepository implements BookmarkRepository {
                 .orElseThrow(() -> new NotFoundException("no bookmark with id " + id));
     }
 
+    /**
+     * returns the bookmarks where the title contains the given string. The search must be case insensitive.
+     *
+     * @param s
+     *         the substring to search
+     * @return the found bookmarks
+     */
+    @Override
+    public Collection<Bookmark> findBookmarksWithSearch(String s) {
+        final String titleToSearch = Objects.requireNonNull(s).toLowerCase();
+        return bookmarks.values().stream()
+                .filter(bookmark -> Objects.nonNull(bookmark.getTitle()))
+                .filter(bookmark -> bookmark.getTitle().toLowerCase().contains(titleToSearch))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public Collection<Bookmark> findBookmarksWithTags(Collection<String> tags, boolean opAnd) {
         Map<String, Set<Bookmark>> bookmarksForTag = new HashMap<>();
@@ -107,22 +128,6 @@ public class InMemoryRepository implements BookmarkRepository {
             }
         }
         return foundBookmarks;
-    }
-
-    /**
-     * returns the bookmarks where the title contains the given string. The search must be case insensitive.
-     *
-     * @param s
-     *         the substring to search
-     * @return the found bookmarks
-     */
-    @Override
-    public Collection<Bookmark> findBookmarksWithSearch(String s) {
-        final String titleToSearch = Objects.requireNonNull(s).toLowerCase();
-        return bookmarks.values().stream()
-                .filter(bookmark -> Objects.nonNull(bookmark.getTitle()))
-                .filter(bookmark -> bookmark.getTitle().toLowerCase().contains(titleToSearch))
-                .collect(Collectors.toList());
     }
 
     /**

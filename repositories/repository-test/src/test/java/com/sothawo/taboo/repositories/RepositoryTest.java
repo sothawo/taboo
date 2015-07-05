@@ -1,6 +1,10 @@
 package com.sothawo.taboo.repositories;
 
-import com.sothawo.taboo.common.*;
+import com.sothawo.taboo.common.AlreadyExistsException;
+import com.sothawo.taboo.common.Bookmark;
+import com.sothawo.taboo.common.BookmarkRepository;
+import com.sothawo.taboo.common.BookmarkRepositoryFactory;
+import com.sothawo.taboo.common.NotFoundException;
 import com.sothawo.taboo.repositories.springmongo.MongoConfig;
 import com.sothawo.taboo.repositories.springmongo.SpringMongoRepositoryFactory;
 import org.junit.Before;
@@ -15,7 +19,10 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -139,7 +146,8 @@ public class RepositoryTest {
 
     @Test
     public void findBookmarkById() throws Exception {
-        Bookmark bookmark = repository.createBookmark(aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").build());
+        Bookmark bookmark =
+                repository.createBookmark(aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").build());
 
         Bookmark foundBookmark = repository.findBookmarkById(bookmark.getId());
 
@@ -214,7 +222,7 @@ public class RepositoryTest {
     }
 
     @Test
-    public void findBookmarkByTitle() throws Exception {
+    public void findBookmarkBySearchInTitle() throws Exception {
         Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("Hello world").build();
         Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("world wide web").build();
         Bookmark bookmark3 = aBookmark().withUrl("url3").withTitle("say hello").build();
@@ -227,5 +235,22 @@ public class RepositoryTest {
 
         assertThat(bookmarks, hasSize(2));
         assertThat(bookmarks, hasItems(bookmark1, bookmark3));
+    }
+
+    @Test
+    public void findBookmarksBySearchInTitleAndTags() throws Exception {
+        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("Hello world").addTag("tag1").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("world wide web").addTag("tag1").addTag("tag2")
+                .build();
+        Bookmark bookmark3 = aBookmark().withUrl("url3").withTitle("say hello").addTag("tag3").build();
+        repository.createBookmark(bookmark1);
+        repository.createBookmark(bookmark2);
+        repository.createBookmark(bookmark3);
+
+        Collection<Bookmark> bookmarks =
+                repository.findBookmarksWithTagsAndSearch(Arrays.asList("tag1"), true, "hello");
+
+        assertThat(bookmarks, hasSize(1));
+        assertThat(bookmarks, hasItems(bookmark1));
     }
 }

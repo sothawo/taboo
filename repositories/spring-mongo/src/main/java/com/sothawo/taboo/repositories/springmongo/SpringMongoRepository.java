@@ -5,9 +5,9 @@
  */
 package com.sothawo.taboo.repositories.springmongo;
 
+import com.sothawo.taboo.common.AbstractBookmarkRepository;
 import com.sothawo.taboo.common.AlreadyExistsException;
 import com.sothawo.taboo.common.Bookmark;
-import com.sothawo.taboo.common.BookmarkRepository;
 import com.sothawo.taboo.common.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -27,7 +27,7 @@ import static org.springframework.data.mongodb.core.query.Query.query;
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 @Component
-public class SpringMongoRepository implements BookmarkRepository {
+public class SpringMongoRepository extends AbstractBookmarkRepository {
 // ------------------------------ FIELDS ------------------------------
 
     /** name of the bookmarks collection */
@@ -131,6 +131,19 @@ public class SpringMongoRepository implements BookmarkRepository {
     }
 
     /**
+     * returns the bookmarks where the title contains the given string. The search must be case insensitive.
+     *
+     * @param s
+     *         the substring to search
+     * @return the found bookmarks
+     */
+    @Override
+    public Collection<Bookmark> findBookmarksWithSearch(String s) {
+        return mongoRepository.findByLowerTitleContaining(s).stream().map(MongoBookmark::toCommon).collect
+                (Collectors.toList());
+    }
+
+    /**
      * returns all bookmarks that have all of the given tags.
      *
      * @param tags
@@ -149,19 +162,6 @@ public class SpringMongoRepository implements BookmarkRepository {
                 ? mongo.find(query(where("tags").all(tags)), MongoBookmark.class)
                 : mongo.find(query(where("tags").in(tags)), MongoBookmark.class);
         return mongoBookmarks.stream().map(MongoBookmark::toCommon).collect(Collectors.toList());
-    }
-
-    /**
-     * returns the bookmarks where the title contains the given string. The search must be case insensitive.
-     *
-     * @param s
-     *         the substring to search
-     * @return the found bookmarks
-     */
-    @Override
-    public Collection<Bookmark> findBookmarksWithSearch(String s) {
-        return mongoRepository.findByLowerTitleContaining(s).stream().map(MongoBookmark::toCommon).collect
-                (Collectors.toList());
     }
 
     /**
