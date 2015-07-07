@@ -95,7 +95,7 @@ public class SpringMongoRepository extends AbstractBookmarkRepository {
      * @return the bookmarks
      */
     @Override
-    public Collection<Bookmark> findAllBookmarks() {
+    public Collection<Bookmark> getAllBookmarks() {
         return mongoRepository.findAll().stream().map(MongoBookmark::toCommon).collect(Collectors.toList());
     }
 
@@ -105,7 +105,7 @@ public class SpringMongoRepository extends AbstractBookmarkRepository {
      * @return Collection of tags, may be emoty, not null
      */
     @Override
-    public Collection<String> findAllTags() {
+    public Collection<String> getAllTags() {
         // this is ugly, as the distinct method returns an untyped list, at the moment the only way to get the
         // distinct values from mongo
         //noinspection unchecked
@@ -122,7 +122,7 @@ public class SpringMongoRepository extends AbstractBookmarkRepository {
      *         if no bookmark is found for the given id
      */
     @Override
-    public Bookmark findBookmarkById(String id) {
+    public Bookmark getBookmarkById(String id) {
         MongoBookmark mongoBookmark = mongoRepository.findOne(id);
         if (null == mongoBookmark) {
             throw new NotFoundException("no bookmark with id " + id);
@@ -138,7 +138,7 @@ public class SpringMongoRepository extends AbstractBookmarkRepository {
      * @return the found bookmarks
      */
     @Override
-    public Collection<Bookmark> findBookmarksWithSearch(String s) {
+    public Collection<Bookmark> getBookmarksWithSearch(String s) {
         return mongoRepository.findByLowerTitleContaining(s).stream().map(MongoBookmark::toCommon).collect
                 (Collectors.toList());
     }
@@ -153,7 +153,7 @@ public class SpringMongoRepository extends AbstractBookmarkRepository {
      * @return the bookmarks
      */
     @Override
-    public Collection<Bookmark> findBookmarksWithTags(Collection<String> tags, boolean opAnd) {
+    public Collection<Bookmark> getBookmarksWithTags(Collection<String> tags, boolean opAnd) {
         if (null == tags || tags.size() == 0) {
             return Collections.emptyList();
         }

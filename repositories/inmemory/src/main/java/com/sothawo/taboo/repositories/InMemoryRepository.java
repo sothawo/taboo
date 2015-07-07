@@ -66,22 +66,22 @@ public class InMemoryRepository extends AbstractBookmarkRepository {
      */
     @Override
     public void deleteBookmark(String id) {
-        bookmarks.remove(findBookmarkById(id).getUrl());
+        bookmarks.remove(getBookmarkById(id).getUrl());
     }
 
     @Override
-    public Collection<Bookmark> findAllBookmarks() {
+    public Collection<Bookmark> getAllBookmarks() {
         return bookmarks.values();
     }
 
     @Override
-    public Collection<String> findAllTags() {
+    public Collection<String> getAllTags() {
         return bookmarks.values().stream().flatMap(bookmark -> bookmark.getTags().stream())
                 .collect(Collectors.toSet());
     }
 
     @Override
-    public Bookmark findBookmarkById(String id) {
+    public Bookmark getBookmarkById(String id) {
         String idToSearch = Objects.requireNonNull(id);
         return bookmarks.values().stream()
                 .filter(b -> b.getId().equals(idToSearch))
@@ -97,7 +97,7 @@ public class InMemoryRepository extends AbstractBookmarkRepository {
      * @return the found bookmarks
      */
     @Override
-    public Collection<Bookmark> findBookmarksWithSearch(String s) {
+    public Collection<Bookmark> getBookmarksWithSearch(String s) {
         final String titleToSearch = Objects.requireNonNull(s).toLowerCase();
         return bookmarks.values().stream()
                 .filter(bookmark -> Objects.nonNull(bookmark.getTitle()))
@@ -106,7 +106,7 @@ public class InMemoryRepository extends AbstractBookmarkRepository {
     }
 
     @Override
-    public Collection<Bookmark> findBookmarksWithTags(Collection<String> tags, boolean opAnd) {
+    public Collection<Bookmark> getBookmarksWithTags(Collection<String> tags, boolean opAnd) {
         Map<String, Set<Bookmark>> bookmarksForTag = new HashMap<>();
         for (String tag : tags) {
             bookmarksForTag.put(tag, new HashSet<>());

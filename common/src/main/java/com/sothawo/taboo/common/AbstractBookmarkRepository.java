@@ -23,22 +23,22 @@ public abstract class AbstractBookmarkRepository implements BookmarkRepository {
 // --------------------- Interface BookmarkRepository ---------------------
 
     /**
-     * basic implementation that calls both methods {@link BookmarkRepository#findBookmarksWithTags(Collection,
+     * basic implementation that calls both methods {@link BookmarkRepository#getBookmarksWithTags(Collection,
      * boolean)}
-     * and {@link BookmarkRepository#findBookmarksWithSearch(String)} and builds the intersection of both returned
+     * and {@link BookmarkRepository#getBookmarksWithSearch(String)} and builds the intersection of both returned
      * collections. Deriving classes might implement a more performant search.
      *
-     * @see BookmarkRepository#findBookmarksWithTagsAndSearch(Collection, boolean, String).
+     * @see BookmarkRepository#getBookmarksWithTagsAndSearch(Collection, boolean, String).
      */
     @Override
-    public Collection<Bookmark> findBookmarksWithTagsAndSearch(Collection<String> tags, boolean opAnd, String s) {
+    public Collection<Bookmark> getBookmarksWithTagsAndSearch(Collection<String> tags, boolean opAnd, String s) {
         if(null == s) {
-            return findBookmarksWithTags(tags, opAnd);
+            return getBookmarksWithTags(tags, opAnd);
         } else if (null == tags) {
-            return findBookmarksWithSearch(s);
+            return getBookmarksWithSearch(s);
         } else {
-            Set<Bookmark> bookmarksWithTags = new HashSet<>(findBookmarksWithTags(tags, opAnd));
-            Set<Bookmark> bookmarksWithString = new HashSet<>(findBookmarksWithSearch(s));
+            Set<Bookmark> bookmarksWithTags = new HashSet<>(getBookmarksWithTags(tags, opAnd));
+            Set<Bookmark> bookmarksWithString = new HashSet<>(getBookmarksWithSearch(s));
             return Sets.intersection(bookmarksWithTags, bookmarksWithString);
         }
     }

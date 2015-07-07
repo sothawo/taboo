@@ -43,14 +43,14 @@ public interface BookmarkRepository {
      *
      * @return the bookmarks
      */
-    Collection<Bookmark> findAllBookmarks();
+    Collection<Bookmark> getAllBookmarks();
 
     /**
      * returns all tags that are stored in the repository.
      *
      * @return Collection of tags, may be emoty, not null
      */
-    Collection<String> findAllTags();
+    Collection<String> getAllTags();
 
     /**
      * returns the bookmark for the given id.
@@ -61,7 +61,7 @@ public interface BookmarkRepository {
      * @throws NotFoundException
      *         if no bookmark is found for the given id
      */
-    Bookmark findBookmarkById(String id);
+    Bookmark getBookmarkById(String id);
 
     /**
      * returns the bookmarks that contain the given string. The search must be case insensitive.
@@ -70,7 +70,7 @@ public interface BookmarkRepository {
      *         the substring to search
      * @return the found bookmarks
      */
-    Collection<Bookmark> findBookmarksWithSearch(String s);
+    Collection<Bookmark> getBookmarksWithSearch(String s);
 
     /**
      * returns all bookmarks that have all of the given tags.
@@ -81,7 +81,7 @@ public interface BookmarkRepository {
      *         if true, the tags are to be combined using AND, otherwise OR
      * @return the found bookmarks
      */
-    Collection<Bookmark> findBookmarksWithTags(Collection<String> tags, boolean opAnd);
+    Collection<Bookmark> getBookmarksWithTags(Collection<String> tags, boolean opAnd);
 
     /**
      * returns all bookmarks that have all of the given tags and that contain the given search string.
@@ -92,7 +92,7 @@ public interface BookmarkRepository {
      *         if true, the tags are to be combined using AND, otherwise OR
      * @return the found bookmarks
      */
-    Collection<Bookmark> findBookmarksWithTagsAndSearch(Collection<String> tags, boolean opAnd, String s);
+    Collection<Bookmark> getBookmarksWithTagsAndSearch(Collection<String> tags, boolean opAnd, String s);
 
     /**
      * removes all bookmarks from the repository.

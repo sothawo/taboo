@@ -175,16 +175,16 @@ public class TabooService {
                                                        final String search) {
         boolean opAnd = !OP_OR.equals(op.toLowerCase());
         if(null == tags && null == search) {
-            return repository.findAllBookmarks();
+            return repository.getAllBookmarks();
         }
         else if (null == search) {
             // only tags
-            return repository.findBookmarksWithTags(tags, opAnd);
+            return repository.getBookmarksWithTags(tags, opAnd);
         } else if (null == tags) {
             // only search
-            return repository.findBookmarksWithSearch(search);
+            return repository.getBookmarksWithSearch(search);
         } else {
-            return repository.findBookmarksWithTagsAndSearch(tags, opAnd, search);
+            return repository.getBookmarksWithTagsAndSearch(tags, opAnd, search);
         }
     }
 
@@ -195,7 +195,7 @@ public class TabooService {
      */
     @RequestMapping(value = "/tags", method = RequestMethod.GET)
     public final Collection<String> findAlltags() {
-        return repository.findAllTags().stream().filter(Objects::nonNull).collect(Collectors.toList());
+        return repository.getAllTags().stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**
@@ -209,6 +209,6 @@ public class TabooService {
      */
     @RequestMapping(value = "/bookmarks/{id}", method = RequestMethod.GET)
     public final Bookmark findBookmarkById(@PathVariable(value = "id") final String id) {
-        return repository.findBookmarkById(id);
+        return repository.getBookmarkById(id);
     }
 }

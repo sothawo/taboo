@@ -104,7 +104,7 @@ public class RepositoryTest {
         bookmark2 = repository.createBookmark(bookmark2);
 
         repository.deleteBookmark(bookmark2.getId());
-        Collection<Bookmark> allBookmarks = repository.findAllBookmarks();
+        Collection<Bookmark> allBookmarks = repository.getAllBookmarks();
 
         assertThat(allBookmarks, hasSize(1));
         assertThat(allBookmarks, hasItems(bookmark1));
@@ -125,7 +125,7 @@ public class RepositoryTest {
         repository.createBookmark(bookmark1);
         repository.createBookmark(bookmark2);
 
-        Collection<Bookmark> allBookmarks = repository.findAllBookmarks();
+        Collection<Bookmark> allBookmarks = repository.getAllBookmarks();
         assertThat(allBookmarks, hasItems(bookmark1, bookmark2));
     }
 
@@ -138,7 +138,7 @@ public class RepositoryTest {
         repository.createBookmark(bookmark2);
         repository.createBookmark(bookmark3);
 
-        Collection<String> tags = repository.findAllTags();
+        Collection<String> tags = repository.getAllTags();
 
         assertThat(tags, hasSize(4));
         assertThat(tags, hasItems("tag1", "tag2", "tag3", "common"));
@@ -149,14 +149,14 @@ public class RepositoryTest {
         Bookmark bookmark =
                 repository.createBookmark(aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").build());
 
-        Bookmark foundBookmark = repository.findBookmarkById(bookmark.getId());
+        Bookmark foundBookmark = repository.getBookmarkById(bookmark.getId());
 
         assertThat(foundBookmark, is(bookmark));
     }
 
     @Test(expected = NotFoundException.class)
     public void findBookmarkByIdNotExisting() throws Exception {
-        repository.findBookmarkById("42");
+        repository.getBookmarkById("42");
         fail("NotFoundException expected");
     }
 
@@ -170,7 +170,7 @@ public class RepositoryTest {
         repository.createBookmark(bookmark3);
 
         Collection<Bookmark> bookmarks =
-                repository.findBookmarksWithTags(Arrays.asList("tag2", "common"), true);
+                repository.getBookmarksWithTags(Arrays.asList("tag2", "common"), true);
 
         assertThat(bookmarks, hasSize(1));
         assertThat(bookmarks, hasItem(bookmark2));
@@ -186,7 +186,7 @@ public class RepositoryTest {
         repository.createBookmark(bookmark3);
 
         Collection<Bookmark> bookmarks =
-                repository.findBookmarksWithTags(Arrays.asList("tag2", "common"), false);
+                repository.getBookmarksWithTags(Arrays.asList("tag2", "common"), false);
 
         assertThat(bookmarks, hasSize(2));
         assertThat(bookmarks, hasItems(bookmark1, bookmark2));
@@ -194,7 +194,7 @@ public class RepositoryTest {
 
     @Test
     public void findTagsOnNewRepositoryYieldsEmptyList() throws Exception {
-        Collection<String> tags = repository.findAllTags();
+        Collection<String> tags = repository.getAllTags();
 
         assertThat(tags, hasSize(0));
     }
@@ -204,14 +204,14 @@ public class RepositoryTest {
         Bookmark bookmark = aBookmark().withUrl("url1").withTitle("title1").build();
         repository.createBookmark(bookmark);
 
-        Collection<String> tags = repository.findAllTags();
+        Collection<String> tags = repository.getAllTags();
 
         assertThat(tags, hasSize(0));
     }
 
     @Test
     public void repositoryHasNoBookmarksOnCreation() throws Exception {
-        Collection<Bookmark> bookmarks = repository.findAllBookmarks();
+        Collection<Bookmark> bookmarks = repository.getAllBookmarks();
         assertThat(bookmarks, hasSize(0));
     }
 
@@ -231,7 +231,7 @@ public class RepositoryTest {
         repository.createBookmark(bookmark3);
 
         Collection<Bookmark> bookmarks =
-                repository.findBookmarksWithSearch("hello");
+                repository.getBookmarksWithSearch("hello");
 
         assertThat(bookmarks, hasSize(2));
         assertThat(bookmarks, hasItems(bookmark1, bookmark3));
@@ -248,7 +248,7 @@ public class RepositoryTest {
         repository.createBookmark(bookmark3);
 
         Collection<Bookmark> bookmarks =
-                repository.findBookmarksWithTagsAndSearch(Arrays.asList("tag1"), true, "hello");
+                repository.getBookmarksWithTagsAndSearch(Arrays.asList("tag1"), true, "hello");
 
         assertThat(bookmarks, hasSize(1));
         assertThat(bookmarks, hasItems(bookmark1));
