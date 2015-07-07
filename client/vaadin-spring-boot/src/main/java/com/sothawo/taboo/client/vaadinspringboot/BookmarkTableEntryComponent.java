@@ -67,7 +67,7 @@ public class BookmarkTableEntryComponent extends CustomComponent {
         // vertical layout with buttons
         VerticalLayout buttonLayout = new VerticalLayout();
         buttonLayout.setWidth("40px");
-
+        buttonLayout.setSpacing(true);
 
         // Button to edit
         Button button = new Button(FontAwesome.PENCIL_SQUARE_O);

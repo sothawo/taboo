@@ -1,11 +1,13 @@
-@import "../valo/valo.scss";
+// uncomment for dark style
+//@import "variables_dark";
+@import "../valo/valo";
 
 @mixin taboo {
   @include valo;
 
   // cells of the bookmarks table
   .v-table-bookmarks-table .v-table-cell-content {
-    height: 75px;
+    height: 85px;
   }
 
   .v-table-bookmarks-table .bookmark-title {
