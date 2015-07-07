@@ -25,7 +25,6 @@ import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -43,7 +42,7 @@ public class BookmarkFilterComponent extends CustomComponent {
     private final static Logger logger = LoggerFactory.getLogger(BookmarkFilterComponent.class);
     /** TagList Component for selected tags */
     private final TagListComponent selectedTagList = new TagListComponent();
-    /** TagLisComponent for available tags */
+    /** TagListComponent for available tags */
     private final TagListComponent availableTagList = new TagListComponent();
     /** the taboo service */
     @Autowired
@@ -51,8 +50,8 @@ public class BookmarkFilterComponent extends CustomComponent {
     /** the component for showing the bookmarks */
     @Autowired
     private BookmarkTableComponent bookmarkTableComponent;
-    /** text field to search in the titles. */
-    private TextField textFieldTitle;
+    /** TextField to search in the bookmarks. */
+    private TextField searchField;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -63,11 +62,14 @@ public class BookmarkFilterComponent extends CustomComponent {
         VerticalLayout layout = new VerticalLayout();
         layout.setSpacing(true);
 
-        layout.addComponent(createTitlePanel());
+        Button clearSelection = new Button("clear selection");
+        clearSelection.addClickListener(clickEvent -> clearSelection());
+        clearSelection.setWidth("100%");
+        layout.addComponent(clearSelection);
 
-        Button clearSelection = new Button("clear");
-        clearSelection.addClickListener(clickEvent -> resetTags());
-        layout.addComponent(createTagListPanel("selected tags", selectedTagList, clearSelection));
+        layout.addComponent(createSearchPanel());
+
+        layout.addComponent(createTagListPanel("selected tags", selectedTagList, null));
         layout.addComponent(createTagListPanel("available tags", availableTagList, null));
 
         selectedTagList.setListener(this::removeTagFromSelection);
@@ -101,47 +103,48 @@ public class BookmarkFilterComponent extends CustomComponent {
     }
 
     /**
-     * creates a Panel wiht a TextFeild to search in the bookmark's titles.
+     * creates a Panel with a TextField to search in the bookmark's titles.
      *
      * @return Panel component
      */
-    private Panel createTitlePanel() {
-        Panel panel = new Panel("Title");
+    private Panel createSearchPanel() {
+        Panel panel = new Panel("search...");
         VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
 
-        textFieldTitle = new TextField();
-        textFieldTitle.addTextChangeListener(evt -> {
-            String text = Optional.ofNullable(evt.getText()).orElse("");
-            if (!selectedTagList.getTags().isEmpty()) {
-                resetTags();
-            }
-            getBookmarksForTitle(text);
-        });
-        textFieldTitle.setTextChangeEventMode(AbstractTextField.TextChangeEventMode.LAZY);
-        textFieldTitle.setWidth("100%");
+        searchField = new TextField();
+        searchField.addTextChangeListener(evt -> loadBookmarksForTagsAndSelection(selectedTagList.getTags(), evt
+                .getText()));
+        searchField.setTextChangeEventMode(AbstractTextField.TextChangeEventMode.LAZY);
+        searchField.setWidth("100%");
 
-        layout.addComponent(textFieldTitle);
+        layout.addComponent(searchField);
 
         panel.setContent(layout);
         return panel;
     }
 
     /**
-     * loads the bookmarks which contain the given string in their title.
-     *
-     * @param title
-     *         the string to search for
+     * loads the bookmarks for the given selection.
      */
-    private void getBookmarksForTitle(String title) {
-        if (0 == Optional.ofNullable(title).orElse("").length()) {
-            textFieldTitle.clear();
-            resetTags();
-        } else {
-            // do that in background, to show use UI.access() to trigger push
-            CompletableFuture.supplyAsync(() -> taboo.getBookmarks(title))
-                    .thenAccept(bookmarks -> UI.getCurrent().access(() -> setBookmarksToShow(bookmarks)));
-        }
+    public void reloadBookmarks() {
+        logger.debug("reloading bookmarks");
+        loadBookmarksForTagsAndSelection(selectedTagList.getTags(), searchField.getValue());
+
+    }
+
+    /**
+     * loads the bookmarks for the given tags and selection.
+     *
+     * @param tags
+     *         the tags
+     * @param search
+     *         the search string
+     */
+    private void loadBookmarksForTagsAndSelection(final Collection<String> tags, final String search) {
+        // do that in background, to show use UI.access() to trigger push
+        CompletableFuture.supplyAsync(() -> taboo.getBookmarks(tags, search))
+                .thenAccept(bookmarks -> getUI().access(() -> setBookmarksToShow(bookmarks)));
     }
 
 // -------------------------- OTHER METHODS --------------------------
@@ -156,11 +159,12 @@ public class BookmarkFilterComponent extends CustomComponent {
     private void addTagToSelection(String tag) {
         logger.info("add tag {}", tag);
 
-        // first get the set of selected tags
+        // first get the set of selected tags, add the new one and set them
         final Set<String> selectedTags = new HashSet<>();
         selectedTags.addAll(selectedTagList.getTags());
         selectedTags.add(tag);
-        setSelectedTags(selectedTags);
+        selectedTagList.setTags(selectedTags);
+        reloadBookmarks();
     }
 
     /**
@@ -168,15 +172,17 @@ public class BookmarkFilterComponent extends CustomComponent {
      */
     @PostConstruct
     public void initBean() {
-        resetTags();
+        // wait with initialize until we are attached
+        addAttachListener(attachEvent -> clearSelection());
     }
 
     /**
-     * resets the selected tags list to empty and the available to all that the server knows.
+     * clears the selection criteria. resets the selected tags list to empty by calling #setSelectedTags() with an empty
+     * list.
      */
-    private void resetTags() {
+    private void clearSelection() {
+        searchField.setValue("");
         setSelectedTags(Collections.EMPTY_LIST);
-        availableTagList.setTags(taboo.getTags());
     }
 
     /**
@@ -204,14 +210,7 @@ public class BookmarkFilterComponent extends CustomComponent {
         Set<String> selectedTags = new HashSet<>();
         selectedTags.addAll(tags);
         selectedTagList.setTags(selectedTags);
-        getBookmarksForSelectedTags();
-    }
-
-    /**
-     * load the bookmarks for the selected tags and adjusts the list of available tags.
-     */
-    public void getBookmarksForSelectedTags() {
-        setBookmarksToShow(taboo.getBookmarks(selectedTagList.getTags()));
+        reloadBookmarks();
     }
 
     /**
@@ -222,6 +221,7 @@ public class BookmarkFilterComponent extends CustomComponent {
      *         the bookmarks to show
      */
     private void setBookmarksToShow(Collection<Bookmark> bookmarks) {
+        logger.debug("showing {} bookmark(s)", bookmarks.size());
         bookmarkTableComponent.setBookmarks(bookmarks);
         Set<String> selectedTags = new HashSet<>(selectedTagList.getTags());
         // collect the tags from the bookmarks, remove the tags that are already selected and set in the available

@@ -13,13 +13,14 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
- * a component that displays a list of tags as a continuous flow of buttons. There can be a Listener registered (only
- * one).
+ * a component that displays a Set of tags as a continuous flow of buttons. There can be a Listener registered (only
+ * one). A Set is used to prevent duplicate entries and to get the entries sorted.
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
@@ -31,7 +32,7 @@ public class TagListComponent extends CustomComponent {
     /** the layout containing the tags. */
     private final Layout layout;
     /** the tags */
-    private final Collection<String> tags = new ArrayList<>();
+    private final Set<String> tags = new HashSet<>();
     /** the listener that is notified when a tag is selected. */
     private Listener listener;
 
@@ -57,22 +58,31 @@ public class TagListComponent extends CustomComponent {
 
 // -------------------------- OTHER METHODS --------------------------
 
-    public void setTags(Collection<String> tags) {
+    /**
+     * sets the tags and creates buttons for them
+     *
+     * @param tags
+     *         the new tags
+     */
+    public void setTags(final Collection<String> tags) {
         this.tags.clear();
         layout.removeAllComponents();
         if (null != tags) {
+            // add the non-empty ones
             tags.stream()
                     .filter(Objects::nonNull)
                     .filter(tag -> !tag.isEmpty())
-                    .forEach(tag -> {
-                        Button tagButton = new Button(tag);
-                        tagButton.addStyleName("taglist-entry");
-                        tagButton.addStyleName(ValoTheme.BUTTON_TINY);
-                        tagButton.addClickListener(clickEvent -> tagSelect(clickEvent.getButton().getCaption()));
-                        layout.addComponent(tagButton);
-                        this.tags.add(tag);
-                    });
+                    .forEach(this.tags::add);
         }
+        // for each tag, create a button
+        this.tags.stream()
+                .forEach(tag -> {
+                    Button tagButton = new Button(tag);
+                    tagButton.addStyleName("taglist-entry");
+                    tagButton.addStyleName(ValoTheme.BUTTON_TINY);
+                    tagButton.addClickListener(clickEvent -> tagSelect(clickEvent.getButton().getCaption()));
+                    layout.addComponent(tagButton);
+                });
     }
 
     /**

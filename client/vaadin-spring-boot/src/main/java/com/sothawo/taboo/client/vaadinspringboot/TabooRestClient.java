@@ -13,11 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -62,50 +64,30 @@ public class TabooRestClient implements TabooClient {
         rest.delete(tabooUrlBookmarks + "/" + bookmark.getId());
     }
 
-    /**
-     * retrieves all bookmarks with the given tags
-     *
-     * @param tags
-     *         the tags of the bookmarks
-     * @return list of bookmarks
-     */
     @Override
-    public Collection<Bookmark> getBookmarks(Collection<String> tags) {
+    public Collection<Bookmark> getBookmarks(Collection<String> tags, String search) {
         RestTemplate rest = new RestTemplate();
         // need to build the arguments as string as they have the same name
         String queryParam = "";
         if (null != tags && !tags.isEmpty()) {
             queryParam = '?' + tags.stream().map(tag -> "tag=" + tag).collect(Collectors.joining("&"));
         }
-
+        if (!StringUtils.isEmpty(search)) {
+            if (queryParam.isEmpty()) {
+                queryParam = "?";
+            } else {
+                queryParam += "&";
+            }
+            queryParam += "search=" + search;
+        }
         String url = tabooUrlBookmarks + queryParam;
         logger.debug("get Bookmarks: {}", url);
         ResponseEntity<Bookmark[]> response = rest.getForEntity(url, Bookmark[].class);
 
         HttpStatus status = response.getStatusCode();
-        logger.debug("get bookmarks: {} {}", status.toString(), status.getReasonPhrase());
-
-        return Arrays.asList(response.getBody());
-    }
-
-    /**
-     * retrieves all bookmarks that match a given title.
-     *
-     * @param title
-     *         the title to match
-     * @return matching bookmarks
-     */
-    @Override
-    public Collection<Bookmark> getBookmarks(String title) {
-        RestTemplate rest = new RestTemplate();
-        String url = tabooUrlBookmarks + "?title={title}";
-        logger.debug("get Bookmarks: {}", url);
-        ResponseEntity<Bookmark[]> response = rest.getForEntity(url, Bookmark[].class, title);
-
-        HttpStatus status = response.getStatusCode();
-        logger.debug("get bookmarks: {} {}", status.toString(), status.getReasonPhrase());
-
-        return Arrays.asList(response.getBody());
+        List<Bookmark> bookmarks = Arrays.asList(response.getBody());
+        logger.debug("get bookmarks: {} {}, #{}", status.toString(), status.getReasonPhrase(), bookmarks.size());
+        return bookmarks;
     }
 
     /**

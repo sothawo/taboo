@@ -83,7 +83,7 @@ public class BookmarkTableComponent extends CustomComponent {
                             // Confirmed to continue, delete
                             taboo.deleteBookmark(bookmark);
                             // reload the remaining bookmarks
-                            bookmarkFilterComponent.getBookmarksForSelectedTags();
+                            bookmarkFilterComponent.reloadBookmarks();
                         } catch (RuntimeException e) {
                             ClientUI.handleException(e);
                         }

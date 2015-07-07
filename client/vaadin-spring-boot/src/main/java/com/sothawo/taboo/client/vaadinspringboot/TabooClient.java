@@ -26,22 +26,16 @@ public interface TabooClient {
     void deleteBookmark(final Bookmark bookmark);
 
     /**
-     * retrieves all bookmarks with the given tags
+     * retrieves all bookmarks with the given tags and containing the search string. when the list of tags is empty, all
+     * bookmarks are returned.
      *
      * @param tags
      *         the tags of the bookmarks
+     * @param search
+     *         the string to search for
      * @return list of bookmarks
      */
-    Collection<Bookmark> getBookmarks(final Collection<String> tags);
-
-    /**
-     * retrieves all bookmarks that match a given title.
-     *
-     * @param title
-     *         the title to match
-     * @return matching bookmarks
-     */
-    Collection<Bookmark> getBookmarks(final String title);
+    Collection<Bookmark> getBookmarks(final Collection<String> tags, final String search);
 
     /**
      * get all the tags available in the service.
