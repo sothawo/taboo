@@ -173,17 +173,19 @@ public class TabooService {
                                                        final String op,
                                                        @RequestParam(value = "search", required = false)
                                                        final String search) {
-        Collection<Bookmark> bookmarks;
-        if (null != tags) {
-            bookmarks = repository.findBookmarksWithTags(tags, !OP_OR.equalsIgnoreCase(op));
-        } else {
-            if (null != search) {
-                bookmarks = repository.findBookmarksWithSearch(search);
-            } else {
-                bookmarks = repository.findAllBookmarks();
-            }
+        boolean opAnd = !OP_OR.equals(op.toLowerCase());
+        if(null == tags && null == search) {
+            return repository.findAllBookmarks();
         }
-        return bookmarks;
+        else if (null == search) {
+            // only tags
+            return repository.findBookmarksWithTags(tags, opAnd);
+        } else if (null == tags) {
+            // only search
+            return repository.findBookmarksWithSearch(search);
+        } else {
+            return repository.findBookmarksWithTagsAndSearch(tags, opAnd, search);
+        }
     }
 
     /**

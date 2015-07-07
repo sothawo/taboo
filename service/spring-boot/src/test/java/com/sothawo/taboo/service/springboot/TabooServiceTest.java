@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -296,8 +297,8 @@ public class TabooServiceTest {
     }
 
     @Test
-    public void findBookmarksBySearch() throws Exception {
-        Bookmark bookmark = createBookmarks("1", "2").get(0);
+    public void findBookmarksWithSearch() throws Exception {
+        Bookmark bookmark = createBookmarks("1").get(0);
 
         new Expectations() {{
             repository.findBookmarksWithSearch("search1");
@@ -308,7 +309,6 @@ public class TabooServiceTest {
         mockMvc.perform(get(TABOO_BOOKMARKS)
                 .param("search", "search1")
                 .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(bookmark.getId()))) // id check is enough here
@@ -319,6 +319,34 @@ public class TabooServiceTest {
             times = 1;
         }};
 
+    }
+
+    @Test
+    public void findBookmarksWithTagAndSearch() throws Exception {
+        Bookmark bookmark = createBookmarks("1").get(0);
+        Collection<String> tags = Arrays.asList("tag1");
+        String search = "search1";
+
+        new Expectations() {{
+            repository.findBookmarksWithTagsAndSearch(tags, true, search);
+            result = Collections.singletonList(bookmark);
+        }};
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(get(TABOO_BOOKMARKS)
+                .param("search", "search1")
+                .param("tag", "tag1")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(1)))
+                .andExpect(jsonPath("$[0].id", is(bookmark.getId()))) // id check is enough here
+        ;
+
+        new Verifications() {{
+            repository.findBookmarksWithTagsAndSearch(tags, true, search);
+            times = 1;
+        }};
     }
 
     /**
