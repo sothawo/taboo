@@ -77,6 +77,11 @@
             <artifactId>confirmdialog</artifactId>
             <version>${vaadin.confirmdialog.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.icons</groupId>
+            <artifactId>vaadin-icons</artifactId>
+            <version>1.0.1</version>
+        </dependency>
         <!-- for loading titles from websites -->
         <dependency>
             <groupId>org.jsoup</groupId>

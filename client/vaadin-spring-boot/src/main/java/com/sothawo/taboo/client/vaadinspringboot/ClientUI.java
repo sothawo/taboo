@@ -64,8 +64,6 @@ public class ClientUI extends UI {
         layout.setSpacing(true);
         setContent(layout);
 
-        Label tabooLabel = new Label(TABOO);
-        layout.addComponent(tabooLabel);
         layout.addComponent(createEntryComponent());
 
         Component bookmarkComponent = createBookmarkComponent();

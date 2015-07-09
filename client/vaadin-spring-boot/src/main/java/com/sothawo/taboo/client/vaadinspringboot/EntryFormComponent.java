@@ -10,7 +10,6 @@ import com.sothawo.taboo.common.TagUtil;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -20,11 +19,11 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.teemu.VaadinIcons;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -89,7 +88,7 @@ public class EntryFormComponent extends CustomComponent {
         hLayoutTop.setExpandRatio(url, 1);
 
         // a button to load the title
-        Button buttonLoad = new Button(FontAwesome.DOWNLOAD);
+        Button buttonLoad = new Button(VaadinIcons.DOWNLOAD_ALT);
         buttonLoad.addStyleName(ValoTheme.BUTTON_TINY);
         hLayoutTop.addComponent(buttonLoad);
         hLayoutTop.setComponentAlignment(buttonLoad, Alignment.BOTTOM_CENTER);
