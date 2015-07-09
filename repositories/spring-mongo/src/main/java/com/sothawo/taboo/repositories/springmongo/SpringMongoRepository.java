@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -170,5 +171,23 @@ public class SpringMongoRepository extends AbstractBookmarkRepository {
     @Override
     public void purge() {
         mongoRepository.deleteAll();
+    }
+
+    @Override
+    public void updateBookmark(Bookmark bookmark) {
+        String id = Objects.requireNonNull(bookmark).getId();
+        if (null == id || id.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+
+        // check if bookmark exists
+        getBookmarkById(bookmark.getId());
+        // check if there is no different bookmark with this url
+        MongoBookmark found = mongoRepository.findByUrl(bookmark.getUrl());
+        if (null != found && !id.equals(found.getId())) {
+            throw new AlreadyExistsException("bookmark with url " + bookmark.getUrl());
+        }
+
+        mongoRepository.save(MongoBookmark.fromCommon(bookmark));
     }
 }

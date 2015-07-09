@@ -98,4 +98,18 @@ public interface BookmarkRepository {
      * removes all bookmarks from the repository.
      */
     void purge();
+
+    /**
+     * updates a bookmark.
+     *
+     * @param bookmark
+     *         the bookmark to update
+     * @throws NullPointerException
+     *         when bookmark is null
+     * @throws IllegalArgumentException
+     *         when the bookmark has no id
+     * @throws NotFoundException
+     *         when no bookmark with the given id is found
+     */
+    void updateBookmark(Bookmark bookmark);
 }

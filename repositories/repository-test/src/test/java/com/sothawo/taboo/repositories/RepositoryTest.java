@@ -253,4 +253,65 @@ public class RepositoryTest {
         assertThat(bookmarks, hasSize(1));
         assertThat(bookmarks, hasItems(bookmark1));
     }
+
+    @Test
+    public void updateBookmark() throws Exception {
+        Bookmark bookmark = aBookmark().withUrl("url0").withTitle("title0").addTag("tag0").build();
+
+        bookmark = repository.createBookmark(bookmark);
+        bookmark.setUrl("url1");
+        bookmark.setTitle("title1");
+        bookmark.clearTags();
+        bookmark.addTag("tag1");
+        String id = bookmark.getId();
+
+        repository.updateBookmark(bookmark);
+        bookmark = repository.getBookmarkById(id);
+
+        assertThat(bookmark.getId(), is(id));
+        assertThat(bookmark.getUrl(), is("url1"));
+        assertThat(bookmark.getTitle(), is("title1"));
+        assertThat(bookmark.getTags(), hasSize(1));
+        assertThat(bookmark.getTags(), hasItem("tag1"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void updateBookmarkWithoutId() throws Exception {
+        Bookmark bookmark = aBookmark().withUrl("url0").withTitle("title0").addTag("tag0").build();
+
+        repository.updateBookmark(bookmark);
+
+        fail("IllegalArgumentException expected");
+    }
+
+
+    @Test(expected = NullPointerException.class)
+    public void updateBookmarNull() throws Exception {
+        repository.updateBookmark(null);
+
+        fail("NullPointerException expected");
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void updateBookmarkWithNotExistingId() throws Exception {
+        Bookmark bookmark = aBookmark().withUrl("url0").withTitle("title0").addTag("tag0").build();
+        bookmark.setId("NotExistingId");
+
+        repository.updateBookmark(bookmark);
+
+        fail("NotFoundException expected");
+    }
+
+    @Test(expected = AlreadyExistsException.class)
+    public void updateToExistingUrl() throws Exception {
+        Bookmark bookmark = repository.createBookmark(aBookmark().withUrl("url0").withTitle("title0").addTag("tag0")
+                .build());
+        repository.createBookmark(aBookmark().withUrl("url1").withTitle("title1").addTag("tag1")
+                .build());
+        bookmark.setUrl("url1");
+
+        repository.updateBookmark(bookmark);
+
+        fail("AlreadyExistsException expected");
+    }
 }

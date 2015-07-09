@@ -31,6 +31,7 @@ public class MongoBookmark {
     private String id;
 
     /** bookmark's url */
+    @Indexed
     private String url;
 
     /** bookmark's title */

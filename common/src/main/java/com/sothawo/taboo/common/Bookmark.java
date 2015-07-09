@@ -114,6 +114,13 @@ public final class Bookmark {
     }
 
     /**
+     * clears all the tags.
+     */
+    public void clearTags() {
+        tags.clear();
+    }
+
+    /**
      * returns an unmodifiable view of the tags collection.
      *
      * @return unmodifiable collection

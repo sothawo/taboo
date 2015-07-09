@@ -137,4 +137,19 @@ public class InMemoryRepository extends AbstractBookmarkRepository {
     public void purge() {
         bookmarks.clear();
     }
+
+    @Override
+    public void updateBookmark(Bookmark bookmark) {
+        String id = Objects.requireNonNull(bookmark).getId();
+        if (null == id || id.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        // check if there is no different bookmark with this url
+        Bookmark found = bookmarks.get(bookmark.getUrl());
+        if (null != found && !id.equals(found.getId())) {
+            throw new AlreadyExistsException("bookmark with url " + bookmark.getUrl());
+        }
+        deleteBookmark(id);
+        bookmarks.put(bookmark.getUrl(), bookmark);
+    }
 }
