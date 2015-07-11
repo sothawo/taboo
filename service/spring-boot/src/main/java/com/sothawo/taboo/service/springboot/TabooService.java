@@ -68,20 +68,6 @@ public class TabooService {
 // -------------------------- OTHER METHODS --------------------------
 
     /**
-     * ExceptionHandler for AlreadyExistsException. returns the exception's error message in the body with the 409
-     * status code.
-     *
-     * @param e
-     *         the exception to handle
-     * @return HTTP CONFLICT Response Status and error message
-     */
-    @ExceptionHandler(AlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public final String alreadyExistsExceptionHandler(final AlreadyExistsException e) {
-        return e.getMessage();
-    }
-
-    /**
      * creates a new bookmark in the repository.
      *
      * @param bookmark
@@ -113,25 +99,6 @@ public class TabooService {
     }
 
     /**
-     * updates a bookmark in the repository.
-     *
-     * @param bookmark
-     *         bookmark to be updated
-     * @throws IllegalArgumentException
-     *         when bookmarkis null or doesnt have it's id set
-     */
-    @RequestMapping(value = "/bookmarks", method = RequestMethod.PUT)
-    public final void updateBookmark(@RequestBody final Bookmark bookmark) {
-        if (null == bookmark) {
-            throw new IllegalArgumentException("bookmark must not be null");
-        }
-        if (null == bookmark.getId()) {
-            throw new IllegalArgumentException("id must be set");
-        }
-        repository.updateBookmark(bookmark);
-    }
-
-    /**
      * deletes a bookmark from the repository.
      *
      * @param id
@@ -143,6 +110,20 @@ public class TabooService {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public final void deleteBookmarkById(@PathVariable(value = "id") final String id) {
         repository.deleteBookmark(id);
+    }
+
+    /**
+     * ExceptionHandler for AlreadyExistsException. returns the exception's error message in the body with the 409
+     * status code.
+     *
+     * @param e
+     *         the exception to handle
+     * @return HTTP CONFLICT Response Status and error message
+     */
+    @ExceptionHandler(AlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public final String exceptionHandlerAlreadyExistsException(final AlreadyExistsException e) {
+        return e.getMessage();
     }
 
     /**
@@ -193,10 +174,9 @@ public class TabooService {
                                                        @RequestParam(value = "search", required = false)
                                                        final String search) {
         boolean opAnd = !OP_OR.equals(op.toLowerCase());
-        if(null == tags && null == search) {
+        if (null == tags && null == search) {
             return repository.getAllBookmarks();
-        }
-        else if (null == search) {
+        } else if (null == search) {
             // only tags
             return repository.getBookmarksWithTags(tags, opAnd);
         } else if (null == tags) {
@@ -229,5 +209,24 @@ public class TabooService {
     @RequestMapping(value = "/bookmarks/{id}", method = RequestMethod.GET)
     public final Bookmark findBookmarkById(@PathVariable(value = "id") final String id) {
         return repository.getBookmarkById(id);
+    }
+
+    /**
+     * updates a bookmark in the repository.
+     *
+     * @param bookmark
+     *         bookmark to be updated
+     * @throws IllegalArgumentException
+     *         when bookmarkis null or doesnt have it's id set
+     */
+    @RequestMapping(value = "/bookmarks", method = RequestMethod.PUT)
+    public final void updateBookmark(@RequestBody final Bookmark bookmark) {
+        if (null == bookmark) {
+            throw new IllegalArgumentException("bookmark must not be null");
+        }
+        if (null == bookmark.getId()) {
+            throw new IllegalArgumentException("id must be set");
+        }
+        repository.updateBookmark(bookmark);
     }
 }
