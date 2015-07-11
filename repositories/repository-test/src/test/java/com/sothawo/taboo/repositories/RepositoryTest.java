@@ -161,6 +161,39 @@ public class RepositoryTest {
     }
 
     @Test
+    public void findBookmarkBySearchInTitle() throws Exception {
+        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("Hello world").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("world wide web").build();
+        Bookmark bookmark3 = aBookmark().withUrl("url3").withTitle("say hello").build();
+        repository.createBookmark(bookmark1);
+        repository.createBookmark(bookmark2);
+        repository.createBookmark(bookmark3);
+
+        Collection<Bookmark> bookmarks =
+                repository.getBookmarksWithSearch("hello");
+
+        assertThat(bookmarks, hasSize(2));
+        assertThat(bookmarks, hasItems(bookmark1, bookmark3));
+    }
+
+    @Test
+    public void findBookmarksBySearchInTitleAndTags() throws Exception {
+        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("Hello world").addTag("tag1").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("world wide web").addTag("tag1").addTag("tag2")
+                .build();
+        Bookmark bookmark3 = aBookmark().withUrl("url3").withTitle("say hello").addTag("tag3").build();
+        repository.createBookmark(bookmark1);
+        repository.createBookmark(bookmark2);
+        repository.createBookmark(bookmark3);
+
+        Collection<Bookmark> bookmarks =
+                repository.getBookmarksWithTagsAndSearch(Arrays.asList("tag1"), true, "hello");
+
+        assertThat(bookmarks, hasSize(1));
+        assertThat(bookmarks, hasItems(bookmark1));
+    }
+
+    @Test
     public void findBookmarksWithTagsAnd() throws Exception {
         Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").addTag("common").build();
         Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("title2").addTag("tag2").addTag("common").build();
@@ -222,39 +255,6 @@ public class RepositoryTest {
     }
 
     @Test
-    public void findBookmarkBySearchInTitle() throws Exception {
-        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("Hello world").build();
-        Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("world wide web").build();
-        Bookmark bookmark3 = aBookmark().withUrl("url3").withTitle("say hello").build();
-        repository.createBookmark(bookmark1);
-        repository.createBookmark(bookmark2);
-        repository.createBookmark(bookmark3);
-
-        Collection<Bookmark> bookmarks =
-                repository.getBookmarksWithSearch("hello");
-
-        assertThat(bookmarks, hasSize(2));
-        assertThat(bookmarks, hasItems(bookmark1, bookmark3));
-    }
-
-    @Test
-    public void findBookmarksBySearchInTitleAndTags() throws Exception {
-        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("Hello world").addTag("tag1").build();
-        Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("world wide web").addTag("tag1").addTag("tag2")
-                .build();
-        Bookmark bookmark3 = aBookmark().withUrl("url3").withTitle("say hello").addTag("tag3").build();
-        repository.createBookmark(bookmark1);
-        repository.createBookmark(bookmark2);
-        repository.createBookmark(bookmark3);
-
-        Collection<Bookmark> bookmarks =
-                repository.getBookmarksWithTagsAndSearch(Arrays.asList("tag1"), true, "hello");
-
-        assertThat(bookmarks, hasSize(1));
-        assertThat(bookmarks, hasItems(bookmark1));
-    }
-
-    @Test
     public void updateBookmark() throws Exception {
         Bookmark bookmark = aBookmark().withUrl("url0").withTitle("title0").addTag("tag0").build();
 
@@ -275,21 +275,17 @@ public class RepositoryTest {
         assertThat(bookmark.getTags(), hasItem("tag1"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void updateBookmarkWithoutId() throws Exception {
-        Bookmark bookmark = aBookmark().withUrl("url0").withTitle("title0").addTag("tag0").build();
+    @Test(expected = AlreadyExistsException.class)
+    public void updateBookmarkToExistingUrl() throws Exception {
+        Bookmark bookmark = repository.createBookmark(aBookmark().withUrl("url0").withTitle("title0").addTag("tag0")
+                .build());
+        repository.createBookmark(aBookmark().withUrl("url1").withTitle("title1").addTag("tag1")
+                .build());
+        bookmark.setUrl("url1");
 
         repository.updateBookmark(bookmark);
 
-        fail("IllegalArgumentException expected");
-    }
-
-
-    @Test(expected = NullPointerException.class)
-    public void updateBookmarNull() throws Exception {
-        repository.updateBookmark(null);
-
-        fail("NullPointerException expected");
+        fail("AlreadyExistsException expected");
     }
 
     @Test(expected = NotFoundException.class)
@@ -302,16 +298,19 @@ public class RepositoryTest {
         fail("NotFoundException expected");
     }
 
-    @Test(expected = AlreadyExistsException.class)
-    public void updateToExistingUrl() throws Exception {
-        Bookmark bookmark = repository.createBookmark(aBookmark().withUrl("url0").withTitle("title0").addTag("tag0")
-                .build());
-        repository.createBookmark(aBookmark().withUrl("url1").withTitle("title1").addTag("tag1")
-                .build());
-        bookmark.setUrl("url1");
+    @Test(expected = NullPointerException.class)
+    public void updateBookmarkWithoutData() throws Exception {
+        repository.updateBookmark(null);
+
+        fail("NullPointerException expected");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void updateBookmarkWithoutId() throws Exception {
+        Bookmark bookmark = aBookmark().withUrl("url0").withTitle("title0").addTag("tag0").build();
 
         repository.updateBookmark(bookmark);
 
-        fail("AlreadyExistsException expected");
+        fail("IllegalArgumentException expected");
     }
 }

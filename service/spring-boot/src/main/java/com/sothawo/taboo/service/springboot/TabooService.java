@@ -90,7 +90,7 @@ public class TabooService {
      *         uri component builder to build the created uri
      * @return the created bookmark
      * @throws IllegalArgumentException
-     *         when bookmark has it's id set
+     *         when bookmarkis null or has it's id set
      */
     @RequestMapping(value = "/bookmarks", method = RequestMethod.POST)
     public final ResponseEntity<Bookmark> createBookmark(@RequestBody final Bookmark bookmark,
@@ -110,6 +110,25 @@ public class TabooService {
                 .build().toUri();
         headers.setLocation(locationUri);
         return new ResponseEntity<>(createdBookmark, headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * updates a bookmark in the repository.
+     *
+     * @param bookmark
+     *         bookmark to be updated
+     * @throws IllegalArgumentException
+     *         when bookmarkis null or doesnt have it's id set
+     */
+    @RequestMapping(value = "/bookmarks", method = RequestMethod.PUT)
+    public final void updateBookmark(@RequestBody final Bookmark bookmark) {
+        if (null == bookmark) {
+            throw new IllegalArgumentException("bookmark must not be null");
+        }
+        if (null == bookmark.getId()) {
+            throw new IllegalArgumentException("id must be set");
+        }
+        repository.updateBookmark(bookmark);
     }
 
     /**

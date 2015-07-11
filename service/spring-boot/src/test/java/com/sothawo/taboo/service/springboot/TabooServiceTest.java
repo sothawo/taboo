@@ -28,7 +28,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -127,7 +127,7 @@ public class TabooServiceTest {
     }
 
     @Test
-    public void createBookmarksWithNoBodyYieldsBadRequest() throws Exception {
+    public void createBookmarksWithoutData() throws Exception {
         MockMvc mockMvc = standaloneSetup(tabooService).build();
         mockMvc.perform(post(TABOO_BOOKMARKS)
                 .accept(MediaType.APPLICATION_JSON)
@@ -205,22 +205,6 @@ public class TabooServiceTest {
             repository.getAllBookmarks();
             times = 1;
         }};
-    }
-
-    /**
-     * helper method to create a list of bookmarks.
-     *
-     * @param ids
-     *         id values for the Bookmark objects to create
-     * @return a list of bookmarks
-     */
-    private List<Bookmark> createBookmarks(String... ids) {
-        List<Bookmark> bookmarks = new ArrayList<>();
-        for (String id : ids) {
-            bookmarks
-                    .add(aBookmark().withId(id).withUrl("url" + id).withTitle("title" + id).addTag("tag" + id).build());
-        }
-        return bookmarks;
     }
 
     @Test
@@ -301,6 +285,22 @@ public class TabooServiceTest {
         }};
     }
 
+    /**
+     * helper method to create a list of bookmarks.
+     *
+     * @param ids
+     *         id values for the Bookmark objects to create
+     * @return a list of bookmarks
+     */
+    private List<Bookmark> createBookmarks(String... ids) {
+        List<Bookmark> bookmarks = new ArrayList<>();
+        for (String id : ids) {
+            bookmarks
+                    .add(aBookmark().withId(id).withUrl("url" + id).withTitle("title" + id).addTag("tag" + id).build());
+        }
+        return bookmarks;
+    }
+
     @Test
     public void getBookmarksWithSearch() throws Exception {
         Bookmark bookmark = createBookmarks("1").get(0);
@@ -341,7 +341,6 @@ public class TabooServiceTest {
                 .param("search", "search1")
                 .param("tag", "tag1")
                 .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(bookmark.getId()))) // id check is enough here
@@ -390,6 +389,104 @@ public class TabooServiceTest {
         new Verifications() {{
             repository.getBookmarkById("11");
             times = 1;
+        }};
+    }
+
+    @Test
+    public void updateBookmark() throws Exception {
+        Bookmark bookmark = createBookmarks("1").get(0);
+        bookmark.setId("id1");
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(put(TABOO_BOOKMARKS)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(convertObjectToJsonBytes(bookmark)))
+                .andExpect(status().isOk())
+        ;
+
+        new Verifications() {{
+            repository.updateBookmark(bookmark);
+            times = 1;
+        }};
+    }
+
+    @Test
+    public void updateBookmarkToExistingUrl() throws Exception {
+        Bookmark bookmark = createBookmarks("1").get(0);
+        bookmark.setId("id1");
+        new Expectations() {{
+            repository.updateBookmark(bookmark);
+            result = new AlreadyExistsException("bookmark exists " + bookmark.getUrl());
+        }};
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(put(TABOO_BOOKMARKS)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(convertObjectToJsonBytes(bookmark)))
+                .andExpect(status().isConflict())
+        ;
+
+        new Verifications() {{
+            repository.updateBookmark(bookmark);
+            times = 1;
+        }};
+    }
+
+    @Test
+    public void updateBookmarkWithNotExistingId() throws Exception {
+        Bookmark bookmark = createBookmarks("1").get(0);
+        bookmark.setId("id1");
+        new Expectations() {{
+            repository.updateBookmark(bookmark);
+            result = new NotFoundException("bookmark not found " + bookmark.getUrl());
+        }};
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(put(TABOO_BOOKMARKS)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(convertObjectToJsonBytes(bookmark)))
+                .andExpect(status().isNotFound())
+        ;
+
+        new Verifications() {{
+            repository.updateBookmark(bookmark);
+            times = 1;
+        }};
+    }
+
+    @Test
+    public void updateBookmarkWithoutData() throws Exception {
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(put(TABOO_BOOKMARKS)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+        ;
+
+        new Verifications() {{
+            repository.updateBookmark((Bookmark) any);
+            times = 0;
+        }};
+    }
+
+    @Test
+    public void updateBookmarkWithoutId() throws Exception {
+        Bookmark bookmarkIn = aBookmark().withUrl("url").withTitle("title").addTag("tag").build();
+
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(put(TABOO_BOOKMARKS)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(convertObjectToJsonBytes(bookmarkIn)))
+                .andExpect(status().isPreconditionFailed())
+        ;
+
+        new Verifications() {{
+            repository.createBookmark((Bookmark) any);
+            times = 0;
         }};
     }
 }
