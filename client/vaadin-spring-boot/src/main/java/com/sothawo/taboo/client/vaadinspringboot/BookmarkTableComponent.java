@@ -38,6 +38,10 @@ public class BookmarkTableComponent extends CustomComponent {
     @Autowired
     private BookmarkFilterComponent bookmarkFilterComponent;
 
+    /** the entry component */
+    @Autowired
+    private EntryFormComponent entryFormComponent;
+
     /** the table for the bookmarks */
     private final Table table;
 
@@ -107,5 +111,15 @@ public class BookmarkTableComponent extends CustomComponent {
         } catch (Exception e) {
             ClientUI.handleException(e);
         }
+    }
+
+    /**
+     * trabsfers the given bookmark to the EntryFormComponent. Called by the table entry sutom component.
+     *
+     * @param bookmark
+     *         the bokkmark that is going to be edited.
+     */
+    public void transferToEditForm(Bookmark bookmark) {
+        entryFormComponent.showBookmark(bookmark);
     }
 }

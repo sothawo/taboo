@@ -80,6 +80,7 @@ public class BookmarkTableEntryComponent extends CustomComponent {
         button.setWidth("100%");
         button.addStyleName(ValoTheme.BUTTON_TINY);
         buttonLayout.addComponent(button);
+        button.addClickListener(clickEvent -> bookmarkTableComponent.transferToEditForm(bookmark));
 
         // button to delete
         button = new Button(VaadinIcons.TRASH);

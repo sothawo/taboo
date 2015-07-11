@@ -76,6 +76,7 @@ public class TagListComponent extends CustomComponent {
         }
         // for each tag, create a button
         this.tags.stream()
+                .sorted()
                 .forEach(tag -> {
                     Button tagButton = new Button(tag);
                     tagButton.addStyleName("taglist-entry");

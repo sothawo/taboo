@@ -117,6 +117,13 @@ public class TabooRestClient implements TabooClient {
         logger.debug("stored bookmark: {}", response.toString());
     }
 
+    @Override
+    public void updateBookmark(Bookmark bookmark) {
+        RestTemplate rest = new RestTemplate();
+        rest.put(tabooUrlBookmarks, bookmark, Bookmark.class);
+        logger.debug("updated bookmark.");
+    }
+
 // -------------------------- OTHER METHODS --------------------------
 
     @PostConstruct

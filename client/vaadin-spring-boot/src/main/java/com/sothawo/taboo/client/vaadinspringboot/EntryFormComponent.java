@@ -5,6 +5,7 @@
  */
 package com.sothawo.taboo.client.vaadinspringboot;
 
+import com.sothawo.taboo.common.Bookmark;
 import com.sothawo.taboo.common.BookmarkBuilder;
 import com.sothawo.taboo.common.TagUtil;
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -28,6 +29,7 @@ import org.vaadin.teemu.VaadinIcons;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
 
@@ -113,6 +115,8 @@ public class EntryFormComponent extends CustomComponent {
             try {
                 binder.commit();
                 saveEntryData();
+                binder.clear();
+                data.setId(null);
             } catch (FieldGroup.CommitException e) {
                 ClientUI.handleException(e);
             }
@@ -121,7 +125,10 @@ public class EntryFormComponent extends CustomComponent {
         hLayoutBottom.setComponentAlignment(buttonSave, Alignment.BOTTOM_CENTER);
 
         Button buttonClear = new Button("Clear");
-        buttonClear.addClickListener(clickEvent -> binder.clear());
+        buttonClear.addClickListener(clickEvent -> {
+            binder.clear();
+            data.setId(null);
+        });
         hLayoutBottom.addComponent(buttonClear);
         hLayoutBottom.setComponentAlignment(buttonClear, Alignment.BOTTOM_CENTER);
 
@@ -156,7 +163,6 @@ public class EntryFormComponent extends CustomComponent {
                 title.setValue(htmlTitle);
                 url.setValue(finalUrl);
             }));
-
         }
     }
 
@@ -167,13 +173,32 @@ public class EntryFormComponent extends CustomComponent {
     private void saveEntryData() {
         try {
             Collection<String> tags = TagUtil.split(data.getTags());
-            BookmarkBuilder bookmarkBuilder = aBookmark().withUrl(data.getUrl()).withTitle(data.getTitle());
+            BookmarkBuilder bookmarkBuilder =
+                    aBookmark().withId(data.getId()).withUrl(data.getUrl()).withTitle(data.getTitle());
             tags.stream().filter(tag -> !tag.isEmpty()).forEach(bookmarkBuilder::addTag);
-            taboo.storeNewBookmark(bookmarkBuilder.build());
+            Bookmark bookmark = bookmarkBuilder.build();
+            if(null == bookmark.getId()) {
+                taboo.storeNewBookmark(bookmark);
+            } else {
+                taboo.updateBookmark(bookmark);
+            }
             bookmarkFilterComponent.setSelectedTags(tags);
         } catch (Exception e) {
             ClientUI.handleException(e);
         }
+    }
+
+    /**
+     * shows the bookmark data to be potentially edited.
+     * @param bookmark
+     */
+    public void showBookmark(Bookmark bookmark) {
+        getUI().access(() -> {
+            data.setId(bookmark.getId());
+            url.setValue(bookmark.getUrl());
+            title.setValue(bookmark.getTitle());
+            tags.setValue(bookmark.getTags().stream().collect(Collectors.joining(" ")));
+        });
     }
 
 // -------------------------- INNER CLASSES --------------------------
@@ -184,15 +209,25 @@ public class EntryFormComponent extends CustomComponent {
     public static class EntryData {
 // ------------------------------ FIELDS ------------------------------
 
+        /** the id */
+        private String id = null;
+
         /** the title */
         private String title = "";
-
         /** the bookmark */
         private String url = "";
         /** String containing the tags */
         private String tags = "";
 
 // --------------------- GETTER / SETTER METHODS ---------------------
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
 
         public String getTags() {
             return tags;

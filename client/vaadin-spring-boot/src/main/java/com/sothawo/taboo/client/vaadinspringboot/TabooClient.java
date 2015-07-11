@@ -51,4 +51,12 @@ public interface TabooClient {
      *         the bookmark to store
      */
     void storeNewBookmark(final Bookmark bookmark);
+
+    /**
+     * updates the given bookmark in the service.
+     *
+     * @param bookmark
+     *         the bookmark to update
+     */
+    void updateBookmark(Bookmark bookmark);
 }
