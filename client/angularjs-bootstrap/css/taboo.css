@@ -3,6 +3,10 @@ body {
     margin-top: 20px;
 }
 
+#bookmarkEntry button {
+    margin-top: 25px;
+}
+
 #clearButton {
     margin-bottom: 10px;
     width: 100%;

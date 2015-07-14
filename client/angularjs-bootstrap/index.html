@@ -32,10 +32,38 @@
 <!-- container for the whole app -->
 <div class="container">
 
-    <div class="row">
+    <!-- panel for new bookmark entry -->
+    <div class="row" id="bookmarkEntry">
         <div class="panel panel-default">
             <div class="panel-heading">new bookmark</div>
-            <div class="panel-body">todo...</div>
+            <div class="panel-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xs-11 form-group">
+                            <label>bookmark</label>
+                            <input class="form-control"/>
+                        </div>
+                        <div class="col-xs-1">
+                            <button class="btn btn-default btn-sm glyphicon glyphicon-download-alt" type="button">
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-5 form-group">
+                            <label>title</label>
+                            <input class="form-control"/>
+                        </div>
+                        <div class="col-xs-12 col-sm-5 form-group">
+                            <label>tags</label>
+                            <input class="form-control"/>
+                        </div>
+                        <div class="col-xs-12 col-sm-2">
+                            <button class="btn btn-default btn-sm " type="button">save</button>
+                            <button class="btn btn-default btn-sm " type="button">clear</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
