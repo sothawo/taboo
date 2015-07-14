@@ -2,3 +2,12 @@
 body {
     margin-top: 20px;
 }
+
+#clearButton {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+#searchText {
+    width: 100%;
+}
