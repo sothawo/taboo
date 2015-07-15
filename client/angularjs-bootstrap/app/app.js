@@ -18,13 +18,8 @@ function BookmarksVM($http) {
     this.bookmarks = [];
     this.selectedTagList = [];
 
-    that.bookmarks.push(
-        new Bookmark('1', 'www.b1.de', 'b1', ['tag1-1', 'tag-1-2']),
-        new Bookmark('2', 'www.b2.de', 'b2', ['tag2-1', 'tag-2-2'])
-    );
-
     /**
-     * clears all selection data
+     * clears all selection data and loads the bookmarks for no selection.
      */
     this.clearSelection = function() {
         // clear the search field
@@ -36,7 +31,7 @@ function BookmarksVM($http) {
      * @param tags the new selected tags
      */
     this.setSelectedTags = function(tags) {
-        if(Array.isArray(tags)) {
+        if(angular.isArray(tags)) {
             that.selectedTagList = tags;
         } else {
             that.selectedTagList = [];
