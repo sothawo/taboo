@@ -16,6 +16,7 @@ app.controller('BookmarksCtrl', function ($scope, $http) {
 function BookmarksVM($http) {
     var that = this;
     this.bookmarks = [];
+    this.searchText = "";
     this.selectedTags = new TabooSet();
     this.availableTags = new TabooSet();
 
@@ -23,7 +24,7 @@ function BookmarksVM($http) {
      * clears all selection data and loads the bookmarks for no selection.
      */
     this.clearSelection = function () {
-        // clear the search field
+        that.searchText = "";
         that.setSelectedTags([]);
     }
 
@@ -63,10 +64,15 @@ function BookmarksVM($http) {
      * reloads the bookmarks for the given selection criteria
      */
     this.reloadBookmarks = function () {
-        // TODO: search parameters
-        var params = {
-            tag: that.selectedTags.getElements()
-        };
+        // search parameters
+        var params = {};
+        if(that.selectedTags.size() > 0) {
+            params["tag"] = that.selectedTags.getElements();
+        }
+        if(that.searchText) {
+            params["search"] = that.searchText;
+        }
+
         $http.get("http://localhost:8081/taboo/bookmarks", {params: params})
             .then(function (result) {
                 var bookmarks = [];
