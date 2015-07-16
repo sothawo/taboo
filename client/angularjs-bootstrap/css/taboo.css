@@ -15,3 +15,14 @@ body {
 #searchText {
     width: 100%;
 }
+
+.bookmark-table .bookmark-title {
+    font-size: larger;
+}
+
+.bookmark-table .bookmark-url {
+}
+
+.bookmark-table .bookmark-tags {
+    font-size: smaller;
+}

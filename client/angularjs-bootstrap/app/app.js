@@ -45,7 +45,13 @@ function BookmarksVM($http) {
     this.reloadBookmarks = function() {
         $http.get("http://localhost:8081/taboo/bookmarks")
             .then(function(result){
-                that.bookmarks = result.data;
+                that.bookmarks = [];
+                var i = 0;
+                while( i < result.data.length){
+                    var bookmark = new Bookmark(result.data[i]);
+                    that.bookmarks.push(bookmark);
+                    i++;
+                }
             }).catch(function(result){
                 alert("Fehler: " + result.status + " " + result.statusText);
             });
@@ -56,9 +62,10 @@ function BookmarksVM($http) {
 }
 
 // Bookmark class
-function Bookmark(id, url, title, tags) {
-    this.id = id;
-    this.url = url;
-    this.title = title;
-    this.tags = tags;
+function Bookmark(other) {
+    this.id = other.id;
+    this.url = other.url;
+    this.title = other.title;
+    this.tags = other.tags;
+    this.joinedTags = this.tags.join(', ');
 }
