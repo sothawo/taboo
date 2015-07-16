@@ -44,6 +44,14 @@ TabooSet.prototype.add = function(e) {
     }
 }
 
+TabooSet.prototype.remove = function(e) {
+    var p = this.search(e);
+    if(this.bag_[p] == e) {
+        // found it
+        this.bag_.splice(p, 1);
+    }
+}
+
 TabooSet.prototype.contains = function(e) {
     var p = this.search(e);
     return (this.bag_[p] == e);

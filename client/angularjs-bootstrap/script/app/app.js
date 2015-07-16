@@ -64,7 +64,10 @@ function BookmarksVM($http) {
      */
     this.reloadBookmarks = function () {
         // TODO: search parameters
-        $http.get("http://localhost:8081/taboo/bookmarks")
+        var params = {
+            tag: that.selectedTags.getElements()
+        };
+        $http.get("http://localhost:8081/taboo/bookmarks", {params: params})
             .then(function (result) {
                 var bookmarks = [];
                 var i = 0;
@@ -77,6 +80,24 @@ function BookmarksVM($http) {
             }).catch(function (result) {
                 alert("Fehler: " + result.status + " " + result.statusText);
             });
+    };
+
+    /**
+     * adds a tag to the selected tag list and reloads the bookmarks.
+     * @param tag
+     */
+    this.addTagToSelection = function(tag) {
+        that.selectedTags.add(tag);
+        that.reloadBookmarks();
+    };
+
+    /**
+     * removes a tag from the selected tags list and reloads the bookmarks.
+     * @param tag
+     */
+    this.removeTagFromSelection = function(tag) {
+        that.selectedTags.remove(tag);
+        that.reloadBookmarks();
     };
 
     //initial setup
