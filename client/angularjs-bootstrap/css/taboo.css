@@ -26,3 +26,8 @@ body {
 .bookmark-table .bookmark-tags {
     font-size: smaller;
 }
+
+.taglist-entry {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}

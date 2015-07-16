@@ -377,7 +377,7 @@ function nextUid() {
 
 
 /**
- * Set or clear the hashkey for an object.
+ * TabooSet or clear the hashkey for an object.
  * @param obj object
  * @param h the hashkey (!truthy to delete the hashkey)
  */
@@ -6773,7 +6773,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       },
 
       /**
-       * Set a normalized attribute on the element in a way such that all directives
+       * TabooSet a normalized attribute on the element in a way such that all directives
        * can share the attribute. This function properly handles boolean attributes.
        * @param {string} key Normalized key. (ie ngAttribute)
        * @param {string|boolean} value The value to set. If `null` attribute will be deleted.
@@ -23272,7 +23272,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
             setValidity(name, null);
           });
         }
-        // Set the parse error last, to prevent unsetting it, should a $validators key == parserName
+        // TabooSet the parse error last, to prevent unsetting it, should a $validators key == parserName
         setValidity(errorKey, parserValid);
         return parserValid;
       }
