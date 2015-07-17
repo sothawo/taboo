@@ -51,13 +51,16 @@ function BookmarksVM($http) {
         that.bookmarks = bookmarks;
         // collect the tags from the bookmarks
         var tags = new TabooSet();
-        for(var i = 0, tot = that.bookmarks.length; i < tot; i++) {
-            var bookmark = that.bookmarks[i];
-            tags = tags.union(bookmark.tags);
-        }
+        var count = that.bookmarks.length;
+        if (count > 0) {
+            for (var i = 0; i < count; i++) {
+                var bookmark = that.bookmarks[i];
+                tags = tags.union(bookmark.tags);
+            }
 
-        // remove the selected tags and set the result as available
-        that.availableTags = tags.difference(that.selectedTags);
+            // remove the selected tags and set the result as available
+            that.availableTags = tags.difference(that.selectedTags);
+        }
     };
 
     /**
@@ -65,34 +68,48 @@ function BookmarksVM($http) {
      */
     this.reloadBookmarks = function () {
         // search parameters
+        var paramsAreSet = false;
         var params = {};
-        if(that.selectedTags.size() > 0) {
+        if (that.selectedTags.size() > 0) {
             params["tag"] = that.selectedTags.getElements();
+            paramsAreSet = true;
         }
-        if(that.searchText) {
+        if (that.searchText) {
             params["search"] = that.searchText;
+            paramsAreSet = true;
         }
 
-        $http.get("http://localhost:8081/taboo/bookmarks", {params: params})
-            .then(function (result) {
-                var bookmarks = [];
-                var i = 0;
-                while (i < result.data.length) {
-                    var bookmark = new Bookmark(result.data[i]);
-                    bookmarks.push(bookmark);
-                    i++;
-                }
-                that.setBookmarksToShow(bookmarks);
-            }).catch(function (result) {
-                alert("Fehler: " + result.status + " " + result.statusText);
-            });
+        if (paramsAreSet) {
+            $http.get("http://localhost:8081/taboo/bookmarks", {params: params})
+                .then(function (result) {
+                    var bookmarks = [];
+                    var i = 0;
+                    while (i < result.data.length) {
+                        var bookmark = new Bookmark(result.data[i]);
+                        bookmarks.push(bookmark);
+                        i++;
+                    }
+                    that.setBookmarksToShow(bookmarks);
+                }).catch(function (result) {
+                    alert("Fehler: " + result.status + " " + result.statusText);
+                });
+        } else {
+            // only get the tags
+            $http.get("http://localhost:8081/taboo/tags")
+                .then(function (result) {
+                    that.setBookmarksToShow([]);
+                    that.availableTags = new TabooSet(result.data);
+                }).catch(function (result) {
+                    alert("Fehler: " + result.status + " " + result.statusText);
+                });
+        }
     };
 
     /**
      * adds a tag to the selected tag list and reloads the bookmarks.
      * @param tag
      */
-    this.addTagToSelection = function(tag) {
+    this.addTagToSelection = function (tag) {
         that.selectedTags.add(tag);
         that.reloadBookmarks();
     };
@@ -101,7 +118,7 @@ function BookmarksVM($http) {
      * removes a tag from the selected tags list and reloads the bookmarks.
      * @param tag
      */
-    this.removeTagFromSelection = function(tag) {
+    this.removeTagFromSelection = function (tag) {
         that.selectedTags.remove(tag);
         that.reloadBookmarks();
     };

@@ -1,6 +1,7 @@
 
 body {
     margin-top: 20px;
+    font: 300 16px/1.55 "Open Sans", sans-serif;
 }
 
 #bookmarkEntry button {

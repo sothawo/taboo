@@ -15,7 +15,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +24,7 @@ import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -142,10 +142,18 @@ public class BookmarkFilterComponent extends CustomComponent {
      *         the search string
      */
     private void loadBookmarksForTagsAndSelection(final Collection<String> tags, final String search) {
+        // when no tags are selected and no searchfield is set then load all the tags
         // do that in background, to show use UI.access() to trigger push
-        CompletableFuture.supplyAsync(() -> taboo.getBookmarks(tags, search))
-                .thenAccept(bookmarks -> getUI().access(() -> setBookmarksToShow(bookmarks)));
-    }
+        if (Objects.requireNonNull(tags).isEmpty() && Objects.requireNonNull(search).isEmpty()) {
+            CompletableFuture.supplyAsync(taboo::getTags)
+                    .thenAccept(allTags -> getUI().access(() -> {
+                        availableTagList.setTags(allTags);
+                        setBookmarksToShow(Collections.EMPTY_LIST);
+                    }));
+        } else {
+            CompletableFuture.supplyAsync(() -> taboo.getBookmarks(tags, search))
+                    .thenAccept(bookmarks -> getUI().access(() -> setBookmarksToShow(bookmarks)));}
+        }
 
 // -------------------------- OTHER METHODS --------------------------
 
@@ -226,8 +234,10 @@ public class BookmarkFilterComponent extends CustomComponent {
         Set<String> selectedTags = new HashSet<>(selectedTagList.getTags());
         // collect the tags from the bookmarks, remove the tags that are already selected and set in the available
         // tags list get the bookmarks and set the set of selected tags
-        availableTagList.setTags(Sets.difference(
-                bookmarks.stream().flatMap(bookmark -> bookmark.getTags().stream()).collect(Collectors.toSet()),
-                selectedTags));
+        if (bookmarks.size() > 0) {
+            availableTagList.setTags(Sets.difference(
+                    bookmarks.stream().flatMap(bookmark -> bookmark.getTags().stream()).collect(Collectors.toSet()),
+                    selectedTags));
+        }
     }
 }
