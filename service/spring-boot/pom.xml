@@ -64,6 +64,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
         </dependency>
+        <!-- for loading titles from websites -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.8.2</version>
+        </dependency>
+
         <!-- Test -->
         <dependency>
             <!-- before JUnit, otherwise the test classes must be annotated with @RunWith(JMockit.class) which may

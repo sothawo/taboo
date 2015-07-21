@@ -158,7 +158,7 @@ public class EntryFormComponent extends CustomComponent {
                     return "";
                 }
             }).thenAccept(htmlTitle -> UI.getCurrent().access(() -> {
-                // because the UI is annotated with @Push, afetr the call to UI.access() the server will
+                // because the UI is annotated with @Push, after the call to UI.access() the server will
                 // push the data to the client.
                 title.setValue(htmlTitle);
                 url.setValue(finalUrl);

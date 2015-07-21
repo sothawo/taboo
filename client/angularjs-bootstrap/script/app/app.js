@@ -6,60 +6,76 @@
 
 var app = angular.module('taboo', []);
 
+// set configuration for the backend service
+app.constant('tabooService', {
+    urlService: 'http://localhost:8081',
+    pathBookmarks: '/taboo/bookmarks',
+    pathTags: '/taboo/tags',
+    pathTitle: '/taboo/title'
+});
+
 // create Controller that creates a ViewModel
-app.controller('BookmarksCtrl', function ($scope, $http) {
-    $scope.vm = new BookmarksVM($http);
+app.controller('TabooCtrl', function ($scope, $http, tabooService) {
+    $scope.vm = new TabooVM($http, tabooService);
 });
 
 
 // ViewModel
-function BookmarksVM($http) {
-    var that = this;
+function TabooVM($http, tabooService) {
+    var self = this;
+    /** entry for new bookmark url. */
+    this.newBookmarkUrl = "";
+    /** entry for new bookmark title. */
+    this.newBookmarkTitle = "";
+    /** the bookmarks to show. */
     this.bookmarks = [];
+    /** search field for bookmarks. */
     this.searchText = "";
+    /** the list of selected tags. */
     this.selectedTags = new TabooSet();
+    /** the list of available tags */
     this.availableTags = new TabooSet();
 
     /**
-     * clears all selection data and loads the bookmarks for no selection.
+     * clears all selection data and ses the selected tags to empty.
      */
     this.clearSelection = function () {
-        that.searchText = "";
-        that.setSelectedTags([]);
+        self.searchText = "";
+        self.setSelectedTags([]);
     }
 
     /**
-     * sets the selected tags and loads the bookmarks for the tags.
-     * @param tags the new selected tags
+     * sets the selected tags and reloads the bookmarks for the tags.
+     * @param tags the new selected tags.
      */
     this.setSelectedTags = function (tags) {
         if (tags.isSetObject) {
-            that.selectedTags = tags;
+            self.selectedTags = tags;
         } else if (angular.isArray(tags)) {
-            that.selectedTags = new TabooSet(tags);
+            self.selectedTags = new TabooSet(tags);
         } else {
-            that.selectedTags = new TabooSet();
+            self.selectedTags = new TabooSet();
         }
-        that.reloadBookmarks();
+        self.reloadBookmarks();
     }
 
     /**
      * sets the bookmarks to show and updates the tag sets.
      * @param bookmarks
      */
-    that.setBookmarksToShow = function (bookmarks) {
-        that.bookmarks = bookmarks;
+    self.setBookmarksToShow = function (bookmarks) {
+        self.bookmarks = bookmarks;
         // collect the tags from the bookmarks
         var tags = new TabooSet();
-        var count = that.bookmarks.length;
+        var count = self.bookmarks.length;
         if (count > 0) {
             for (var i = 0; i < count; i++) {
-                var bookmark = that.bookmarks[i];
+                var bookmark = self.bookmarks[i];
                 tags = tags.union(bookmark.tags);
             }
 
             // remove the selected tags and set the result as available
-            that.availableTags = tags.difference(that.selectedTags);
+            self.availableTags = tags.difference(self.selectedTags);
         }
     };
 
@@ -70,17 +86,17 @@ function BookmarksVM($http) {
         // search parameters
         var paramsAreSet = false;
         var params = {};
-        if (that.selectedTags.size() > 0) {
-            params["tag"] = that.selectedTags.getElements();
+        if (self.selectedTags.size() > 0) {
+            params["tag"] = self.selectedTags.getElements();
             paramsAreSet = true;
         }
-        if (that.searchText) {
-            params["search"] = that.searchText;
+        if (self.searchText) {
+            params["search"] = self.searchText;
             paramsAreSet = true;
         }
 
         if (paramsAreSet) {
-            $http.get("http://localhost:8081/taboo/bookmarks", {params: params})
+            $http.get(tabooService.urlService + tabooService.pathBookmarks, {params: params})
                 .then(function (result) {
                     var bookmarks = [];
                     var i = 0;
@@ -89,16 +105,16 @@ function BookmarksVM($http) {
                         bookmarks.push(bookmark);
                         i++;
                     }
-                    that.setBookmarksToShow(bookmarks);
+                    self.setBookmarksToShow(bookmarks);
                 }).catch(function (result) {
                     alert("Fehler: " + result.status + " " + result.statusText);
                 });
         } else {
             // only get the tags
-            $http.get("http://localhost:8081/taboo/tags")
+            $http.get(tabooService.urlService + tabooService.pathTags)
                 .then(function (result) {
-                    that.setBookmarksToShow([]);
-                    that.availableTags = new TabooSet(result.data);
+                    self.setBookmarksToShow([]);
+                    self.availableTags = new TabooSet(result.data);
                 }).catch(function (result) {
                     alert("Fehler: " + result.status + " " + result.statusText);
                 });
@@ -110,8 +126,8 @@ function BookmarksVM($http) {
      * @param tag
      */
     this.addTagToSelection = function (tag) {
-        that.selectedTags.add(tag);
-        that.reloadBookmarks();
+        self.selectedTags.add(tag);
+        self.reloadBookmarks();
     };
 
     /**
@@ -119,21 +135,39 @@ function BookmarksVM($http) {
      * @param tag
      */
     this.removeTagFromSelection = function (tag) {
-        that.selectedTags.remove(tag);
-        that.reloadBookmarks();
+        self.selectedTags.remove(tag);
+        self.reloadBookmarks();
+    };
+
+    /**
+     * tries to load the title for current new bookmark url.
+     */
+    this.loadTitle = function () {
+        if (self.newBookmarkUrl) {
+            $http.get(tabooService.urlService + tabooService.pathTitle, {params: {url: self.newBookmarkUrl}})
+                .then(function (result) {
+                    self.newBookmarkTitle = result.data;
+                }).catch(function (result) {
+                    alert("Fehler: " + result.status + " " + result.statusText);
+                });
+        }
     };
 
     //initial setup
-    that.clearSelection();
+    self.clearSelection();
 }
 
 
-// Bookmark class
-function Bookmark(other) {
-    this.id = other.id;
-    this.url = other.url;
-    this.title = other.title;
-    this.tags = new TabooSet(other.tags);
+/**
+ * creates a Bookmark from a REST-data Bookmark (these have an array of tags, not a Set).
+ * @param restBookmark bookmark from a REST call.
+ * @constructor
+ */
+function Bookmark(restBookmark) {
+    this.id = restBookmark.id;
+    this.url = restBookmark.url;
+    this.title = restBookmark.title;
+    this.tags = new TabooSet(restBookmark.tags);
 
     this.joinedTags = function () {
         return this.tags.getElements().join(', ');

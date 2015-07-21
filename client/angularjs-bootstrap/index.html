@@ -37,11 +37,11 @@
     <link rel="stylesheet" href="./css/taboo.css">
 </head>
 
-<body>
+<body ng-app="taboo">
 
 <!-- container for the whole app -->
-<div class="container" ng-app="taboo">
-    <div ng-controller="BookmarksCtrl">
+<div class="container">
+    <div ng-controller="TabooCtrl">
 
         <!-- panel for new bookmark entry -->
         <div class="row" id="bookmarkEntry">
@@ -52,17 +52,18 @@
                         <div class="row">
                             <div class="col-xs-11 form-group">
                                 <label>bookmark</label>
-                                <input class="form-control"/>
+                                <input class="form-control" ng-model="vm.newBookmarkUrl" />
                             </div>
                             <div class="col-xs-1">
-                                <button class="btn btn-default btn-sm glyphicon glyphicon-download-alt" type="button">
+                                <button class="btn btn-default btn-sm glyphicon glyphicon-download-alt" type="button"
+                                   ng-click="vm.loadTitle()">
                                 </button>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-xs-12 col-sm-5 form-group">
                                 <label>title</label>
-                                <input class="form-control"/>
+                                <input class="form-control" ng-model="vm.newBookmarkTitle"/>
                             </div>
                             <div class="col-xs-12 col-sm-5 form-group">
                                 <label>tags</label>

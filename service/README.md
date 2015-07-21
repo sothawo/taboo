@@ -46,3 +46,12 @@ gets all tags from the repository (no duplicates)
 #### _DELETE /taboo/bookmarks/{id}_
  
 deletes the bookmark with the given id 
+
+#### _PUT /taboo/bookmarks_
+
+updates new bookmark. the bookmark data must be sent as JSON data in the body. The id of the bookmark must be 
+set.
+
+#### _GET /taboo/title?url=url_
+
+calls the passed in url and tries to extract the title from the returned page

@@ -9,6 +9,10 @@ import com.sothawo.taboo.common.AlreadyExistsException;
 import com.sothawo.taboo.common.Bookmark;
 import com.sothawo.taboo.common.BookmarkRepository;
 import com.sothawo.taboo.common.NotFoundException;
+import org.jsoup.HttpStatusException;
+import org.jsoup.Jsoup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +22,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
@@ -36,7 +42,12 @@ import java.util.stream.Collectors;
 @RestController // contains @ResponseBody
 @RequestMapping("/taboo")
 public class TabooService {
-// ------------------------------ FIELDS ------------------------------
+    // ------------------------------ FIELDS ------------------------------
+    /** Logger. */
+    private static final Logger logger = LoggerFactory.getLogger(TabooService.class);
+
+    /** needed for tests. */
+    static final String MAGIC_TEST_URL = "magicTestStringThatsNotAnUrl";
 
     /** OR operation. */
     private static final String OP_OR = "or";
@@ -228,5 +239,40 @@ public class TabooService {
             throw new IllegalArgumentException("id must be set");
         }
         repository.updateBookmark(bookmark);
+    }
+
+    /**
+     * tries to load the title for a web page.
+     *
+     * @param url
+     *         url for which the title shall be loaded
+     * @return ResponseEntity with the title
+     */
+    @RequestMapping(value = "/title", method = RequestMethod.GET, produces = "text/plain")
+    @ResponseBody
+    public final ResponseEntity<String> loadTitle(@RequestParam(value = "url", required = true) final String url) {
+        if (MAGIC_TEST_URL.equals(url)) {
+            return new ResponseEntity<>(url, HttpStatus.OK);
+        }
+
+        String urlString = url;
+        if (null != urlString && !urlString.isEmpty()) {
+            if (!urlString.startsWith("http")) {
+                urlString = "http://" + urlString;
+            }
+            final String finalUrl = urlString;
+            logger.debug("loading title for url {}", finalUrl);
+            try {
+                String htmlTitle = Jsoup.connect(finalUrl).timeout(5000).get().title();
+                logger.debug("got title: {}", htmlTitle);
+                return new ResponseEntity<>(htmlTitle, HttpStatus.OK);
+            } catch (HttpStatusException e) {
+                logger.info("loading url http error", e);
+                return new ResponseEntity<>(HttpStatus.valueOf(e.getStatusCode()));
+            } catch (IOException e) {
+                logger.info("loading url error", e);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
