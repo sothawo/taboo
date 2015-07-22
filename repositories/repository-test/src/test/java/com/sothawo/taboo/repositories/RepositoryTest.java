@@ -95,6 +95,12 @@ public class RepositoryTest {
         fail("expected AlreadyExistsException");
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void createBookmarkWithoutUrl() throws Exception {
+        repository.createBookmark(aBookmark().withTitle("title").build());
+        fail("excpected IllegalArgumentException");
+    }
+
     @Test
     public void deleteExistingBookmark() throws Exception {
         Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").build();

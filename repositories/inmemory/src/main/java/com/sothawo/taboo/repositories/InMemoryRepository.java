@@ -47,6 +47,9 @@ public class InMemoryRepository extends AbstractBookmarkRepository {
         if (null != bookmark.getId()) {
             throw new IllegalArgumentException("is is not null");
         }
+        if (null == bookmark.getUrl() || bookmark.getUrl().isEmpty()) {
+            throw new IllegalArgumentException("bookmark url is not set");
+        }
         if (bookmarks.containsKey(bookmark.getUrl())) {
             throw new AlreadyExistsException("bookmark with url: " + bookmark.getUrl());
         }
