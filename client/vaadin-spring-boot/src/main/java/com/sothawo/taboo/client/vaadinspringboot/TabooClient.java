@@ -45,6 +45,15 @@ public interface TabooClient {
     Collection<String> getTags();
 
     /**
+     * loads the title for an URL from the Service.
+     *
+     * @param url
+     *         the url for which the title shall be loaded
+     * @return a bookmark with an url that may be updated and a title
+     */
+    Bookmark loadTitle(final String url);
+
+    /**
      * stores a new Bookmark in the service.
      *
      * @param bookmark

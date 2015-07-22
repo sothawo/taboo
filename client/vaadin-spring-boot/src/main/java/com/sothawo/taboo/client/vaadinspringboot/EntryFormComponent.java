@@ -20,13 +20,11 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.teemu.VaadinIcons;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -141,28 +139,16 @@ public class EntryFormComponent extends CustomComponent {
      * tries to download the title for the actual url.
      */
     private void downloadTitle() {
-        String urlString = url.getValue();
-        if (null != urlString && !urlString.isEmpty()) {
-            if (!urlString.startsWith("http")) {
-                urlString = "http://" + urlString;
-            }
-            final String finalUrl = urlString;
+        final String finalUrl = url.getValue();
+        if (null != finalUrl && !finalUrl.isEmpty()) {
             logger.debug("loading title for url {}", finalUrl);
-            CompletableFuture.supplyAsync(() -> {
-                try {
-                    String htmlTitle = Jsoup.connect(finalUrl).timeout(3000).get().title();
-                    logger.debug("got title: {}", htmlTitle);
-                    return htmlTitle;
-                } catch (IOException e) {
-                    UI.getCurrent().access(() -> ClientUI.handleException(e));
-                    return "";
-                }
-            }).thenAccept(htmlTitle -> UI.getCurrent().access(() -> {
-                // because the UI is annotated with @Push, after the call to UI.access() the server will
-                // push the data to the client.
-                title.setValue(htmlTitle);
-                url.setValue(finalUrl);
-            }));
+            CompletableFuture.supplyAsync(() -> taboo.loadTitle(finalUrl))
+                    .thenAccept(bookmark -> UI.getCurrent().access(() -> {
+                        // because the UI is annotated with @Push, after the call to UI.access() the server will
+                        // push the data to the client.
+                        url.setValue(bookmark.getUrl());
+                        title.setValue(bookmark.getTitle());
+                    }));
         }
     }
 
@@ -177,7 +163,7 @@ public class EntryFormComponent extends CustomComponent {
                     aBookmark().withId(data.getId()).withUrl(data.getUrl()).withTitle(data.getTitle());
             tags.stream().filter(tag -> !tag.isEmpty()).forEach(bookmarkBuilder::addTag);
             Bookmark bookmark = bookmarkBuilder.build();
-            if(null == bookmark.getId()) {
+            if (null == bookmark.getId()) {
                 taboo.storeNewBookmark(bookmark);
             } else {
                 taboo.updateBookmark(bookmark);
@@ -190,6 +176,7 @@ public class EntryFormComponent extends CustomComponent {
 
     /**
      * shows the bookmark data to be potentially edited.
+     *
      * @param bookmark
      */
     public void showBookmark(Bookmark bookmark) {

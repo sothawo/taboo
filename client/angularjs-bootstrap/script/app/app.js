@@ -146,7 +146,8 @@ function TabooVM($http, tabooService) {
         if (self.newBookmarkUrl) {
             $http.get(tabooService.urlService + tabooService.pathTitle, {params: {url: self.newBookmarkUrl}})
                 .then(function (result) {
-                    self.newBookmarkTitle = result.data;
+                    self.newBookmarkUrl = result.data.url;
+                    self.newBookmarkTitle = result.data.title;
                 }).catch(function (result) {
                     alert("Fehler: " + result.status + " " + result.statusText);
                 });

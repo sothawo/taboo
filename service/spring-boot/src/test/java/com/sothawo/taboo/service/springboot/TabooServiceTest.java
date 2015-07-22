@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -394,6 +394,14 @@ public class TabooServiceTest {
     }
 
     @Test
+    public void titleForBookmark() throws Exception {
+        MockMvc mockMvc = standaloneSetup(tabooService).build();
+        mockMvc.perform(get("/taboo/title").param("url", TabooService.MAGIC_TEST_URL))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.url", is(TabooService.MAGIC_TEST_URL)));
+    }
+
+    @Test
     public void updateBookmark() throws Exception {
         Bookmark bookmark = createBookmarks("1").get(0);
         bookmark.setId("id1");
@@ -489,14 +497,5 @@ public class TabooServiceTest {
             repository.createBookmark((Bookmark) any);
             times = 0;
         }};
-    }
-
-    @Test
-    public void titleForBookmark() throws Exception {
-        MockMvc mockMvc = standaloneSetup(tabooService).build();
-        mockMvc.perform(get("/taboo/title").param("url", TabooService.MAGIC_TEST_URL))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType( MediaType.TEXT_PLAIN))
-                .andExpect(content().string(TabooService.MAGIC_TEST_URL));
     }
 }

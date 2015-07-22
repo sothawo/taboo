@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.sothawo.taboo.common.BookmarkBuilder.aBookmark;
+
 /**
  * Spring-Boot Service implementation for the taboo backend service.
  *
@@ -248,11 +250,11 @@ public class TabooService {
      *         url for which the title shall be loaded
      * @return ResponseEntity with the title
      */
-    @RequestMapping(value = "/title", method = RequestMethod.GET, produces = "text/plain")
+    @RequestMapping(value = "/title", method = RequestMethod.GET)
     @ResponseBody
-    public final ResponseEntity<String> loadTitle(@RequestParam(value = "url", required = true) final String url) {
+    public final ResponseEntity<Bookmark> loadTitle(@RequestParam(value = "url", required = true) final String url) {
         if (MAGIC_TEST_URL.equals(url)) {
-            return new ResponseEntity<>(url, HttpStatus.OK);
+            return new ResponseEntity<>(aBookmark().withUrl(url).build(), HttpStatus.OK);
         }
 
         String urlString = url;
@@ -265,7 +267,7 @@ public class TabooService {
             try {
                 String htmlTitle = Jsoup.connect(finalUrl).timeout(5000).get().title();
                 logger.debug("got title: {}", htmlTitle);
-                return new ResponseEntity<>(htmlTitle, HttpStatus.OK);
+                return new ResponseEntity<>(aBookmark().withUrl(finalUrl).withTitle(htmlTitle).build(), HttpStatus.OK);
             } catch (HttpStatusException e) {
                 logger.info("loading url http error", e);
                 return new ResponseEntity<>(HttpStatus.valueOf(e.getStatusCode()));

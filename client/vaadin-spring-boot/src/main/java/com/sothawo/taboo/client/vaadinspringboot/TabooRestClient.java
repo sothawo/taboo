@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.awt.print.Book;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -46,6 +47,9 @@ public class TabooRestClient implements TabooClient {
 
     /** taboo url for tags */
     private String tabooUrlTags;
+
+    /** taboo url for title loading */
+    private String tabooUrlTitle;
 
 // ------------------------ INTERFACE METHODS ------------------------
 
@@ -106,6 +110,17 @@ public class TabooRestClient implements TabooClient {
         return Arrays.asList(response.getBody());
     }
 
+    @Override
+    public Bookmark loadTitle(String url) {
+        RestTemplate rest = new RestTemplate();
+        String finalUrl = tabooUrlTitle + "?url={url}";
+        logger.debug("get title: {}, url={}", finalUrl, url);
+        ResponseEntity<Bookmark> response = rest.getForEntity(finalUrl, Bookmark.class, url);
+        HttpStatus status = response.getStatusCode();
+        logger.debug("get title: {} {}", status.toString(), status.getReasonPhrase());
+        return response.getBody();
+    }
+
     /**
      * @param bookmark
      *         the bookmark to save
@@ -133,5 +148,6 @@ public class TabooRestClient implements TabooClient {
         logger.debug("taboo url: {}", tabooUrl);
         tabooUrlBookmarks = tabooUrl + "/bookmarks";
         tabooUrlTags = tabooUrl + "/tags";
+        tabooUrlTitle = tabooUrl + "/title";
     }
 }
