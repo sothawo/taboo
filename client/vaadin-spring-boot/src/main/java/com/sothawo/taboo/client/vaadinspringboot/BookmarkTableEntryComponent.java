@@ -56,7 +56,12 @@ public class BookmarkTableEntryComponent extends CustomComponent {
         title.setStyleName("bookmark-title");
         bookmarkLayout.addComponent(title);
 
-        Link link = new Link(bookmark.getUrl(), new ExternalResource(bookmark.getUrl()));
+        String urlWithPrefix = bookmark.getUrl();
+        if (!(urlWithPrefix.toLowerCase().startsWith("http://") ||
+                urlWithPrefix.toLowerCase().startsWith("https://"))) {
+            urlWithPrefix = "http://" + urlWithPrefix;
+        }
+        Link link = new Link(bookmark.getUrl(), new ExternalResource(urlWithPrefix));
         link.setStyleName("bookmark-url");
         // Open the URL in a new window/tab
         link.setTargetName("_blank");

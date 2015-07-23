@@ -106,7 +106,7 @@ public class SpringMongoRepository extends AbstractBookmarkRepository {
     /**
      * returns all tags that are stored in the repository.
      *
-     * @return Collection of tags, may be emoty, not null
+     * @return Collection of tags, may be empty, not null
      */
     @Override
     public Collection<String> getAllTags() {

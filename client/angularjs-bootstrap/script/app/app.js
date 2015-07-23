@@ -4,6 +4,14 @@
  * http://www.sothawo.com
  */
 
+// define additional functions
+if (typeof String.prototype.startsWith != 'function') {
+    // see below for better implementation!
+    String.prototype.startsWith = function (str){
+        return this.lastIndexOf(str, 0) === 0;
+    };
+}
+
 var app = angular.module('taboo', []);
 
 // set configuration for the backend service
@@ -173,4 +181,10 @@ function Bookmark(restBookmark) {
     this.joinedTags = function () {
         return this.tags.getElements().join(', ');
     };
+
+    if(!(this.url.startsWith('http://') || this.url.startsWith('https://'))) {
+        this.urlWithPrefix = 'http://' + this.url;
+    } else {
+        this.urlWithPrefix = this.url;
+    }
 }
