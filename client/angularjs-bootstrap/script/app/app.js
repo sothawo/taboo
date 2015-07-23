@@ -31,10 +31,12 @@ app.controller('TabooCtrl', function ($scope, $http, tabooService) {
 // ViewModel
 function TabooVM($http, tabooService) {
     var self = this;
-    /** entry for new bookmark url. */
+    /** entry for new bookmark's url. */
     this.newBookmarkUrl = "";
-    /** entry for new bookmark title. */
+    /** entry for new bookmark's title. */
     this.newBookmarkTitle = "";
+    /** entry for the new bookmark's tags. */
+    this.newBookmarkTags = "";
     /** the bookmarks to show. */
     this.bookmarks = [];
     /** search field for bookmarks. */
@@ -79,7 +81,7 @@ function TabooVM($http, tabooService) {
         if (count > 0) {
             for (var i = 0; i < count; i++) {
                 var bookmark = self.bookmarks[i];
-                tags = tags.union(bookmark.tags);
+                tags = tags.union(bookmark.tagsSet);
             }
 
             // remove the selected tags and set the result as available
@@ -162,6 +164,27 @@ function TabooVM($http, tabooService) {
         }
     };
 
+    /**
+     * saves a new or updated bookmark to the backend.
+     */
+    this.saveEntryData = function() {
+        if(self.newBookmarkUrl) {
+            var bookmark = new Bookmark();
+            bookmark.url = self.newBookmarkUrl;
+            bookmark.title = self.newBookmarkTitle;
+            bookmark.tags = self.newBookmarkTags.toLowerCase().split(/[^a-zA-ZäöüÄÖÜß0-9]+/i);
+
+            // todo: check if update
+
+            $http.post(tabooService.urlService + tabooService.pathBookmarks, bookmark)
+                .then(function(result){
+                    self.setSelectedTags(bookmark.tags);
+                }).catch(function (result) {
+                    alert("Fehler: " + result.status + " " + result.statusText);
+                });
+        }
+    };
+
     //initial setup
     self.clearSelection();
 }
@@ -173,18 +196,28 @@ function TabooVM($http, tabooService) {
  * @constructor
  */
 function Bookmark(restBookmark) {
-    this.id = restBookmark.id;
-    this.url = restBookmark.url;
-    this.title = restBookmark.title;
-    this.tags = new TabooSet(restBookmark.tags);
-
-    this.joinedTags = function () {
-        return this.tags.getElements().join(', ');
-    };
+    var self = this;
+    if(restBookmark) {
+        this.id = restBookmark.id;
+        this.url = restBookmark.url;
+        this.title = restBookmark.title;
+        this.tags = restBookmark.tags;
+        this.tagsSet = new TabooSet(restBookmark.tags);
+    } else {
+        this.id = undefined;
+        this.url = "";
+        this.title = ""
+        this.tags = [];
+        this.tagsSet = new TabooSet();
+    }
 
     if(!(this.url.startsWith('http://') || this.url.startsWith('https://'))) {
         this.urlWithPrefix = 'http://' + this.url;
     } else {
         this.urlWithPrefix = this.url;
     }
+
+    this.joinedTags = function () {
+        return self.tagsSet.getElements().join(', ');
+    };
 }
