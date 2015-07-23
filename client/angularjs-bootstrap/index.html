@@ -49,6 +49,7 @@
                 <div class="panel-heading">new bookmark</div>
                 <div class="panel-body">
                     <div class="container-fluid">
+                        <!-- row for url and load-title button -->
                         <div class="row">
                             <div class="col-xs-11 form-group">
                                 <label>bookmark</label>
@@ -60,6 +61,7 @@
                                 </button>
                             </div>
                         </div>
+                        <!-- row for title, tags and buttons -->
                         <div class="row">
                             <div class="col-xs-12 col-sm-5 form-group">
                                 <label>title</label>
@@ -92,14 +94,14 @@
                         <div class="row">
                             <!-- div containing the different selection filters -->
                             <div class="col-xs-12 col-sm-3 col-sm-push-9" id="filter-container">
+                                <!-- Button to clear the selection -->
                                 <div class="row">
-                                    <!-- Button to clear the selection -->
                                     <button ng-click="vm.clearSelection()"
                                             class="btn btn-default" type="button" id="clearButton">clear selection
                                     </button>
                                 </div>
+                                <!-- search text -->
                                 <div class="row">
-                                    <!-- search text -->
                                     <div class="panel panel-default">
                                         <div class="panel-heading">search...</div>
                                         <div class="panel-body">
@@ -110,8 +112,8 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- selected tags -->
                                 <div class="row">
-                                    <!-- selected tags -->
                                     <div class="panel panel-default">
                                         <div class="panel-heading">selected tags</div>
                                         <div class="panel-body">
@@ -122,8 +124,8 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- available tags -->
                                 <div class="row">
-                                    <!-- available tags -->
                                     <div class="panel panel-default">
                                         <div class="panel-heading">available tags</div>
                                         <div class="panel-body">
@@ -141,9 +143,10 @@
                                        ng-show="vm.bookmarks.length > 0">
                                     <tr ng-repeat="bookmark in vm.bookmarks">
                                         <td>
-                                            <!-- bokmark entry -->
+                                            <!-- bookmark entry -->
                                             <div class="container-fluid">
                                                 <div class="row">
+                                                    <!-- bookmark data -->
                                                     <div class="col-xs-11">
                                                         <div class="bookmark-title">{{bookmark.title}}</div>
                                                         <div class="bookmark-url">
@@ -152,10 +155,11 @@
                                                         </div>
                                                         <div class="bookmark-tags">{{bookmark.joinedTags()}}</div>
                                                     </div>
+                                                    <!-- buttons to edit and delete-->
                                                     <div class="col-xs-1">
                                                         <button class="btn btn-default btn-sm glyphicon glyphicon-edit"
                                                                 type="button"
-                                                                ng-click="">
+                                                                ng-click="vm.editBookmark(bookmark)">
                                                         </button>
                                                         <button class="btn btn-default btn-sm glyphicon glyphicon-trash"
                                                                 type="button"

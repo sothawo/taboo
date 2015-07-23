@@ -37,6 +37,8 @@ function TabooVM($http, tabooService) {
     this.newBookmarkTitle = "";
     /** entry for the new bookmark's tags. */
     this.newBookmarkTags = "";
+    /** entry for the bookmark's id when editing */
+    this.editBookmarkId = "";
     /** the bookmarks to show. */
     this.bookmarks = [];
     /** search field for bookmarks. */
@@ -174,14 +176,22 @@ function TabooVM($http, tabooService) {
             bookmark.title = self.newBookmarkTitle;
             bookmark.tags = self.newBookmarkTags.toLowerCase().split(/[^a-zA-ZäöüÄÖÜß0-9]+/i);
 
-            // todo: check if update
-
-            $http.post(tabooService.urlService + tabooService.pathBookmarks, bookmark)
-                .then(function(result){
-                    self.setSelectedTags(bookmark.tags);
-                }).catch(function (result) {
-                    alert("Fehler: " + result.status + " " + result.statusText);
-                });
+            if(self.editBookmarkId) {
+                bookmark.id = self.editBookmarkId;
+                $http.put(tabooService.urlService + tabooService.pathBookmarks, bookmark)
+                    .then(function (result) {
+                        self.setSelectedTags(bookmark.tags);
+                    }).catch(function (result) {
+                        alert("Fehler: " + result.status + " " + result.statusText);
+                    });
+            } else {
+                $http.post(tabooService.urlService + tabooService.pathBookmarks, bookmark)
+                    .then(function (result) {
+                        self.setSelectedTags(bookmark.tags);
+                    }).catch(function (result) {
+                        alert("Fehler: " + result.status + " " + result.statusText);
+                    });
+            }
         }
     };
 
@@ -192,6 +202,7 @@ function TabooVM($http, tabooService) {
         self.newBookmarkUrl = "";
         self.newBookmarkTitle = "";
         self.newBookmarkTags = "";
+        self.editBookmarkId = undefined;
     };
 
     /**
@@ -208,6 +219,19 @@ function TabooVM($http, tabooService) {
                 .catch(function(result){
                     alert("Fehler: " + result.status + " " + result.statusText);
                 });
+        }
+    };
+
+    /**
+     * sets the data of the given bookmark in the controls for editing.
+     * @param bookmark the bookmark to edit
+     */
+    this.editBookmark = function(bookmark) {
+        if(bookmark) {
+            self.newBookmarkUrl = bookmark.url;
+            self.newBookmarkTitle = bookmark.title;
+            self.newBookmarkTags = bookmark.joinedTags();
+            self.editBookmarkId = bookmark.id;
         }
     };
 
