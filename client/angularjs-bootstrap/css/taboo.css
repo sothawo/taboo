@@ -28,6 +28,11 @@ body {
     font-size: smaller;
 }
 
+.bookmark-table button {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
 .taglist-entry {
     margin-right: 10px;
     margin-bottom: 10px;

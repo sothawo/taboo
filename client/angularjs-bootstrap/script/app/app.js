@@ -194,6 +194,23 @@ function TabooVM($http, tabooService) {
         self.newBookmarkTags = "";
     };
 
+    /**
+     * deletes a bookmark from the backend.
+     * @param bookmark the bookmark to delete
+     */
+    this.deleteBookmark = function(bookmark) {
+        if(bookmark) {
+            // todo: confirm
+            $http.delete(tabooService.urlService + tabooService.pathBookmarks + '/' + bookmark.id)
+                .then(function(result){
+                    self.reloadBookmarks();
+                })
+                .catch(function(result){
+                    alert("Fehler: " + result.status + " " + result.statusText);
+                });
+        }
+    };
+
     //initial setup
     self.clearSelection();
 }

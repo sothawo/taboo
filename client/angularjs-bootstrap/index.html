@@ -29,7 +29,7 @@
     <![endif]-->
 
     <!-- AngularJS -->
-    <script src="script/angular-1.3.16/angular.min.js"></script>
+    <script src="script/angular-1.4.3/angular.min.js"></script>
 
     <!-- taboo application -->
     <script src="script/TabooSet.js"></script>
@@ -141,12 +141,29 @@
                                        ng-show="vm.bookmarks.length > 0">
                                     <tr ng-repeat="bookmark in vm.bookmarks">
                                         <td>
-                                            <div class="bookmark-title">{{bookmark.title}}</div>
-                                            <div class="bookmark-url">
-                                                <a href="{{bookmark.urlWithPrefix}}"
-                                                   target="_blank">{{bookmark.url}}</a>
+                                            <!-- bokmark entry -->
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <div class="col-xs-11">
+                                                        <div class="bookmark-title">{{bookmark.title}}</div>
+                                                        <div class="bookmark-url">
+                                                            <a href="{{bookmark.urlWithPrefix}}"
+                                                               target="_blank">{{bookmark.url}}</a>
+                                                        </div>
+                                                        <div class="bookmark-tags">{{bookmark.joinedTags()}}</div>
+                                                    </div>
+                                                    <div class="col-xs-1">
+                                                        <button class="btn btn-default btn-sm glyphicon glyphicon-edit"
+                                                                type="button"
+                                                                ng-click="">
+                                                        </button>
+                                                        <button class="btn btn-default btn-sm glyphicon glyphicon-trash"
+                                                                type="button"
+                                                                ng-click="vm.deleteBookmark(bookmark)">
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="bookmark-tags">{{bookmark.joinedTags()}}</div>
                                         </td>
                                     </tr>
                                 </table>
