@@ -185,6 +185,15 @@ function TabooVM($http, tabooService) {
         }
     };
 
+    /**
+     * clears the entry fields for new bookmarks.
+     */
+    this.clearEntryData = function () {
+        self.newBookmarkUrl = "";
+        self.newBookmarkTitle = "";
+        self.newBookmarkTags = "";
+    };
+
     //initial setup
     self.clearSelection();
 }
