@@ -54,7 +54,7 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
             <!-- bundled with spring-data-mongo is 1.9.x, spring boot needs 1.10. -->
-            <version>1.10.0.RELEASE</version>
+            <version>1.13.13.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
